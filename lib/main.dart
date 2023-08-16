@@ -1,72 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget{
+  final List<Section> sections = [
 
+
+    Section(title: 'Oxygen Supplies',
+        items:[ "Oxygen Cylinder",
+        "Portable Oxygen Cans",
+        "Empty Oxygen Cylinder",
+        "Oxygen Concentrator",
+        "Oxygen Cylinder Manifold",
+        "Oxygen Flow Meter",
+        "Oxygen Mask"]),
+    Section(title: 'Medicines',
+        items:["Tocilizumab",
+        "FabiFlu",
+        "Remdesivir",
+        "Dexamethasone Tablet",
+        "Ivermectin",
+        "Doxycycline",
+        "Deflazacort"]),
+    Section(title: "Immunity Boosters",
+        items: [
+        "Vitamin C Tablets",
+        "Zinc Sulphate Tablets",
+        "Zincovit Tablets",
+        "Multivitamin Syrup",
+        "Vitamin D3"
+        ]),
+    Section(title: "Safety Essentials",
+        items: [
+        "Face Mask",
+        "PPE Kits",
+        "Face Shield",
+        "Disposable Gloves",
+        "Sneeze Guard",
+        "Car Partition",
+        "Surgical Caps",
+        "Hand Sanitizer &amp; Disinfectant",
+        "Automatic Sanitizer Dispenser"
+        ]),
+    Section(title: "Medical Supplies",
+      items: [
+      "Pulse Oximeter",
+      "Thermometer",
+      "Steam Vaporizer",
+      "Nebulizer",
+      "Corona Test Kit"
+      ]),
+    Section(title: "Hospital Machines & Supplies",
+      items: [
+      "Ventilator",
+      "BiPAP Machine",
+      "CPAP Machine",
+      "Oxygen Mask",
+      "Patient Monitoring System",
+      "Suction Machine"
+      ])
+  ];
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  return MaterialApp(
+    home: Scaffold(
+      body: ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount:sections.length,
+      itemBuilder: (context,index){
+        return SectionWidget(section: sections[index]);
+    },
+          // separatorBuilder: (context, index) {
+          //   return Divider(); // Add a divider between sections
+          // },
+    ),
+    ),
+  );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ImportantSuppilesDetailsList(),
-      ),
-    );
-  }
+class SectionWidget extends StatelessWidget {
+  Section section;
+  SectionWidget({required this .section});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(section.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: section.items.length,
+          itemBuilder: (context,index){
+            return Card(
+              elevation: 1,
+              child: ListTile(
+                title: Text(section.items[index]),
+                trailing: Icon(Icons.keyboard_arrow_right, color: Colors.green,size: 30,),
+                onTap:() {
+                  Navigator.push(context, MaterialPageRoute(builder:(context)=>DetailScreen(data: section.items[index])));}
+              ),
+            );
+          },
+        )
+      ],
     );
   }
+
 }
