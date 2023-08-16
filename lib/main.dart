@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: ListView.builder(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: sections.length,
           itemBuilder: (context, index) {
             return SectionWidget(section: sections[index]);
@@ -89,14 +91,14 @@ class SectionWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Text(
             section.title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
         ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: section.items.length,
           itemBuilder: (context, index) {
@@ -104,7 +106,7 @@ class SectionWidget extends StatelessWidget {
               elevation: 1,
               child: ListTile(
                   title: Text(section.items[index]),
-                  trailing: Icon(
+                  trailing: const Icon(
                     Icons.keyboard_arrow_right,
                     color: Colors.green,
                     size: 30,
@@ -114,7 +116,7 @@ class SectionWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                ImportantSuppilesDetailsList()));
+                                const ImportantSuppilesDetailsList()));
                   }),
             );
           },
