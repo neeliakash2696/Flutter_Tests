@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tests/detailScreen.dart';
 import 'package:flutter_tests/section.dart';
+import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,6 +8,7 @@ void main() {
 
 class MyApp extends StatelessWidget{
   final List<Section> sections = [
+
 
     Section(title: 'Oxygen Supplies',
         items:[ "Oxygen Cylinder",
@@ -80,9 +81,8 @@ class MyApp extends StatelessWidget{
     ),
   );
   }
-
-
 }
+
 
 class SectionWidget extends StatelessWidget {
   Section section;
