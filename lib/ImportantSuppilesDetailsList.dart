@@ -244,7 +244,7 @@ class ImportantSuppilesDetailsListState
                         ),
                       ],
                       options: CarouselOptions(
-                        height: 380.0,
+                        // height: 380.0,
                         enlargeCenterPage: true,
                         autoPlay: false,
                         aspectRatio: 16 / 9,
