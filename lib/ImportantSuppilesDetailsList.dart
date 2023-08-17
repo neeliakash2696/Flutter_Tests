@@ -30,7 +30,7 @@ class ImportantSuppilesDetailsListState
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-    // getProductDetails();
+    getProductDetails();
   }
 
   encodeString<String>(String inputString) {
@@ -46,10 +46,10 @@ class ImportantSuppilesDetailsListState
           "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjMzNzM0NCwiaWF0IjoxNjkyMjUwOTQ0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxNy0wOC0yMDIzIn0.rtdlqKxpdYjKVHs1rKlw-htad96rk9rigeNUt10EcTI&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=$encodedQueryParam&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       if (response.statusCode == 200) {
-        var x = json.decode(response.body)['results'];
-        for (var i = 0; i < x.length; i++) {}
-        var image = x[0]['more_results'][0]['large_image'];
-        test = image;
+        // var x = json.decode(response.body)['results'];
+        // for (var i = 0; i < x.length; i++) {}
+        // var image = x[0]['more_results'][0]['large_image'];
+        // test = image;
         // dataArray = DataModel.fromJson(json.decode(response.body));
         setState(() {});
         EasyLoading.dismiss();
@@ -113,13 +113,16 @@ class ImportantSuppilesDetailsListState
                     children: [
                       IconButton(
                         icon: const Icon(Icons.menu),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                         color: Colors.black,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
-                          controller: TextEditingController(text: 'Oxygen'),
+                          controller: TextEditingController(
+                              text: "${widget.productName}"),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(8),
@@ -191,8 +194,8 @@ class ImportantSuppilesDetailsListState
                               height: 70,
                               width: 100,
                               alignment: Alignment.topCenter,
-                              child: const Image(
-                                image: CachedNetworkImageProvider(
+                              child: Image(
+                                image: CachedNetworkImageProvider(test ??
                                     "https://ik.imagekit.io/hpapi/harry.jpg"),
                               ),
                             ),
