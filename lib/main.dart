@@ -108,7 +108,11 @@ class SectionWidget extends StatelessWidget {
               elevation: 1,
               child: ListTile(
                   title: Text(section.items[index]),
-                trailing: Icon(Icons.keyboard_arrow_right, color: Colors.teal,size: 30,)
+                  trailing: Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.teal,
+                    size: 30,
+                  ),
                   onTap: () {
                     Navigator.push(
                         context,
