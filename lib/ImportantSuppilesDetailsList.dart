@@ -414,9 +414,11 @@ class ImportantSuppilesDetailsListState
 class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double deviceWidth=MediaQuery.of(context).size.width/2;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
+        width: MediaQuery.of(context).size.width/2-25,
         alignment: Alignment.center,
         padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
         decoration: BoxDecoration(
@@ -428,6 +430,7 @@ class CustomButton extends StatelessWidget {
         ),
         child: Center(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 30,
@@ -457,6 +460,7 @@ class CustomButton2 extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
+        width: MediaQuery.of(context).size.width/2-25,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
@@ -468,6 +472,7 @@ class CustomButton2 extends StatelessWidget {
         ),
         child: Center(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 30,
