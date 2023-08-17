@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 
@@ -77,6 +78,7 @@ class MyApp extends StatelessWidget {
           // },
         ),
       ),
+      builder: EasyLoading.init(),
     );
   }
 }
@@ -115,8 +117,8 @@ class SectionWidget extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const ImportantSuppilesDetailsList()));
+                            builder: (context) => ImportantSuppilesDetailsList(
+                                productName: section.items[index])));
                   }),
             );
           },
