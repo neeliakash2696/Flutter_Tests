@@ -2,6 +2,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'categoriesSection.dart';
+
 class ImportantSuppilesDetailsList extends StatefulWidget {
   const ImportantSuppilesDetailsList({super.key});
 
@@ -12,6 +14,11 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
+  final List<CategoriesSection> sections=[
+    CategoriesSection(title: 'Seller Type', icon: Icon(Icons.keyboard_arrow_down_sharp)),
+    CategoriesSection(title: 'Related', icon: Icon(Icons.keyboard_arrow_down_sharp)),
+    CategoriesSection(title: 'Detail', icon: Icon(Icons.list))
+  ];
   // View Did Load
   @override
   void initState() {
@@ -83,13 +90,18 @@ class ImportantSuppilesDetailsListState
                 physics: NeverScrollableScrollPhysics(),
                 itemExtent: MediaQuery.of(context).size.width / 3,
               scrollDirection: Axis.horizontal, // Set horizontal scroll direction
-              itemCount: 3, // Number of list tiles
+              itemCount: sections.length, // Number of list tiles
               itemBuilder: (context, index) {
                 return Card(
-                  child: ListTile(
-                      title: Center(
-                        child: Text("Item $index"),
-                    ),
+                  child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(sections[index].title,style: TextStyle(fontSize: 12),textAlign: TextAlign.center,),
+                          sections[index].icon
+                          ],
+                      ),
                     ),
                 );
               },
