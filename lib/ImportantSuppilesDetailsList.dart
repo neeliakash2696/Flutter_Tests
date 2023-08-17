@@ -22,25 +22,81 @@ class ImportantSuppilesDetailsListState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          "Notifications",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Color(0xff432B20),
-              fontSize: 16,
-              fontFamily: 'HVD Fonts',
-              fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Color(0xff432B20),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.teal,
+        title: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.menu),
+                        onPressed: () {
+                        },
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: TextEditingController(text: 'Oxygen'),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(8),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("images/mic_icon_colored.png"),
+                                fit: BoxFit.cover),
+                          ),
+                          alignment: Alignment.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            SizedBox(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemExtent: MediaQuery.of(context).size.width / 3,
+              scrollDirection: Axis.horizontal, // Set horizontal scroll direction
+              itemCount: 3, // Number of list tiles
+              itemBuilder: (context, index) {
+                return Card(
+                  child: ListTile(
+                      title: Center(
+                        child: Text("Item $index"),
+                    ),
+                    ),
+                );
+              },
+
+              ),
+            ),
+            // const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: 10,
