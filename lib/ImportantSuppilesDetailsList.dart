@@ -414,7 +414,6 @@ class ImportantSuppilesDetailsListState
 class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    double deviceWidth=MediaQuery.of(context).size.width/2;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
