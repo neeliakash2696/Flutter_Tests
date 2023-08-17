@@ -181,6 +181,8 @@ class ImportantSuppilesDetailsListState
                       // Action
                     },
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           margin: const EdgeInsets.all(10),
