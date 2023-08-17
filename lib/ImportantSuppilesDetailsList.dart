@@ -22,8 +22,8 @@ class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
   late var encodedQueryParam;
   var test;
-  List<String> imagesArray = [];
-  List<String> titlesArray = [];
+  List<String>? imagesArray = [];
+  List<String>? titlesArray = [];
   // View Did Load
   @override
   void initState() {
@@ -46,11 +46,14 @@ class ImportantSuppilesDetailsListState
           "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjMzNzM0NCwiaWF0IjoxNjkyMjUwOTQ0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxNy0wOC0yMDIzIn0.rtdlqKxpdYjKVHs1rKlw-htad96rk9rigeNUt10EcTI&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=$encodedQueryParam&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       if (response.statusCode == 200) {
-        // var x = json.decode(response.body)['results'];
-        // for (var i = 0; i < x.length; i++) {}
-        // var image = x[0]['more_results'][0]['large_image'];
-        // test = image;
-        // dataArray = DataModel.fromJson(json.decode(response.body));
+        var resultsArray = json.decode(response.body)['results'];
+        for (var i = 0; i < resultsArray.length; i++) {
+          var image = resultsArray[i]['fields']['large_image'];
+          var title = resultsArray[i]['fields']['title'];
+          imagesArray?.add(image ?? "");
+          titlesArray?.add(title ?? "NA");
+        }
+        print(imagesArray);
         setState(() {});
         EasyLoading.dismiss();
         // ignore: use_build_context_synchronously
@@ -195,7 +198,8 @@ class ImportantSuppilesDetailsListState
                               width: 100,
                               alignment: Alignment.topCenter,
                               child: Image(
-                                image: CachedNetworkImageProvider(test ??
+                                image: CachedNetworkImageProvider(imagesArray?[
+                                        index] ??
                                     "https://ik.imagekit.io/hpapi/harry.jpg"),
                               ),
                             ),
@@ -204,10 +208,10 @@ class ImportantSuppilesDetailsListState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.fromLTRB(0, 10, 5, 0),
                                     child: Text(
-                                      "All Life Portable Oxygen Canmn vjhfb fvhjbhjfbdvjh",
+                                      titlesArray?[index] ?? "",
                                       style: TextStyle(
                                           color: Color(0xff432B20),
                                           fontSize: 16,
