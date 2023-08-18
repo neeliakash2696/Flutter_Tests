@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
+
+import 'main_pbr_banner.dart';
 
 void main() {
   runApp(MyApp());
@@ -65,13 +68,17 @@ class MyApp extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) {
+    // sections.insert(2, Section(title:"PBR BANNER", items:[]));
     return MaterialApp(
       home: Scaffold(
         body: ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: sections.length,
           itemBuilder: (context, index) {
-            return SectionWidget(section: sections[index]);
+            {
+              print(sections[2].title);
+              return SectionWidget(section: sections[index]);
+            }
           },
           // separatorBuilder: (context, index) {
           //   return Divider(); // Add a divider between sections
@@ -86,9 +93,9 @@ class MyApp extends StatelessWidget {
 class SectionWidget extends StatelessWidget {
   Section section;
   SectionWidget({required this.section});
-
   @override
   Widget build(BuildContext context) {
+    print("section title: ${section.title}");
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,24 +111,25 @@ class SectionWidget extends StatelessWidget {
           shrinkWrap: true,
           itemCount: section.items.length,
           itemBuilder: (context, index) {
-            return Card(
-              elevation: 1,
-              child: ListTile(
-                  title: Text(section.items[index]),
-                  trailing: Icon(
-                    Icons.keyboard_arrow_right,
-                    color: Colors.teal,
-                    size: 30,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ImportantSuppilesDetailsList(
-                                productName: section.items[index])));
-                  }),
-            );
-          },
+              return Card(
+                elevation: 1,
+                child: ListTile
+                  (
+                    title: Text(section.items[index]),
+                    trailing: Icon(
+                      Icons.keyboard_arrow_right,
+                      color: Colors.teal,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                      MainPBRBanner()));
+                    }),
+              );
+            },
         )
       ],
     );
