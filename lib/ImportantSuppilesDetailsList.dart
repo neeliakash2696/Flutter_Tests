@@ -12,31 +12,19 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:http/http.dart' as http;
 
-
-import 'categoriesSection.dart';
-
-
-// ignore: must_be_immutable
-
 class ImportantSuppilesDetailsList extends StatefulWidget {
   @override
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
-  ImportantSuppilesDetailsList({Key? key, required this.productName})
+  List<String> categoriesList;
+  ImportantSuppilesDetailsList(
+      {Key? key, required this.productName, required this.categoriesList})
       : super(key: key);
 }
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
-
-  final List<CategoriesSection> sections=[
-    CategoriesSection(title: 'Seller Type', icon: Icon(Icons.keyboard_arrow_down_sharp)),
-    CategoriesSection(title: 'Related', icon: Icon(Icons.keyboard_arrow_down_sharp)),
-    CategoriesSection(title: 'Detail', icon: Icon(Icons.list))
-  ];
-  late var encodedQueryParam;
-
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -45,6 +33,20 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
+  String sellerDropDownValue = 'Seller Type';
+  String categoriesDropDownValue = 'Categories';
+
+  // List of items in our dropdown menu
+  var sellerDropDownItems = [
+    'Seller Type',
+    'All',
+    'Manufacturer',
+    'Wholesaler',
+    'Retailer',
+    'Exporter',
+  ];
+
+  var categoriesDropDownItems = ['Categories'];
 
   // View Did Load
   @override
@@ -52,20 +54,27 @@ class ImportantSuppilesDetailsListState
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-    getProductDetails();
+    getProductDetails(widget.productName);
   }
 
-  encodeString<String>(String inputString) {
-    var queryParamRaw = widget.productName;
+  generatecategoriesList() {
+    categoriesDropDownItems.clear();
+    categoriesDropDownItems.add('Categories');
+    categoriesDropDownItems.addAll(widget.categoriesList);
+  }
+
+  String encodeString(String? inputString) {
+    var queryParamRaw = inputString ?? "";
     var encoded = queryParamRaw.replaceAll(" ", "%20");
     return encoded;
   }
 
-  getProductDetails() async {
+  getProductDetails(String category) async {
     EasyLoading.show(status: 'Loading...');
+    generatecategoriesList();
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjQyOTk1NSwiaWF0IjoxNjkyMzQzNTU1LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxOC0wOC0yMDIzIn0._ieTj9E3mdRJe51kY8UmkVFVsuVupJIViP7qmcVBY5I&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=Portable%20Oxygen%20Cans&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjQyOTk1NSwiaWF0IjoxNjkyMzQzNTU1LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxOC0wOC0yMDIzIn0._ieTj9E3mdRJe51kY8UmkVFVsuVupJIViP7qmcVBY5I&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -218,31 +227,67 @@ class ImportantSuppilesDetailsListState
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemExtent: MediaQuery.of(context).size.width / 3,
-              scrollDirection: Axis.horizontal, // Set horizontal scroll direction
-              itemCount: sections.length, // Number of list tiles
-                itemBuilder: (context, index) {
-                  return Card(
-                  child: Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(sections[index].title,style: TextStyle(fontSize: 12),textAlign: TextAlign.center,),
-                          sections[index].icon
-                          ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DropdownButton(
+                  value: sellerDropDownValue,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: sellerDropDownItems.map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text(items),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      sellerDropDownValue = newValue!;
+                    });
+                  },
+                ),
+                DropdownButton(
+                  value: categoriesDropDownValue,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: categoriesDropDownItems.map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text(
+                        items,
+                        textAlign: TextAlign.center,
                       ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      categoriesDropDownValue = newValue!;
+                      var encodedValue = encodeString(categoriesDropDownValue);
+                      print(encodedValue);
+                      getProductDetails(encodedValue);
+                    });
+                  },
+                ),
+              ],
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Detail",
+                    style: TextStyle(
+                      color: Color(0xff432B20),
+                      fontSize: 16,
                     ),
-                  );
-                },
+                  ),
+                  Icon(
+                    Icons.list,
+                    color: Color(0xff432B20),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: resultsArray.length,
@@ -483,7 +528,7 @@ class CustomButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        width: MediaQuery.of(context).size.width/2-25,
+        width: MediaQuery.of(context).size.width / 2 - 25,
         alignment: Alignment.center,
         padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
         decoration: BoxDecoration(
@@ -525,7 +570,7 @@ class CustomButton2 extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        width: MediaQuery.of(context).size.width/2-25,
+        width: MediaQuery.of(context).size.width / 2 - 25,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(

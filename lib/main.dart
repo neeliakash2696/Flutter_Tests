@@ -111,25 +111,28 @@ class SectionWidget extends StatelessWidget {
           shrinkWrap: true,
           itemCount: section.items.length,
           itemBuilder: (context, index) {
-              return Card(
-                elevation: 1,
-                child: ListTile
-                  (
-                    title: Text(section.items[index]),
-                    trailing: Icon(
-                      Icons.keyboard_arrow_right,
-                      color: Colors.teal,
-                      size: 30,
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                      MainPBRBanner()));
-                    }),
-              );
-            },
+
+            return Card(
+              elevation: 1,
+              child: ListTile(
+                  title: Text(section.items[index]),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.teal,
+                    size: 30,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ImportantSuppilesDetailsList(
+                                  productName: section.items[index],
+                                  categoriesList: section.items,
+                                )));
+                  }),
+            );
+          },
+
         )
       ],
     );
