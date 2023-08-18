@@ -1,4 +1,6 @@
 // ignore: file_names
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:developer';
 
@@ -20,10 +22,14 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
-  late var encodedQueryParam;
-  var test;
+  late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
+  List<String>? itemPricesArray = [];
+  List<String>? companyNameArray = [];
+  List<String>? locationsArray = [];
+  List<String>? localityArray = [];
+  List<dynamic> resultsArray = [];
   // View Did Load
   @override
   void initState() {
@@ -43,20 +49,59 @@ class ImportantSuppilesDetailsListState
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjMzNzM0NCwiaWF0IjoxNjkyMjUwOTQ0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxNy0wOC0yMDIzIn0.rtdlqKxpdYjKVHs1rKlw-htad96rk9rigeNUt10EcTI&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=$encodedQueryParam&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjQyOTk1NSwiaWF0IjoxNjkyMzQzNTU1LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxOC0wOC0yMDIzIn0._ieTj9E3mdRJe51kY8UmkVFVsuVupJIViP7qmcVBY5I&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=Portable%20Oxygen%20Cans&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
-      if (response.statusCode == 200) {
-        var resultsArray = json.decode(response.body)['results'];
+      var code = json.decode(response.body)['CODE'];
+      if (code == "402") {
+        var msg = json.decode(response.body)['MESSAGE'];
+        EasyLoading.dismiss();
+        Flushbar(
+          title: code,
+          message: msg,
+          flushbarStyle: FlushbarStyle.FLOATING,
+          isDismissible: true,
+          duration: const Duration(seconds: 4),
+          backgroundColor: Colors.red,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          boxShadows: const [
+            BoxShadow(
+              offset: Offset(0.0, 2.0),
+              blurRadius: 3.0,
+            )
+          ],
+        ).show(context);
+      } else {
+        //if (response.statusCode == 200)
+        resultsArray = json.decode(response.body)['results'];
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
-          var title = resultsArray[i]['fields']['title'];
           imagesArray?.add(image ?? "");
+
+          var title = resultsArray[i]['fields']['title'];
           titlesArray?.add(title ?? "NA");
+
+          var itemPrices = resultsArray[i]['fields']['itemprice'];
+          var units = resultsArray[i]['fields']['moq_type'];
+          if (itemPrices == "" || itemPrices == null) {
+            itemPricesArray?.add("Prices on demand");
+          } else {
+            if (units == "" || units == null) {
+              units = "units";
+            }
+            itemPricesArray?.add((itemPrices) + "/ " + (units));
+          }
+          var company = resultsArray[i]['fields']['tscode'];
+          companyNameArray?.add(company ?? "NA");
+
+          var city = resultsArray[i]['fields']['city'] ?? "";
+          locationsArray?.add(city);
+
+          var locality = resultsArray[i]['fields']['locality'] ?? "NA";
+          localityArray?.add(locality);
         }
-        print(imagesArray);
         setState(() {});
         EasyLoading.dismiss();
-        // ignore: use_build_context_synchronously
         Flushbar(
           title: "DONE",
           message: "API HITTING DONE",
@@ -92,7 +137,7 @@ class ImportantSuppilesDetailsListState
           )
         ],
       ).show(context);
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
     }
   }
 
@@ -180,7 +225,7 @@ class ImportantSuppilesDetailsListState
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: resultsArray.length,
                 itemBuilder: (BuildContext context, int index) {
                   var inkWell = InkWell(
                     onTap: () {
@@ -209,10 +254,11 @@ class ImportantSuppilesDetailsListState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 10, 5, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 10, 5, 0),
                                     child: Text(
                                       titlesArray?[index] ?? "",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Color(0xff432B20),
                                           fontSize: 16,
                                           fontFamily: 'HVD Fonts',
@@ -242,14 +288,14 @@ class ImportantSuppilesDetailsListState
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Flexible(
+                                      Flexible(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 5, 0),
                                           child: Text(
-                                            "125/Piece",
+                                            itemPricesArray?[index] ?? "NA",
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Color(0xff432B20),
                                               fontSize: 14,
                                               fontFamily: 'HVD Fonts',
@@ -280,14 +326,14 @@ class ImportantSuppilesDetailsListState
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Flexible(
+                                      Flexible(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 5, 0),
                                           child: Text(
-                                            "Unatti Aerosols Product and Machines",
+                                            companyNameArray?[index] ?? "",
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Color(0xff432B20),
                                               fontSize: 14,
                                               fontFamily: 'HVD Fonts',
@@ -318,14 +364,17 @@ class ImportantSuppilesDetailsListState
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Flexible(
+                                      Flexible(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 5, 0),
                                           child: Text(
-                                            "New Delhi-Badarpur",
+                                            // ignore: prefer_interpolation_to_compose_strings
+                                            (locationsArray?[index] ?? "NA") +
+                                                "-"
+                                                    "${localityArray?[index] ?? "NA"}",
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Color(0xff432B20),
                                               fontSize: 14,
                                               fontFamily: 'HVD Fonts',
@@ -356,14 +405,14 @@ class ImportantSuppilesDetailsListState
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Flexible(
+                                      Flexible(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 5, 0),
                                           child: Text(
-                                            "Deals in Noida",
+                                            "Deals in ${localityArray?[index] ?? ""}",
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Color(0xff432B20),
                                               fontSize: 14,
                                               fontFamily: 'HVD Fonts',
