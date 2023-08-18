@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       "Sneeze Guard",
       "Car Partition",
       "Surgical Caps",
-      "Hand Sanitizer &amp; Disinfectant",
+      "Hand Sanitizer & Disinfectant",
       "Automatic Sanitizer Dispenser"
     ]),
     Section(title: "Medical Supplies", items: [

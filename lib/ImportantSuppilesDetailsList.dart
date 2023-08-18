@@ -11,7 +11,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
+
+import 'categoriesSection.dart';
+
+
 // ignore: must_be_immutable
+
 class ImportantSuppilesDetailsList extends StatefulWidget {
   @override
   ImportantSuppilesDetailsListState createState() =>
@@ -23,6 +28,14 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
+
+  final List<CategoriesSection> sections=[
+    CategoriesSection(title: 'Seller Type', icon: Icon(Icons.keyboard_arrow_down_sharp)),
+    CategoriesSection(title: 'Related', icon: Icon(Icons.keyboard_arrow_down_sharp)),
+    CategoriesSection(title: 'Detail', icon: Icon(Icons.list))
+  ];
+  late var encodedQueryParam;
+
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -31,6 +44,7 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
+
   // View Did Load
   @override
   void initState() {
@@ -209,14 +223,18 @@ class ImportantSuppilesDetailsListState
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 itemExtent: MediaQuery.of(context).size.width / 3,
-                scrollDirection:
-                    Axis.horizontal, // Set horizontal scroll direction
-                itemCount: 3, // Number of list tiles
+              scrollDirection: Axis.horizontal, // Set horizontal scroll direction
+              itemCount: sections.length, // Number of list tiles
                 itemBuilder: (context, index) {
                   return Card(
-                    child: ListTile(
-                      title: Center(
-                        child: Text("Item $index"),
+                  child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(sections[index].title,style: TextStyle(fontSize: 12),textAlign: TextAlign.center,),
+                          sections[index].icon
+                          ],
                       ),
                     ),
                   );
@@ -460,6 +478,7 @@ class CustomButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
+        width: MediaQuery.of(context).size.width/2-25,
         alignment: Alignment.center,
         padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
         decoration: BoxDecoration(
@@ -471,6 +490,7 @@ class CustomButton extends StatelessWidget {
         ),
         child: Center(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 30,
@@ -500,6 +520,7 @@ class CustomButton2 extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
+        width: MediaQuery.of(context).size.width/2-25,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
@@ -511,6 +532,7 @@ class CustomButton2 extends StatelessWidget {
         ),
         child: Center(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 30,
