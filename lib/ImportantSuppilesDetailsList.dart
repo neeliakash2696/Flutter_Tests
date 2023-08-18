@@ -11,6 +11,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class ImportantSuppilesDetailsList extends StatefulWidget {
   @override
   ImportantSuppilesDetailsListState createState() =>
