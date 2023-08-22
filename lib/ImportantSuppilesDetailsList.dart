@@ -17,16 +17,20 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
+  int productIndex;
   List<String> categoriesList;
   ImportantSuppilesDetailsList(
-      {Key? key, required this.productName, required this.categoriesList})
+      {Key? key,
+      required this.productName,
+      required this.productIndex,
+      required this.categoriesList})
       : super(key: key);
 }
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
   late String encodedQueryParam;
-  int itemCount=0;
+  int itemCount = 0;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? itemPricesArray = [];
@@ -41,7 +45,7 @@ class ImportantSuppilesDetailsListState
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-    getProductDetails(widget.productName);
+    getProductDetails(encodedQueryParam);
   }
 
   String encodeString(String? inputString) {
@@ -50,16 +54,23 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool issellerType) {
-    Navigator.push(
+  openFilters(bool issellerType) async {
+    final result = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: widget.categoriesList,
                   isSellerType: issellerType,
+                  productName: widget.productName,
+                  productIndex: widget.productIndex,
                 ),
             opaque: false,
             fullscreenDialog: true));
+    print("result is $result");
+    encodedQueryParam = encodeString(result);
+    print("at callback $encodedQueryParam");
+    getProductDetails(encodedQueryParam);
+    widget.productName = result;
   }
 
   getProductDetails(String category) async {
@@ -95,10 +106,15 @@ class ImportantSuppilesDetailsListState
             )
           ],
         ).show(context);
-      } else if (response.statusCode == 200){
-        //if (response.statusCode == 200)
+      } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['results'];
-        itemCount=resultsArray.length;
+        itemCount = resultsArray.length;
+        imagesArray?.clear();
+        titlesArray?.clear();
+        itemPricesArray?.clear();
+        companyNameArray?.clear();
+        locationsArray?.clear();
+        localityArray?.clear();
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
           imagesArray?.add(image ?? "");
@@ -125,9 +141,9 @@ class ImportantSuppilesDetailsListState
           var locality = resultsArray[i]['fields']['locality'] ?? "NA";
           localityArray?.add(locality);
         }
-        addBannerOrAd(2,"ADEMPTY");
+        addBannerOrAd(2, "ADEMPTY");
         addBannerOrAd(6, "isq_banner");
-        addBannerOrAd(8,"PBRBANNER");
+        addBannerOrAd(8, "PBRBANNER");
         print("list size=${titlesArray?[9]}");
         setState(() {});
         EasyLoading.dismiss();
@@ -516,17 +532,13 @@ class ImportantSuppilesDetailsListState
                     ),
                   );
 
-                  if(titlesArray?[index]=="PBRBANNER") {
-
+                  if (titlesArray?[index] == "PBRBANNER") {
                     return PBRBanner(product_name: widget.productName);
-                  }
-                  else if(titlesArray?[index]=="isq_banner"){
+                  } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(productName: widget.productName);
-                  }
-                  else if(titlesArray?[index]=="ADEMPTY"){
+                  } else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
-                  }
-                  else {
+                  } else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -537,14 +549,14 @@ class ImportantSuppilesDetailsListState
                   }
                 },
               ),
-
             ),
           ],
         ),
       ),
     );
   }
-  void addBannerOrAd(int pos, String value){
+
+  void addBannerOrAd(int pos, String value) {
     imagesArray?.insert(pos, "");
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");

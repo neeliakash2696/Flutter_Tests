@@ -124,6 +124,7 @@ class SectionWidget extends StatelessWidget {
                             builder: (context) => ImportantSuppilesDetailsList(
                                   productName: section.items[index],
                                   categoriesList: section.items,
+                                  productIndex: index,
                                 )));
                   }),
             );
