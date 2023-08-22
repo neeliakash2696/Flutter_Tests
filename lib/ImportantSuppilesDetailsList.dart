@@ -55,7 +55,7 @@ class ImportantSuppilesDetailsListState
   }
 
   openFilters(bool issellerType) async {
-    final result = await Navigator.push(
+    var result = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
@@ -66,11 +66,13 @@ class ImportantSuppilesDetailsListState
                 ),
             opaque: false,
             fullscreenDialog: true));
-    print("result is $result");
-    encodedQueryParam = encodeString(result);
-    print("at callback $encodedQueryParam");
-    getProductDetails(encodedQueryParam);
-    widget.productName = result;
+    if (result != null) {
+      print("result is $result");
+      encodedQueryParam = encodeString(result);
+      print("at callback $encodedQueryParam");
+      getProductDetails(encodedQueryParam);
+      widget.productName = result;
+    }
   }
 
   getProductDetails(String category) async {
