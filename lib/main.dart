@@ -2,11 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
-
-import 'main_pbr_banner.dart';
 
 void main() {
   runApp(MyApp());
@@ -111,7 +108,6 @@ class SectionWidget extends StatelessWidget {
           shrinkWrap: true,
           itemCount: section.items.length,
           itemBuilder: (context, index) {
-
             return Card(
               elevation: 1,
               child: ListTile(
