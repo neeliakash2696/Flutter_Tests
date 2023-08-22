@@ -62,7 +62,7 @@ class ImportantSuppilesDetailsListState
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjY4OTQ4MCwiaWF0IjoxNjkyNjAzMDgwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMS0wOC0yMDIzIn0.i09PsgG0gAh5loJcPaQag7Agq-LseEYc60YW2X2L8Hk&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjc3NTQ4NSwiaWF0IjoxNjkyNjg5MDg1LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMi0wOC0yMDIzIn0.6giliNAG8f-uk3uLpsyCFOjjPrML_jqXDrjv2BhVO1Y&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       Map<String, String> header = {};
       header["Access-Control-Allow-Origin"] = "*";
       header["Access-Control-Allow-Methods"] = "GET, POST";
