@@ -11,19 +11,20 @@ class PBRBanner extends StatelessWidget{
           padding: const EdgeInsets.all(8.0),
           child: Card(
             color: Colors.teal[50],
-            elevation: 2,
+            // elevation: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                   child: Text("Get the Best Suppliers for your Requirement",
                     softWrap: true,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 15,
+                      color: Colors.black87
                     ),),
                 ),
                 Row(
@@ -40,7 +41,7 @@ class PBRBanner extends StatelessWidget{
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text(product_name,style: TextStyle(fontWeight:FontWeight.bold,color: Colors.teal[700])),
+                          child: Text(product_name,style: TextStyle(fontWeight:FontWeight.bold,color: Colors.teal[500])),
                         ),
                       ),
                     ),
