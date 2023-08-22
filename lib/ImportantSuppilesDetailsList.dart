@@ -67,9 +67,7 @@ class ImportantSuppilesDetailsListState
             opaque: false,
             fullscreenDialog: true));
     if (result != null) {
-      print("result is $result");
       encodedQueryParam = encodeString(result);
-      print("at callback $encodedQueryParam");
       getProductDetails(encodedQueryParam);
       widget.productName = result;
     }
