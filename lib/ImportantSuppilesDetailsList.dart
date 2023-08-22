@@ -5,9 +5,12 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:http/http.dart' as http;
+
+import 'main_pbr_banner.dart';
 
 class ImportantSuppilesDetailsList extends StatefulWidget {
   @override
@@ -23,6 +26,7 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
   late String encodedQueryParam;
+  int itemCount=0;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? itemPricesArray = [];
@@ -91,9 +95,10 @@ class ImportantSuppilesDetailsListState
             )
           ],
         ).show(context);
-      } else {
+      } else if (response.statusCode == 200){
         //if (response.statusCode == 200)
         resultsArray = json.decode(response.body)['results'];
+        itemCount=resultsArray.length;
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
           imagesArray?.add(image ?? "");
@@ -120,6 +125,10 @@ class ImportantSuppilesDetailsListState
           var locality = resultsArray[i]['fields']['locality'] ?? "NA";
           localityArray?.add(locality);
         }
+        addBannerOrAd(2,"ADEMPTY");
+        addBannerOrAd(6, "isq_banner");
+        addBannerOrAd(8,"PBRBANNER");
+        print("list size=${titlesArray?[9]}");
         setState(() {});
         EasyLoading.dismiss();
         Flushbar(
@@ -295,7 +304,7 @@ class ImportantSuppilesDetailsListState
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: resultsArray.length,
+                itemCount: itemCount,
                 itemBuilder: (BuildContext context, int index) {
                   var inkWell = InkWell(
                     onTap: () {
@@ -506,11 +515,20 @@ class ImportantSuppilesDetailsListState
                       ],
                     ),
                   );
-                  if ((index + 1) % 2 == 0)
+
+                  if(titlesArray?[index]=="PBRBANNER") {
+
                     return PBRBanner(product_name: widget.productName);
+                  }
+                  else if(titlesArray?[index]=="isq_banner"){
+                    return MainPBRBanner(productName: widget.productName);
+                  }
+                  else if(titlesArray?[index]=="ADEMPTY"){
+                    return AdClass();
+                  }
                   else {
                     return Card(
-                      elevation: 10,
+                      // elevation: 1,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -519,11 +537,21 @@ class ImportantSuppilesDetailsListState
                   }
                 },
               ),
+
             ),
           ],
         ),
       ),
     );
+  }
+  void addBannerOrAd(int pos, String value){
+    imagesArray?.insert(pos, "");
+    titlesArray?.insert(pos, value);
+    itemPricesArray?.insert(pos, "");
+    companyNameArray?.insert(pos, "");
+    locationsArray?.insert(pos, "");
+    localityArray?.insert(pos, "");
+    itemCount++;
   }
 }
 

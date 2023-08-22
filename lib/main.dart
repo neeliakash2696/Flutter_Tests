@@ -132,7 +132,6 @@ class SectionWidget extends StatelessWidget {
                   }),
             );
           },
-
         )
       ],
     );
