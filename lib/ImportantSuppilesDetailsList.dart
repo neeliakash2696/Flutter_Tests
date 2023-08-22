@@ -5,6 +5,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:http/http.dart' as http;
 
@@ -505,13 +506,17 @@ class ImportantSuppilesDetailsListState
                       ],
                     ),
                   );
-                  return Card(
-                    elevation: 10,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: inkWell,
-                  );
+                  if ((index + 1) % 2 == 0)
+                    return PBRBanner(product_name: widget.productName);
+                  else {
+                    return Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: inkWell,
+                    );
+                  }
                 },
               ),
             ),
