@@ -1,14 +1,11 @@
-// ignore: file_names
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/Fliters.dart';
 import 'package:http/http.dart' as http;
 
 class ImportantSuppilesDetailsList extends StatefulWidget {
@@ -32,20 +29,6 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
-  String sellerDropDownValue = 'Seller Type';
-  String categoriesDropDownValue = 'Categories';
-
-  // List of items in our dropdown menu
-  var sellerDropDownItems = [
-    'Seller Type',
-    'All',
-    'Manufacturer',
-    'Wholesaler',
-    'Retailer',
-    'Exporter',
-  ];
-
-  var categoriesDropDownItems = ['Categories'];
 
   // View Did Load
   @override
@@ -56,25 +39,37 @@ class ImportantSuppilesDetailsListState
     getProductDetails(widget.productName);
   }
 
-  generatecategoriesList() {
-    categoriesDropDownItems.clear();
-    categoriesDropDownItems.add('Categories');
-    categoriesDropDownItems.addAll(widget.categoriesList);
-  }
-
   String encodeString(String? inputString) {
     var queryParamRaw = inputString ?? "";
     var encoded = queryParamRaw.replaceAll(" ", "%20");
     return encoded;
   }
 
+  openFilters(bool issellerType) {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => Filters(
+                  categoriesList: widget.categoriesList,
+                  isSellerType: issellerType,
+                ),
+            opaque: false,
+            fullscreenDialog: true));
+  }
+
   getProductDetails(String category) async {
     EasyLoading.show(status: 'Loading...');
-    generatecategoriesList();
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjQyOTk1NSwiaWF0IjoxNjkyMzQzNTU1LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxOC0wOC0yMDIzIn0._ieTj9E3mdRJe51kY8UmkVFVsuVupJIViP7qmcVBY5I&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-      http.Response response = await http.get(Uri.parse(pathUrl));
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MjY4OTQ4MCwiaWF0IjoxNjkyNjAzMDgwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMS0wOC0yMDIzIn0.i09PsgG0gAh5loJcPaQag7Agq-LseEYc60YW2X2L8Hk&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      Map<String, String> header = {};
+      header["Access-Control-Allow-Origin"] = "*";
+      header["Access-Control-Allow-Methods"] = "GET, POST";
+      header["Access-Control-Allow-Headers"] = "X-Requested-With";
+
+      // http.Response response = await http.get(Uri.parse(pathUrl));
+      http.Response response =
+          await http.post(Uri.parse(pathUrl), headers: header, body: null);
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
@@ -230,62 +225,72 @@ class ImportantSuppilesDetailsListState
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                DropdownButton(
-                  value: sellerDropDownValue,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: sellerDropDownItems.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      sellerDropDownValue = newValue!;
-                    });
+                TextButton(
+                  onPressed: () {
+                    openFilters(true);
                   },
-                ),
-                DropdownButton(
-                  value: categoriesDropDownValue,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: categoriesDropDownItems.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Text(
-                        items,
-                        textAlign: TextAlign.center,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Seller Type",
+                        style: TextStyle(
+                          color: Color(0xff432B20),
+                          fontSize: 16,
+                        ),
                       ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      categoriesDropDownValue = newValue!;
-                      var encodedValue = encodeString(categoriesDropDownValue);
-                      print(encodedValue);
-                      getProductDetails(encodedValue);
-                    });
+                      Icon(
+                        Icons.expand_more,
+                        color: Color(0xff432B20),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                TextButton(
+                  onPressed: () {
+                    openFilters(false);
                   },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Categories",
+                        style: TextStyle(
+                          color: Color(0xff432B20),
+                          fontSize: 16,
+                        ),
+                      ),
+                      Icon(
+                        Icons.expand_more,
+                        color: Color(0xff432B20),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                TextButton(
+                  onPressed: () {
+                    //
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Detail",
+                        style: TextStyle(
+                          color: Color(0xff432B20),
+                          fontSize: 16,
+                        ),
+                      ),
+                      Icon(
+                        Icons.list,
+                        color: Color(0xff432B20),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Detail",
-                    style: TextStyle(
-                      color: Color(0xff432B20),
-                      fontSize: 16,
-                    ),
-                  ),
-                  Icon(
-                    Icons.list,
-                    color: Color(0xff432B20),
-                  ),
-                ],
-              ),
             ),
             Expanded(
               child: ListView.builder(
