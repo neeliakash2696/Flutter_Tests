@@ -12,21 +12,27 @@ import 'package:http/http.dart' as http;
 
 import 'main_pbr_banner.dart';
 
+enum ScreenLayout { details, list }
+
 class ImportantSuppilesDetailsList extends StatefulWidget {
   @override
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
+  int productIndex;
   List<String> categoriesList;
   ImportantSuppilesDetailsList(
-      {Key? key, required this.productName, required this.categoriesList})
+      {Key? key,
+      required this.productName,
+      required this.productIndex,
+      required this.categoriesList})
       : super(key: key);
 }
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList> {
   late String encodedQueryParam;
-  int itemCount=0;
+  int itemCount = 0;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? itemPricesArray = [];
@@ -34,6 +40,7 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
+  var currentLayout = ScreenLayout.details;
 
   // View Did Load
   @override
@@ -41,7 +48,7 @@ class ImportantSuppilesDetailsListState
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-    getProductDetails(widget.productName);
+    getProductDetails(encodedQueryParam);
   }
 
   String encodeString(String? inputString) {
@@ -50,16 +57,23 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool issellerType) {
-    Navigator.push(
+  openFilters(bool isSellerType) async {
+    var result = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: widget.categoriesList,
-                  isSellerType: issellerType,
+                  isSellerType: isSellerType,
+                  productName: widget.productName,
+                  productIndex: widget.productIndex,
                 ),
             opaque: false,
             fullscreenDialog: true));
+    if (result != null) {
+      encodedQueryParam = encodeString(result);
+      getProductDetails(encodedQueryParam);
+      widget.productName = result;
+    }
   }
 
   getProductDetails(String category) async {
@@ -67,15 +81,8 @@ class ImportantSuppilesDetailsListState
     //
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjg1ODEyMSwiaWF0IjoxNjkyNzcxNzIxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMy0wOC0yMDIzIn0.buENrl0CgB-R4_ElA3Pr-hKQzJTn5Ah-nvr65WWeXYI&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-      Map<String, String> header = {};
-      header["Access-Control-Allow-Origin"] = "*";
-      header["Access-Control-Allow-Methods"] = "GET, POST";
-      header["Access-Control-Allow-Headers"] = "X-Requested-With";
-
-      // http.Response response = await http.get(Uri.parse(pathUrl));
-      http.Response response =
-          await http.post(Uri.parse(pathUrl), headers: header, body: null);
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjc4NDI2NCwiaWF0IjoxNjkyNjk3ODY0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMi0wOC0yMDIzIn0.3IMnTAglqUPqkbT9APIj1mVbcq-CGTtkDm2AFs1_6Xg&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
@@ -96,10 +103,15 @@ class ImportantSuppilesDetailsListState
             )
           ],
         ).show(context);
-      } else if (response.statusCode == 200){
-        //if (response.statusCode == 200)
+      } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['results'];
-        itemCount=resultsArray.length;
+        itemCount = resultsArray.length;
+        imagesArray?.clear();
+        titlesArray?.clear();
+        itemPricesArray?.clear();
+        companyNameArray?.clear();
+        locationsArray?.clear();
+        localityArray?.clear();
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
           imagesArray?.add(image ?? "");
@@ -126,9 +138,9 @@ class ImportantSuppilesDetailsListState
           var locality = resultsArray[i]['fields']['locality'] ?? "NA";
           localityArray?.add(locality);
         }
-        addBannerOrAd(2,"ADEMPTY");
+        addBannerOrAd(2, "ADEMPTY");
         addBannerOrAd(6, "isq_banner");
-        addBannerOrAd(8,"PBRBANNER");
+        addBannerOrAd(8, "PBRBANNER");
         print("list size=${titlesArray?[9]}");
         setState(() {});
         EasyLoading.dismiss();
@@ -282,21 +294,30 @@ class ImportantSuppilesDetailsListState
                 const Divider(),
                 TextButton(
                   onPressed: () {
-                    //
+                    if (currentLayout == ScreenLayout.details) {
+                      currentLayout = ScreenLayout.list;
+                    } else {
+                      currentLayout = ScreenLayout.details;
+                    }
+                    setState(() {});
                   },
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Detail",
-                        style: TextStyle(
+                        currentLayout == ScreenLayout.details
+                            ? "Detail "
+                            : "List ",
+                        style: const TextStyle(
                           color: Color(0xff432B20),
                           fontSize: 16,
                         ),
                       ),
                       Icon(
-                        Icons.list,
-                        color: Color(0xff432B20),
+                        currentLayout == ScreenLayout.details
+                            ? Icons.dvr
+                            : Icons.list,
+                        color: const Color(0xff432B20),
                       ),
                     ],
                   ),
@@ -313,201 +334,60 @@ class ImportantSuppilesDetailsListState
                     },
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.all(10),
-                              height: 70,
-                              width: 100,
-                              alignment: Alignment.topCenter,
-                              child: Image(
-                                image: CachedNetworkImageProvider(imagesArray?[
-                                        index] ??
-                                    "https://ik.imagekit.io/hpapi/harry.jpg"),
+                        if (currentLayout == ScreenLayout.details) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(10),
+                                height: 70,
+                                width: 100,
+                                alignment: Alignment.topCenter,
+                                child: Image(
+                                  image: CachedNetworkImageProvider(imagesArray?[
+                                          index] ??
+                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                ),
                               ),
-                            ),
-                            Flexible(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 10, 5, 0),
-                                    child: Text(
-                                      titlesArray?[index] ?? "",
-                                      style: const TextStyle(
-                                          color: Color(0xff432B20),
-                                          fontSize: 16,
-                                          fontFamily: 'HVD Fonts',
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 3),
-                                        child: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "images/indian_rupee.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                          alignment: Alignment.center,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Flexible(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 5, 0),
-                                          child: Text(
-                                            itemPricesArray?[index] ?? "NA",
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                              color: Color(0xff432B20),
-                                              fontSize: 14,
-                                              fontFamily: 'HVD Fonts',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 3),
-                                        child: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "images/trustseal_supplier.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                          alignment: Alignment.center,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Flexible(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 5, 0),
-                                          child: Text(
-                                            companyNameArray?[index] ?? "",
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                              color: Color(0xff432B20),
-                                              fontSize: 14,
-                                              fontFamily: 'HVD Fonts',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 3),
-                                        child: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "images/Location.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                          alignment: Alignment.center,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Flexible(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 5, 0),
-                                          child: Text(
-                                            // ignore: prefer_interpolation_to_compose_strings
-                                            (locationsArray?[index] ?? "NA") +
-                                                "-"
-                                                    "${localityArray?[index] ?? "NA"}",
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                              color: Color(0xff432B20),
-                                              fontSize: 14,
-                                              fontFamily: 'HVD Fonts',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 3),
-                                        child: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "images/url_mp.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                          alignment: Alignment.center,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Flexible(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 5, 0),
-                                          child: Text(
-                                            "Deals in ${localityArray?[index] ?? ""}",
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                              color: Color(0xff432B20),
-                                              fontSize: 14,
-                                              fontFamily: 'HVD Fonts',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                ],
+                              Flexible(
+                                child: Description(
+                                  companyName: companyNameArray?[index] ?? "",
+                                  itemPrice: itemPricesArray?[index] ?? "NA",
+                                  locality: localityArray?[index] ?? "NA",
+                                  location: locationsArray?[index] ?? "NA",
+                                  title: titlesArray?[index] ?? "NA",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ] else ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(10),
+                                alignment: Alignment.topCenter,
+                                child: Image(
+                                  image: CachedNetworkImageProvider(imagesArray?[
+                                          index] ??
+                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Description(
+                                  companyName: companyNameArray?[index] ?? "",
+                                  itemPrice: itemPricesArray?[index] ?? "NA",
+                                  locality: localityArray?[index] ?? "NA",
+                                  location: locationsArray?[index] ?? "NA",
+                                  title: titlesArray?[index] ?? "NA",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -517,17 +397,13 @@ class ImportantSuppilesDetailsListState
                     ),
                   );
 
-                  if(titlesArray?[index]=="PBRBANNER") {
-
+                  if (titlesArray?[index] == "PBRBANNER") {
                     return PBRBanner(product_name: widget.productName);
-                  }
-                  else if(titlesArray?[index]=="isq_banner"){
+                  } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(productName: widget.productName);
-                  }
-                  else if(titlesArray?[index]=="ADEMPTY"){
+                  } else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
-                  }
-                  else {
+                  } else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -538,14 +414,14 @@ class ImportantSuppilesDetailsListState
                   }
                 },
               ),
-
             ),
           ],
         ),
       ),
     );
   }
-  void addBannerOrAd(int pos, String value){
+
+  void addBannerOrAd(int pos, String value) {
     imagesArray?.insert(pos, "");
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");
@@ -637,6 +513,190 @@ class CustomButton2 extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class Description extends StatefulWidget {
+  @override
+  State<Description> createState() => _DescriptionState();
+  String title;
+  String itemPrice;
+  String companyName;
+  String location;
+  String locality;
+  Description(
+      {Key? key,
+      required this.title,
+      required this.itemPrice,
+      required this.companyName,
+      required this.location,
+      required this.locality})
+      : super(key: key);
+}
+
+class _DescriptionState extends State<Description> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 5, 0),
+          child: Text(
+            widget.title,
+            style: const TextStyle(
+                color: Color(0xff432B20),
+                fontSize: 16,
+                fontFamily: 'HVD Fonts',
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Container(
+                height: 15,
+                width: 15,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("images/indian_rupee.png"),
+                      fit: BoxFit.contain),
+                ),
+                alignment: Alignment.center,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Text(
+                  widget.itemPrice,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    color: Color(0xff432B20),
+                    fontSize: 14,
+                    fontFamily: 'HVD Fonts',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Container(
+                height: 15,
+                width: 15,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("images/trustseal_supplier.png"),
+                      fit: BoxFit.contain),
+                ),
+                alignment: Alignment.center,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Text(
+                  widget.companyName,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    color: Color(0xff432B20),
+                    fontSize: 14,
+                    fontFamily: 'HVD Fonts',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Container(
+                height: 15,
+                width: 15,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("images/Location.png"),
+                      fit: BoxFit.contain),
+                ),
+                alignment: Alignment.center,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Text(
+                  (widget.location) + "${widget.locality}",
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    color: Color(0xff432B20),
+                    fontSize: 14,
+                    fontFamily: 'HVD Fonts',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Container(
+                height: 15,
+                width: 15,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("images/url_mp.png"),
+                      fit: BoxFit.contain),
+                ),
+                alignment: Alignment.center,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Text(
+                  "Deals in ${widget.locality}",
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    color: Color(0xff432B20),
+                    fontSize: 14,
+                    fontFamily: 'HVD Fonts',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+      ],
     );
   }
 }

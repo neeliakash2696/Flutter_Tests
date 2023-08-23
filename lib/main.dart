@@ -112,7 +112,6 @@ class SectionWidget extends StatelessWidget {
           shrinkWrap: true,
           itemCount: section.items.length,
           itemBuilder: (context, index) {
-
             return Card(
               elevation: 1,
               child: ListTile(
@@ -129,6 +128,7 @@ class SectionWidget extends StatelessWidget {
                             builder: (context) => ImportantSuppilesDetailsList(
                                   productName: section.items[index],
                                   categoriesList: section.items,
+                                  productIndex: index,
                                 )));
                   }),
             );

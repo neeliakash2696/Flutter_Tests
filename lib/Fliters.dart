@@ -7,17 +7,18 @@ class Filters extends StatefulWidget {
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
   bool isSellerType;
-  Filters({Key? key, required this.categoriesList, required this.isSellerType})
+  String productName;
+  int productIndex;
+  Filters(
+      {Key? key,
+      required this.categoriesList,
+      required this.isSellerType,
+      required this.productName,
+      required this.productIndex})
       : super(key: key);
 }
 
 class FiltersState extends State<Filters> {
-  // View Did Load
-  @override
-  void initState() {
-    super.initState();
-  }
-
   int? _value = 0;
   var sellerTypeItems = [
     'All',
@@ -26,6 +27,17 @@ class FiltersState extends State<Filters> {
     'Retailer',
     'Exporter',
   ];
+
+// View Did Load
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isSellerType) {
+      setState(() {
+        _value = widget.productIndex;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +87,11 @@ class FiltersState extends State<Filters> {
                                   selected: _value == index,
                                   onSelected: (bool selected) {
                                     setState(() {
+                                      var selectedChip = widget.isSellerType
+                                          ? sellerTypeItems[index]
+                                          : widget.categoriesList[index];
                                       _value = index;
-                                      // print(index);
-                                      // print(selected);
+                                      Navigator.pop(context, selectedChip);
                                     });
                                   },
                                 );
