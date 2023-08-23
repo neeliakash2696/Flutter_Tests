@@ -1,15 +1,16 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  PlatformViewsService.synchronizeToNativeViewHierarchy(false);
   runApp(MyApp());
 }
 
