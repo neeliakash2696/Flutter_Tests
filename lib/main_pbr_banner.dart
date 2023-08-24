@@ -2,12 +2,14 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class MainPBRBanner extends StatefulWidget {
   @override
   State<MainPBRBanner> createState() => _MainPBRBannerState();
   String productName;
-  MainPBRBanner({required this.productName});
+  dynamic img;
+  MainPBRBanner({required this.productName, required this.img});
 }
 
 class _MainPBRBannerState extends State<MainPBRBanner> {
@@ -35,7 +37,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
                         width: MediaQuery.of(context).size.width / 4,
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: AssetImage("images/img.png"),
+                                image: NetworkImage(widget.img),
                                 fit: BoxFit.fill)),
                       ),
                     ),

@@ -96,3 +96,4 @@ class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+
