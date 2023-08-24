@@ -500,13 +500,14 @@ class ImportantSuppilesDetailsListState
                             children: [
                               Container(
                                 margin: const EdgeInsets.all(10),
-                                height: 70,
+                                height: 150,
                                 width: 100,
                                 alignment: Alignment.topCenter,
                                 child: Image(
                                   image: CachedNetworkImageProvider(imagesArray?[
                                           index] ??
                                       "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                               Flexible(
