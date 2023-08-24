@@ -55,6 +55,9 @@ class ImportantSuppilesDetailsListState
   bool stop=false;
 
   int scrolled=1;
+
+  int start=0;
+  int end=0;
   // View Did Load
   @override
   void initState() {
@@ -68,8 +71,8 @@ class ImportantSuppilesDetailsListState
         setState(() {
           _isAtEnd = true;
           scrolled=0;
-          var start=items.length-1;
-          var end=start+10;
+          start=end+1;
+          end=start+10;
           if(end>totalItemCount)
             end=totalItemCount;
           if(stop==false)
@@ -167,10 +170,11 @@ class ImportantSuppilesDetailsListState
           print("items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
         if(resultsArray.length>0) {
-          for(int i=start;i<end;i+=5)
+          for(int i=start;i<end;i+=5) {
             addBannerOrAd(i, "ADEMPTY");
-          for(int i=start+4;i<end;i+=7)
-            addBannerOrAd(i, "PBRBANNER");
+            if(i+3<end-3)
+            addBannerOrAd(i + 3, "PBRBANNER");
+          }
         }
         else
           stop=true;
@@ -245,6 +249,8 @@ class ImportantSuppilesDetailsListState
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
+        start=0;
+        end=9;
         dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
         pbrimage = live_mcats[0]['smallimg'];
 
