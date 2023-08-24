@@ -53,6 +53,8 @@ class ImportantSuppilesDetailsListState
   late String pbrimage;
 
   bool stop=false;
+
+  int scrolled=1;
   // View Did Load
   @override
   void initState() {
@@ -61,10 +63,11 @@ class ImportantSuppilesDetailsListState
     print(encodedQueryParam);
     getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent) {
+      if ((_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent) && scrolled==1) {
         setState(() {
           _isAtEnd = true;
+          scrolled=0;
           var start=items.length-1;
           var end=start+10;
           if(end>totalItemCount)
@@ -173,6 +176,7 @@ class ImportantSuppilesDetailsListState
           stop=true;
         print("resultsArray=${items.length} ${titlesArray?.length},");
         EasyLoading.dismiss();
+        scrolled=1;
         if(resultsArray.length>0)
         Flushbar(
           title: "DONE",
