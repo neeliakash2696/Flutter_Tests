@@ -11,7 +11,7 @@ class AdClass extends StatefulWidget {
   State<AdClass> createState() => _AdClassState();
 }
 
-class _AdClassState extends State<AdClass> {
+class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     MobileAds.instance.initialize();
@@ -19,6 +19,7 @@ class _AdClassState extends State<AdClass> {
     super.initState();
     // Load ads.
   }
+
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 
@@ -28,7 +29,7 @@ class _AdClassState extends State<AdClass> {
       : 'ca-app-pub-3940256099942544/2934735716';
 
   /// Loads a banner ad.
-  void loadAd() {
+  Future<void> loadAd() async {
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
       request: const AdRequest(),
@@ -53,6 +54,7 @@ class _AdClassState extends State<AdClass> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_bannerAd != null) {
       return Align(
         alignment: Alignment.bottomCenter,
@@ -64,27 +66,34 @@ class _AdClassState extends State<AdClass> {
           ),
         ),
       );
-    }
-    else
-          return Card(
-            color: Colors.grey[200],
-            child: Container(
-              height: 240,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(3)
-                    ),
-                child: Padding(padding: EdgeInsets.all(3),
-                  child: Text("Ad",style: TextStyle(color: Colors.grey.shade400),)),
-                  )
-                ],
-              ),
-            ),
-          );
-        }
+    } else
+      return Card(
+        color: Colors.grey[200],
+        child: Container(
+          height: 240,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(3)),
+                child: Padding(
+                    padding: EdgeInsets.all(3),
+                    child: Text(
+                      "Ad",
+                      style: TextStyle(color: Colors.grey.shade400),
+                    )),
+              )
+            ],
+          ),
+        ),
+      );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+

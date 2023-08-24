@@ -30,7 +30,8 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 }
 
 class ImportantSuppilesDetailsListState
-    extends State<ImportantSuppilesDetailsList> {
+    extends State<ImportantSuppilesDetailsList>
+    with AutomaticKeepAliveClientMixin {
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -330,6 +331,7 @@ class ImportantSuppilesDetailsListState
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if(items.length-1<0)
       itemCount=0;
     else
@@ -581,6 +583,10 @@ class ImportantSuppilesDetailsListState
     items.length+=1;
     // itemCount++;
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class CustomButton extends StatelessWidget {
