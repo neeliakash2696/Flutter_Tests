@@ -170,12 +170,9 @@ class ImportantSuppilesDetailsListState
           print("items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
         if(resultsArray.length>0) {
-          for(int i=start;i<end;i+=5) {
-            addBannerOrAd(i, "ADEMPTY");
-            if(i+3<end-3)
-            addBannerOrAd(i + 3, "PBRBANNER");
+          addBannerOrAd(end, "ADEMPTY");
+          addBannerOrAd(start+4, "PBRBANNER");
           }
-        }
         else
           stop=true;
         print("resultsArray=${items.length} ${titlesArray?.length},");
