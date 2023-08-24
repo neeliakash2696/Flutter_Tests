@@ -164,9 +164,9 @@ class ImportantSuppilesDetailsListState
           print("items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
         if(resultsArray.length>0) {
-          for(int i=start+4;i<end;i+=5)
+          for(int i=start;i<end;i+=5)
             addBannerOrAd(i, "ADEMPTY");
-          for(int i=start+7;i<end;i+=8)
+          for(int i=start+4;i<end;i+=7)
             addBannerOrAd(i, "PBRBANNER");
         }
         else
