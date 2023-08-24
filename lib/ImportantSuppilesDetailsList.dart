@@ -417,12 +417,12 @@ class ImportantSuppilesDetailsListState
                         "Seller Type",
                         style: TextStyle(
                           color: Color(0xff432B20),
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                       Icon(
                         Icons.expand_more,
-                        color: Color(0xff432B20),
+                        color: Colors.black54,
                       ),
                     ],
                   ),
@@ -439,12 +439,12 @@ class ImportantSuppilesDetailsListState
                         "Categories",
                         style: TextStyle(
                           color: Color(0xff432B20),
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                       Icon(
                         Icons.expand_more,
-                        color: Color(0xff432B20),
+                        color: Colors.black54,
                       ),
                     ],
                   ),
@@ -468,14 +468,14 @@ class ImportantSuppilesDetailsListState
                             : "List ",
                         style: const TextStyle(
                           color: Color(0xff432B20),
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                       Icon(
                         currentLayout == ScreenLayout.details
                             ? Icons.dvr
                             : Icons.list,
-                        color: const Color(0xff432B20),
+                        color: Colors.black54,
                       ),
                     ],
                   ),
