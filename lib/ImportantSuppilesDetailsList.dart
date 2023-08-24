@@ -50,6 +50,8 @@ class ImportantSuppilesDetailsListState
 
 
   late String pbrimage;
+
+  bool stop=false;
   // View Did Load
   @override
   void initState() {
@@ -66,6 +68,7 @@ class ImportantSuppilesDetailsListState
           var end=start+10;
           if(end>totalItemCount)
             end=totalItemCount;
+          if(stop==false)
           getMoreDetails(widget.productName,start,end);// Mark that you've reached the end
         });
       } else {
@@ -165,6 +168,8 @@ class ImportantSuppilesDetailsListState
           for(int i=start+7;i<end;i+=8)
             addBannerOrAd(i, "PBRBANNER");
         }
+        else
+          stop=true;
         print("resultsArray=${items.length} ${titlesArray?.length},");
         EasyLoading.dismiss();
         if(resultsArray.length>0)
