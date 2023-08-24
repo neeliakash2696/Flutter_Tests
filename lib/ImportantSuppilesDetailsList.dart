@@ -705,7 +705,7 @@ class _DescriptionState extends State<Description> {
             widget.title,
             style: const TextStyle(
                 color: Color(0xff432B20),
-                fontSize: 16,
+                fontSize: 15,
                 fontFamily: 'HVD Fonts',
                 fontWeight: FontWeight.bold),
           ),
@@ -720,8 +720,8 @@ class _DescriptionState extends State<Description> {
             Padding(
               padding: const EdgeInsets.only(top: 3),
               child: Container(
-                height: 15,
-                width: 15,
+                height: 14,
+                width: 14,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("images/indian_rupee.png"),
@@ -733,13 +733,14 @@ class _DescriptionState extends State<Description> {
             const SizedBox(width: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 5),
                 child: Text(
                   widget.itemPrice,
                   textAlign: TextAlign.left,
-                  style: const TextStyle(
-                    color: Color(0xff432B20),
-                    fontSize: 14,
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
                     fontFamily: 'HVD Fonts',
                   ),
                 ),
@@ -768,7 +769,7 @@ class _DescriptionState extends State<Description> {
             const SizedBox(width: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 5),
                 child: Text(
                   widget.companyName,
                   textAlign: TextAlign.left,
@@ -803,7 +804,7 @@ class _DescriptionState extends State<Description> {
             const SizedBox(width: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 5),
                 child: Text(
                   (widget.location) + "${widget.locality}",
                   textAlign: TextAlign.left,
