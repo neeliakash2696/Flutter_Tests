@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-class AdClass extends StatefulWidget{
+class AdClass extends StatefulWidget {
   @override
   State<AdClass> createState() => _AdClassState();
 }
@@ -23,7 +23,8 @@ class _AdClassState extends State<AdClass> {
   bool _isLoaded = false;
 
   // TODO: replace this test ad unit with your own ad unit.
-  final adUnitId = Platform.isAndroid? 'ca-app-pub-3940256099942544/6300978111'
+  final adUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
 
   /// Loads a banner ad.
@@ -49,6 +50,7 @@ class _AdClassState extends State<AdClass> {
       ),
     )..load();
   }
+
   @override
   Widget build(BuildContext context) {
     if (_bannerAd != null) {
@@ -64,25 +66,25 @@ class _AdClassState extends State<AdClass> {
       );
     }
     else
-    return Card(
-      color: Colors.grey[200],
-      child: Container(
-        height: 240,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
+          return Card(
+            color: Colors.grey[200],
+            child: Container(
+              height: 240,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
                 borderRadius: BorderRadius.circular(3)
-              ),
+                    ),
                 child: Padding(padding: EdgeInsets.all(3),
                   child: Text("Ad",style: TextStyle(color: Colors.grey.shade400),)),
-                )
-          ],
-        ),
-      ),
-    );
+                  )
+                ],
+              ),
+            ),
+          );
+        }
   }
-}

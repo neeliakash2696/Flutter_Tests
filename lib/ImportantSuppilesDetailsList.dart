@@ -105,7 +105,7 @@ class ImportantSuppilesDetailsListState
     print("start=$start and end=$end and item length=${items.length}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjg3MTM5NiwiaWF0IjoxNjkyNzg0OTk2LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMy0wOC0yMDIzIn0.y-9O9awFwgAqdd7q66bZ7zqgMDEsLeLAu1-LWtVe_1o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjk0MjI4NCwiaWF0IjoxNjkyODU1ODg0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNC0wOC0yMDIzIn0.oI0yxo5cWZtduPEFUKrU-V5qOpyC_BJPMXMMwHvA45g&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -211,7 +211,7 @@ class ImportantSuppilesDetailsListState
     //
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjg3MTM5NiwiaWF0IjoxNjkyNzg0OTk2LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyMy0wOC0yMDIzIn0.y-9O9awFwgAqdd7q66bZ7zqgMDEsLeLAu1-LWtVe_1o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjk0MjI4NCwiaWF0IjoxNjkyODU1ODg0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNC0wOC0yMDIzIn0.oI0yxo5cWZtduPEFUKrU-V5qOpyC_BJPMXMMwHvA45g&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       print(pathUrl);
       var code = json.decode(response.body)['CODE'];
@@ -280,8 +280,9 @@ class ImportantSuppilesDetailsListState
           items=resultsArray;
         });
         addBannerOrAd(2, "ADEMPTY");
-        addBannerOrAd(6, "isq_banner");
-        addBannerOrAd(8, "PBRBANNER");
+        addBannerOrAd(7, "ADEMPTY");
+        addBannerOrAd(5, "isq_banner");
+        addBannerOrAd(10, "PBRBANNER");
         EasyLoading.dismiss();
         Flushbar(
           title: "DONE",
@@ -468,15 +469,6 @@ class ImportantSuppilesDetailsListState
               ],
             ),
             Expanded(
-              child:NotificationListener<ScrollNotification>(
-                onNotification: (notification) {
-                  if (notification is ScrollEndNotification &&
-                      _scrollController.position.extentAfter == 0) {
-                    // You have reached the end
-                    print('Reached the end of the list!');
-                  }
-                  return false;
-                },
               child: ListView.builder(
                 controller: _scrollController,
                 itemCount: itemCount,
@@ -553,7 +545,6 @@ class ImportantSuppilesDetailsListState
                   if (titlesArray?[index] == "PBRBANNER") {
                     return PBRBanner(product_name: widget.productName);
                   } else if (titlesArray?[index] == "isq_banner") {
-                    // print("pbrimagejj=$pbrimage");
                     return MainPBRBanner(productName: widget.productName,img: pbrimage);
                   } else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
@@ -569,7 +560,6 @@ class ImportantSuppilesDetailsListState
                 },
               ),
               )
-              ),
           ],
         ),
       ),
