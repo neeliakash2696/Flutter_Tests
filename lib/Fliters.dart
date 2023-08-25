@@ -7,13 +7,11 @@ class Filters extends StatefulWidget {
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
   bool isSellerType;
-  String productName;
   int productIndex;
   Filters(
       {Key? key,
       required this.categoriesList,
       required this.isSellerType,
-      required this.productName,
       required this.productIndex})
       : super(key: key);
 }
@@ -87,11 +85,23 @@ class FiltersState extends State<Filters> {
                                   selected: _value == index,
                                   onSelected: (bool selected) {
                                     setState(() {
-                                      var selectedChip = widget.isSellerType
-                                          ? sellerTypeItems[index]
-                                          : widget.categoriesList[index];
-                                      _value = index;
-                                      Navigator.pop(context, selectedChip);
+                                      if (_value == index) {
+                                        _value = index;
+                                        Navigator.pop(context);
+                                      } else {
+                                        var selectedChip = widget.isSellerType
+                                            ? sellerTypeItems[index]
+                                            : widget.categoriesList[index];
+                                        _value = index;
+                                        var selectedChipDetails = [
+                                          selectedChip,
+                                          index,
+                                        ];
+                                        print(
+                                            "selectedChipDetails $selectedChipDetails");
+                                        Navigator.pop(
+                                            context, selectedChipDetails);
+                                      }
                                     });
                                   },
                                 );
