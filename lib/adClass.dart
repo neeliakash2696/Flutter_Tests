@@ -23,15 +23,15 @@ class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 
-  // TODO: replace this test ad unit with your own ad unit.
-  final adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
-      : 'ca-app-pub-3940256099942544/2934735716';
+  // // // TODO: replace this test ad unit with your own ad unit.
+  // final adUnitId = Platform.isAndroid
+  //     ? 'ca-app-pub-3940256099942544/6300978111'
+  //     : 'ca-app-pub-3940256099942544/2934735716';
 
   /// Loads a banner ad.
   Future<void> loadAd() async {
     _bannerAd = BannerAd(
-      adUnitId: adUnitId,
+      adUnitId:'ca-app-pub-3940256099942544/6300978111',
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -67,29 +67,29 @@ class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
         ),
       );
     } else
-      return Card(
-        color: Colors.grey[200],
-        child: Container(
-          height: 240,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade400),
-                    borderRadius: BorderRadius.circular(3)),
-                child: Padding(
-                    padding: EdgeInsets.all(3),
-                    child: Text(
-                      "Ad",
-                      style: TextStyle(color: Colors.grey.shade400),
-                    )),
-              )
-            ],
-          ),
-        ),
-      );
+            return Card(
+              color: Colors.grey[200],
+              child: Container(
+                height: 240,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(3)),
+                      child: Padding(
+                          padding: EdgeInsets.all(3),
+                          child: Text(
+                            "Ad",
+                            style: TextStyle(color: Colors.grey.shade400),
+                          )),
+                    )
+                  ],
+                ),
+              ),
+            );
   }
 
   @override

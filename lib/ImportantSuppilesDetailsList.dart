@@ -115,7 +115,7 @@ class ImportantSuppilesDetailsListState
     print("start=$start and end=$end and item length=${items.length}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjk0MjI4NCwiaWF0IjoxNjkyODU1ODg0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNC0wOC0yMDIzIn0.oI0yxo5cWZtduPEFUKrU-V5qOpyC_BJPMXMMwHvA45g&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=145754117&APP_SCREEN_NAME=Search Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiNyo4KjAqMSo0KiIsImV4cCI6MTY5MzAzMTk1NiwiaWF0IjoxNjkyOTQ1NTU2LCJzdWIiOiIxNDU3NTQxMTciLCJjZHQiOiIyNS0wOC0yMDIzIn0.zgGswCPdM__GPoEehcWxbn-QpS6fJNGxRtarCkqRDvs&source=android.search&implicit_info_latlong=29.873962,77.87354&token=imartenquiryprovider&APP_USER_ID=145754117&implicit_info_city_data=roorkee&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=25.0&prdsrc=1&APP_LATITUDE=29.873962&APP_LONGITUDE=77.87354&VALIDATION_USER_IP=49.36.220.222&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=7983071546";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -219,11 +219,10 @@ class ImportantSuppilesDetailsListState
   }
   getProductDetails(String category) async {
     EasyLoading.show(status: 'Loading...');
-    //
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5Mjk0MjI4NCwiaWF0IjoxNjkyODU1ODg0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNC0wOC0yMDIzIn0.oI0yxo5cWZtduPEFUKrU-V5qOpyC_BJPMXMMwHvA45g&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-      http.Response response = await http.get(Uri.parse(pathUrl));
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=145754117&APP_SCREEN_NAME=Search Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiNyo4KjAqMSo0KiIsImV4cCI6MTY5MzAzMTk1NiwiaWF0IjoxNjkyOTQ1NTU2LCJzdWIiOiIxNDU3NTQxMTciLCJjZHQiOiIyNS0wOC0yMDIzIn0.zgGswCPdM__GPoEehcWxbn-QpS6fJNGxRtarCkqRDvs&source=android.search&implicit_info_latlong=29.873962,77.87354&token=imartenquiryprovider&APP_USER_ID=145754117&implicit_info_city_data=roorkee&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=25.0&prdsrc=1&APP_LATITUDE=29.873962&APP_LONGITUDE=77.87354&VALIDATION_USER_IP=49.36.220.222&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=7983071546";
+                http.Response response = await http.get(Uri.parse(pathUrl));
       print(pathUrl);
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -561,9 +560,11 @@ class ImportantSuppilesDetailsListState
                     return PBRBanner(product_name: widget.productName);
                   } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(productName: widget.productName,img: pbrimage);
-                  } else if (titlesArray?[index] == "ADEMPTY") {
+                  }
+                  else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
-                  } else {
+                  }
+                  else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
