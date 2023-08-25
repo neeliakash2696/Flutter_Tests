@@ -5,6 +5,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
@@ -103,10 +104,19 @@ class ImportantSuppilesDetailsListState
             fullscreenDialog: true));
     if (selectedChip != null) {
       encodedQueryParam = encodeString(selectedChip[0]);
-      getProductDetails(encodedQueryParam);
       widget.productName = selectedChip[0];
       widget.productIndex = selectedChip[1];
+      getProductDetails(encodedQueryParam);
     }
+  }
+
+  openVoiceToTextConverter() async {
+    var outputText = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => VoiceToTextConverter(),
+            opaque: false,
+            fullscreenDialog: true));
   }
 
   getMoreDetails(String category, int start, int end) async {
@@ -384,18 +394,23 @@ class ImportantSuppilesDetailsListState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image:
-                                    AssetImage("images/mic_icon_colored.png"),
-                                fit: BoxFit.cover),
+                      GestureDetector(
+                        onTap: () {
+                          openVoiceToTextConverter();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 30,
+                            width: 30,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                      AssetImage("images/mic_icon_colored.png"),
+                                  fit: BoxFit.cover),
+                            ),
+                            alignment: Alignment.center,
                           ),
-                          alignment: Alignment.center,
                         ),
                       ),
                     ],

@@ -10,7 +10,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  PlatformViewsService.synchronizeToNativeViewHierarchy(false);
   runApp(MyApp());
 }
 
@@ -87,6 +86,7 @@ class MyApp extends StatelessWidget {
           // },
         ),
       ),
+      debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
     );
   }
