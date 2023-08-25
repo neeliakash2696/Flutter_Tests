@@ -58,13 +58,19 @@ class ImportantSuppilesDetailsListState
 
   int start=0;
   int end=0;
+
+  int currentPage=0;
   // View Did Load
   @override
   void initState() {
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-    getProductDetails(encodedQueryParam);
+    currentPage=1;
+    start=0;
+    end=9;
+    getMoreDetails(widget.productName,0,9,currentPage);
+    // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent) && scrolled==1) {
@@ -75,8 +81,10 @@ class ImportantSuppilesDetailsListState
           end=start+10;
           if(end>totalItemCount)
             end=totalItemCount;
-          if(stop==false)
-          getMoreDetails(widget.productName,start,end);// Mark that you've reached the end
+          if(stop==false) {
+            currentPage+=1;
+            getMoreDetails(widget.productName, start, end, currentPage);
+          } // Mark that you've reached the end
         });
       } else {
         setState(() {
@@ -106,13 +114,14 @@ class ImportantSuppilesDetailsListState
             fullscreenDialog: true));
     if (result != null) {
       encodedQueryParam = encodeString(result);
-      getProductDetails(encodedQueryParam);
+      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      // getProductDetails(encodedQueryParam);
       widget.productName = result;
     }
   }
-  getMoreDetails(String category,int start, int end) async {
+  getMoreDetails(String category,int start, int end, int currentPage) async {
     EasyLoading.show(status: 'Loading...');
-    print("start=$start and end=$end and item length=${items.length}");
+    print("start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       String pathUrl =
           "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=145754117&APP_SCREEN_NAME=Search Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiNyo4KjAqMSo0KiIsImV4cCI6MTY5MzAzMTk1NiwiaWF0IjoxNjkyOTQ1NTU2LCJzdWIiOiIxNDU3NTQxMTciLCJjZHQiOiIyNS0wOC0yMDIzIn0.zgGswCPdM__GPoEehcWxbn-QpS6fJNGxRtarCkqRDvs&source=android.search&implicit_info_latlong=29.873962,77.87354&token=imartenquiryprovider&APP_USER_ID=145754117&implicit_info_city_data=roorkee&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=25.0&prdsrc=1&APP_LATITUDE=29.873962&APP_LONGITUDE=77.87354&VALIDATION_USER_IP=49.36.220.222&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=7983071546";
@@ -139,6 +148,18 @@ class ImportantSuppilesDetailsListState
         ).show(context);
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['results'];
+        if(currentPage==1) {
+          dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
+          pbrimage = live_mcats[0]['smallimg'];
+          print("pbrimage=$pbrimage");
+          totalItemCount=json.decode(response.body)['total_results_without_repetition'];
+          imagesArray?.clear();
+          titlesArray?.clear();
+          itemPricesArray?.clear();
+          companyNameArray?.clear();
+          locationsArray?.clear();
+          localityArray?.clear();
+        }
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
           imagesArray?.add(image ?? "");
@@ -169,9 +190,16 @@ class ImportantSuppilesDetailsListState
           items.addAll(resultsArray);
           print("items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
-        if(resultsArray.length>0) {
-          addBannerOrAd(end, "ADEMPTY");
-          addBannerOrAd(start+4, "PBRBANNER");
+        if(resultsArray.length>0)
+          if(currentPage>1) {
+            addBannerOrAd(end, "ADEMPTY");
+            addBannerOrAd(start + 4, "PBRBANNER");
+          }
+          else if(currentPage==1){
+            addBannerOrAd(2, "ADEMPTY");
+            addBannerOrAd(7, "ADEMPTY");
+            addBannerOrAd(5, "isq_banner");
+            addBannerOrAd(10, "PBRBANNER");
           }
         else
           stop=true;
