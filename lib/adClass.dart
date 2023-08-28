@@ -31,7 +31,7 @@ class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
   /// Loads a banner ad.
   Future<void> loadAd() async {
     _bannerAd = BannerAd(
-      adUnitId:'ca-app-pub-3940256099942544/6300978111',
+      adUnitId: 'ca-app-pub-3940256099942544/2934735716',
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -67,33 +67,32 @@ class _AdClassState extends State<AdClass> with AutomaticKeepAliveClientMixin {
         ),
       );
     } else
-            return Card(
-              color: Colors.grey[200],
-              child: Container(
-                height: 240,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(3)),
-                      child: Padding(
-                          padding: EdgeInsets.all(3),
-                          child: Text(
-                            "Ad",
-                            style: TextStyle(color: Colors.grey.shade400),
-                          )),
-                    )
-                  ],
-                ),
-              ),
-            );
+      return Card(
+        color: Colors.grey[200],
+        child: Container(
+          height: 240,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(3)),
+                child: Padding(
+                    padding: EdgeInsets.all(3),
+                    child: Text(
+                      "Ad",
+                      style: TextStyle(color: Colors.grey.shade400),
+                    )),
+              )
+            ],
+          ),
+        ),
+      );
   }
 
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
-
