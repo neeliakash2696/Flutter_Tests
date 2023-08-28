@@ -15,10 +15,10 @@ class VoiceToTextConverter extends StatefulWidget {
 
 class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   String info = "Click on Mic when ready";
-  SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
+  SpeechToText speechToText = SpeechToText();
+  bool speechEnabled = false;
   bool recording = false;
-  String _lastWords = '';
+  String lastWords = '';
 
   // View Did Load
   @override
@@ -35,28 +35,29 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   }
 
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
+    speechEnabled = await speechToText.initialize();
     setState(() {});
   }
 
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
+    await speechToText.listen(onResult: _onSpeechResult);
+    lastWords = "";
     print("Started Lsitening");
     info = "Start Speaking";
     setState(() {});
   }
 
-  void _stopListening() async {
-    await _speechToText.stop();
+  Future _stopListening() async {
+    await speechToText.stop();
     print("stopped Listening");
-    info = "stopped Listening";
+    info = "Stopped Listening";
     setState(() {});
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
-      _lastWords = result.recognizedWords;
-      print(_lastWords);
+      lastWords = result.recognizedWords;
+      print(lastWords);
     });
   }
 
@@ -92,10 +93,12 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
+                    setState(() async {
                       print("when clicked $recording");
                       if (recording) {
-                        _stopListening();
+                        await _stopListening().then((value) {
+                          Navigator.pop(context, lastWords);
+                        });
                         info = "stopped Listening";
                         recording = false;
                       } else {
@@ -125,7 +128,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                           ),
                         ),
                         Text(
-                          "$_lastWords",
+                          "$lastWords",
                           style: TextStyle(
                             color: Colors.teal,
                             fontSize: 16,

@@ -117,6 +117,9 @@ class ImportantSuppilesDetailsListState
             pageBuilder: (_, __, ___) => VoiceToTextConverter(),
             opaque: false,
             fullscreenDialog: true));
+    if (outputText != null) {
+      print("output $outputText");
+    }
   }
 
   getMoreDetails(String category, int start, int end) async {
@@ -124,7 +127,7 @@ class ImportantSuppilesDetailsListState
     print("start=$start and end=$end and item length=${items.length}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzAzMjI1OCwiaWF0IjoxNjkyOTQ1ODU4LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNS0wOC0yMDIzIn0.RayaolkG-N-p2_Pu2V4pLFv9C7Ir-JhZXjV30k1NcHY&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -238,7 +241,7 @@ class ImportantSuppilesDetailsListState
     //
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzAzMjI1OCwiaWF0IjoxNjkyOTQ1ODU4LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyNS0wOC0yMDIzIn0.RayaolkG-N-p2_Pu2V4pLFv9C7Ir-JhZXjV30k1NcHY&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       print(pathUrl);
       var code = json.decode(response.body)['CODE'];
