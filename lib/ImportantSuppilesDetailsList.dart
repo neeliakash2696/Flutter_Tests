@@ -118,7 +118,6 @@ class ImportantSuppilesDetailsListState
             opaque: false,
             fullscreenDialog: true));
     if (outputText != null) {
-      print("output $outputText");
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       getProductDetails(encodedQueryParam);
@@ -185,16 +184,16 @@ class ImportantSuppilesDetailsListState
           print(
               "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
-        // if (resultsArray.length > 0) {
-        //   for (int i = start; i < end; i += 5) {
-        //     addBannerOrAd(i, "ADEMPTY");
-        //   }
-        //   for (int i = start + 4; i < end; i += 7) {
-        //     addBannerOrAd(i, "PBRBANNER");
-        //   }
-        // } else {
-        //   stop = true;
-        // }
+        if (resultsArray.length > 0) {
+          for (int i = start; i < end; i += 5) {
+            await addBannerOrAd(i, "ADEMPTY");
+          }
+          for (int i = start + 4; i < end; i += 7) {
+            await addBannerOrAd(i, "PBRBANNER");
+          }
+        } else {
+          stop = true;
+        }
         print("resultsArray=${items.length} ${titlesArray?.length},");
         EasyLoading.dismiss();
         scrolled = 1;
@@ -314,10 +313,10 @@ class ImportantSuppilesDetailsListState
         setState(() {
           items = resultsArray;
         });
-        // addBannerOrAd(2, "ADEMPTY");
-        // addBannerOrAd(7, "ADEMPTY");
-        // addBannerOrAd(5, "isq_banner");
-        // addBannerOrAd(10, "PBRBANNER");
+        await addBannerOrAd(2, "ADEMPTY");
+        await addBannerOrAd(7, "ADEMPTY");
+        await addBannerOrAd(5, "isq_banner");
+        await addBannerOrAd(10, "PBRBANNER");
         EasyLoading.dismiss();
         Flushbar(
           title: "DONE",
@@ -609,7 +608,7 @@ class ImportantSuppilesDetailsListState
     );
   }
 
-  void addBannerOrAd(int pos, String value) {
+  Future addBannerOrAd(int pos, String value) async {
     imagesArray?.insert(pos, "");
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");
