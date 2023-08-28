@@ -37,6 +37,9 @@ dependencies:
   flutter_easyloading: ^3.0.5
   google_mobile_ads: ^3.0.0
   speech_to_text: ^6.3.0
+  url_launcher: ^6.0.0
+  permission_handler: ^10.4.3
+  flutter_phone_direct_caller: ^2.1.1
 
 
   # The following adds the Cupertino Icons font to your application.
