@@ -5,6 +5,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
@@ -46,13 +47,12 @@ class ImportantSuppilesDetailsListState
 
   List<dynamic> items = [];
 
-  var totalItemCount=0;
+  var totalItemCount = 0;
   var itemCount = 0;
-
 
   late String pbrimage;
 
-  bool stop=false;
+  bool stop = false;
 
   int scrolled=1;
 
@@ -60,6 +60,7 @@ class ImportantSuppilesDetailsListState
   int end=0;
 
   int currentPage=0;
+  
   // View Did Load
   @override
   void initState() {
@@ -73,9 +74,11 @@ class ImportantSuppilesDetailsListState
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent) && scrolled==1) {
+              _scrollController.position.maxScrollExtent) &&
+          scrolled == 1) {
         setState(() {
           _isAtEnd = true;
+
           scrolled=0;
           start=end+1;
           end=start+10;
@@ -101,30 +104,48 @@ class ImportantSuppilesDetailsListState
   }
 
   openFilters(bool isSellerType) async {
-    var result = await Navigator.push(
+    var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: widget.categoriesList,
                   isSellerType: isSellerType,
-                  productName: widget.productName,
                   productIndex: widget.productIndex,
                 ),
             opaque: false,
-            fullscreenDialog: true));
-    if (result != null) {
-      encodedQueryParam = encodeString(result);
+            fullscreenDialog: true));  
+
+    if (selectedChip != null) {
+      encodedQueryParam = encodeString(selectedChip[0]);
+      widget.productName = selectedChip[0];
+      widget.productIndex = selectedChip[1];
       getMoreDetails(encodedQueryParam, 0, 9, 1);
-      // getProductDetails(encodedQueryParam);
-      widget.productName = result;
     }
   }
+
+  openVoiceToTextConverter() async {
+    var outputText = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => VoiceToTextConverter(),
+            opaque: false,
+            fullscreenDialog: true));
+    if (outputText != null) {
+      encodedQueryParam = encodeString(outputText);
+      widget.productName = outputText;
+      getProductDetails(encodedQueryParam);
+    }
+  }
+
   getMoreDetails(String category,int start, int end, int currentPage) async {
+
     EasyLoading.show(status: 'Loading...');
     print("start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=145754117&APP_SCREEN_NAME=Search Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiNyo4KjAqMSo0KiIsImV4cCI6MTY5MzAzMTk1NiwiaWF0IjoxNjkyOTQ1NTU2LCJzdWIiOiIxNDU3NTQxMTciLCJjZHQiOiIyNS0wOC0yMDIzIn0.zgGswCPdM__GPoEehcWxbn-QpS6fJNGxRtarCkqRDvs&source=android.search&implicit_info_latlong=29.873962,77.87354&token=imartenquiryprovider&APP_USER_ID=145754117&implicit_info_city_data=roorkee&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=25.0&prdsrc=1&APP_LATITUDE=29.873962&APP_LONGITUDE=77.87354&VALIDATION_USER_IP=49.36.220.222&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=7983071546";
+
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -188,8 +209,10 @@ class ImportantSuppilesDetailsListState
         }
         setState(() {
           items.addAll(resultsArray);
-          print("items length=${items.length} $totalItemCount ${localityArray?.length}");
+          print(
+              "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
+
         if(resultsArray.length>0)
           if(currentPage>1) {
             addBannerOrAd(end, "ADEMPTY");
@@ -203,26 +226,28 @@ class ImportantSuppilesDetailsListState
           }
         else
           stop=true;
+
         print("resultsArray=${items.length} ${titlesArray?.length},");
         EasyLoading.dismiss();
-        scrolled=1;
-        if(resultsArray.length>0)
-        Flushbar(
-          title: "DONE",
-          message: "API HITTING DONE",
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
+        scrolled = 1;
+        if (resultsArray.length > 0) {
+          Flushbar(
+            title: "DONE",
+            message: "API HITTING DONE",
+            flushbarStyle: FlushbarStyle.FLOATING,
+            isDismissible: true,
+            duration: const Duration(seconds: 1),
+            backgroundColor: Colors.green,
+            margin: const EdgeInsets.all(8),
+            borderRadius: BorderRadius.circular(8),
+            boxShadows: const [
+              BoxShadow(
+                offset: Offset(0.0, 2.0),
+                blurRadius: 3.0,
+              )
+            ],
+          ).show(context);
+        }
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -245,12 +270,15 @@ class ImportantSuppilesDetailsListState
       // debugPrint(e.toString());
     }
   }
+
   getProductDetails(String category) async {
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=145754117&APP_SCREEN_NAME=Search Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiNyo4KjAqMSo0KiIsImV4cCI6MTY5MzAzMTk1NiwiaWF0IjoxNjkyOTQ1NTU2LCJzdWIiOiIxNDU3NTQxMTciLCJjZHQiOiIyNS0wOC0yMDIzIn0.zgGswCPdM__GPoEehcWxbn-QpS6fJNGxRtarCkqRDvs&source=android.search&implicit_info_latlong=29.873962,77.87354&token=imartenquiryprovider&APP_USER_ID=145754117&implicit_info_city_data=roorkee&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=25.0&prdsrc=1&APP_LATITUDE=29.873962&APP_LONGITUDE=77.87354&VALIDATION_USER_IP=49.36.220.222&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=7983071546";
-                http.Response response = await http.get(Uri.parse(pathUrl));
+
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      http.Response response = await http.get(Uri.parse(pathUrl));
+
       print(pathUrl);
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -273,14 +301,17 @@ class ImportantSuppilesDetailsListState
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
+
         start=0;
         end=9;
         dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
+
         pbrimage = live_mcats[0]['smallimg'];
 
         // pbrimage=this.pbrimage;
         print("pbrimage=$pbrimage");
-        totalItemCount=json.decode(response.body)['total_results_without_repetition'];
+        totalItemCount =
+            json.decode(response.body)['total_results_without_repetition'];
         resultsArray = json.decode(response.body)['results'];
         // itemCount = resultsArray.length;
         imagesArray?.clear();
@@ -317,12 +348,12 @@ class ImportantSuppilesDetailsListState
         }
         print("list size=${titlesArray?[9]}");
         setState(() {
-          items=resultsArray;
+          items = resultsArray;
         });
-        addBannerOrAd(2, "ADEMPTY");
-        addBannerOrAd(7, "ADEMPTY");
-        addBannerOrAd(5, "isq_banner");
-        addBannerOrAd(10, "PBRBANNER");
+        await addBannerOrAd(2, "ADEMPTY");
+        await addBannerOrAd(7, "ADEMPTY");
+        await addBannerOrAd(5, "isq_banner");
+        await addBannerOrAd(10, "PBRBANNER");
         EasyLoading.dismiss();
         Flushbar(
           title: "DONE",
@@ -366,10 +397,11 @@ class ImportantSuppilesDetailsListState
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if(items.length-1<0)
-      itemCount=0;
-    else
-      itemCount=items.length-1;
+    if (items.length - 1 < 0) {
+      itemCount = 0;
+    } else {
+      itemCount = items.length - 1;
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -404,18 +436,23 @@ class ImportantSuppilesDetailsListState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image:
-                                    AssetImage("images/mic_icon_colored.png"),
-                                fit: BoxFit.cover),
+                      GestureDetector(
+                        onTap: () {
+                          openVoiceToTextConverter();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 30,
+                            width: 30,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                      AssetImage("images/mic_icon_colored.png"),
+                                  fit: BoxFit.cover),
+                            ),
+                            alignment: Alignment.center,
                           ),
-                          alignment: Alignment.center,
                         ),
                       ),
                     ],
@@ -587,9 +624,11 @@ class ImportantSuppilesDetailsListState
                   if (titlesArray?[index] == "PBRBANNER") {
                     return PBRBanner(product_name: widget.productName);
                   } else if (titlesArray?[index] == "isq_banner") {
+
                     return MainPBRBanner(productName: widget.productName,img: pbrimage);
                   }
                   else if (titlesArray?[index] == "ADEMPTY") {
+
                     return AdClass();
                   }
                   else {
@@ -603,21 +642,21 @@ class ImportantSuppilesDetailsListState
                   }
                 },
               ),
-              )
+            )
           ],
         ),
       ),
     );
   }
 
-  void addBannerOrAd(int pos, String value) {
+  Future addBannerOrAd(int pos, String value) async {
     imagesArray?.insert(pos, "");
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");
     companyNameArray?.insert(pos, "");
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
-    items.length+=1;
+    items.length += 1;
     // itemCount++;
   }
 

@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This App wants to record your audio to convert it to text and display search results</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This App wants to record your audio to convert it to text and display search results</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-1233730072936671~7121713710</string>
 	<key>CFBundleDevelopmentRegion</key>
