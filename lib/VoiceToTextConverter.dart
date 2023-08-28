@@ -154,7 +154,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                           )),
                 Container(
                   color: Colors.white,
-                  height: 156,
+                  height: 153,
                   width: 300,
                   child: Center(
                     child: Column(
