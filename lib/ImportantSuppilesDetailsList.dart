@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -226,11 +227,14 @@ class ImportantSuppilesDetailsListState
         });
 
         if (resultsArray.length > 0) if (currentPage > 1) {
+          if(!kIsWeb)
           addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
-          addBannerOrAd(2, "ADEMPTY");
-          addBannerOrAd(7, "ADEMPTY");
+          if(!kIsWeb) {
+            addBannerOrAd(2, "ADEMPTY");
+            addBannerOrAd(7, "ADEMPTY");
+          }
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
         } else
@@ -726,16 +730,24 @@ class CustomButton extends StatelessWidget {
     );
   }
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final permissionStatus = await Permission.phone.request();
     final call = "tel:+91 $phoneNumber";
-    if (permissionStatus.isGranted) {
-      if (await canLaunch(call)) {
-        await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      } else {
-        throw 'Could not launch $call';
+    if(!kIsWeb) {
+      final permissionStatus = await Permission.phone.request();
+      if (permissionStatus.isGranted) {
+        if (await canLaunch(call)) {
+          await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        } else {
+          throw 'Could not launch $call';
+        }
       }
-    }
-    else{
+      else{
+        if (await canLaunch(call)) {
+          await launch(call);
+        } else {
+          throw 'Could not launch $call';
+        }
+      }
+    } else{
       if (await canLaunch(call)) {
         await launch(call);
       } else {
