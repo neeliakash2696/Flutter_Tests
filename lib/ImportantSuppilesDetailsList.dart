@@ -5,11 +5,14 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'main_pbr_banner.dart';
 
@@ -36,6 +39,7 @@ class ImportantSuppilesDetailsListState
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
+  List<String>? phoneArray = [];
   List<String>? itemPricesArray = [];
   List<String>? companyNameArray = [];
   List<String>? locationsArray = [];
@@ -177,6 +181,7 @@ class ImportantSuppilesDetailsListState
           print("pbrimage=$pbrimage");
           totalItemCount=json.decode(response.body)['total_results_without_repetition'];
           imagesArray?.clear();
+          phoneArray?.clear();
           titlesArray?.clear();
           itemPricesArray?.clear();
           companyNameArray?.clear();
@@ -190,6 +195,9 @@ class ImportantSuppilesDetailsListState
           var title = resultsArray[i]['fields']['title'];
           titlesArray?.add(title ?? "NA");
 
+          var phoneNo = resultsArray[i]['fields']['pns'];
+          phoneArray?.add(phoneNo ?? "NA");
+          print("phoine=$phoneNo");
           var itemPrices = resultsArray[i]['fields']['itemprice'];
           var units = resultsArray[i]['fields']['moq_type'];
           if (itemPrices == "" || itemPrices == null) {
@@ -273,128 +281,128 @@ class ImportantSuppilesDetailsListState
     }
   }
 
-  getProductDetails(String category) async {
-    EasyLoading.show(status: 'Loading...');
-    try {
-      String pathUrl =
-
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-      http.Response response = await http.get(Uri.parse(pathUrl));
-
-      print(pathUrl);
-      var code = json.decode(response.body)['CODE'];
-      if (code == "402") {
-        var msg = json.decode(response.body)['MESSAGE'];
-        EasyLoading.dismiss();
-        Flushbar(
-          title: code,
-          message: msg,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 4),
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
-      } else if (response.statusCode == 200) {
-
-        start=0;
-        end=9;
-        dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
-
-        pbrimage = live_mcats[0]['smallimg'];
-
-        // pbrimage=this.pbrimage;
-        print("pbrimage=$pbrimage");
-        totalItemCount =
-            json.decode(response.body)['total_results_without_repetition'];
-        resultsArray = json.decode(response.body)['results'];
-        // itemCount = resultsArray.length;
-        imagesArray?.clear();
-        titlesArray?.clear();
-        itemPricesArray?.clear();
-        companyNameArray?.clear();
-        locationsArray?.clear();
-        localityArray?.clear();
-        for (var i = 0; i < resultsArray.length; i++) {
-          var image = resultsArray[i]['fields']['large_image'];
-          imagesArray?.add(image ?? "");
-
-          var title = resultsArray[i]['fields']['title'];
-          titlesArray?.add(title ?? "NA");
-
-          var itemPrices = resultsArray[i]['fields']['itemprice'];
-          var units = resultsArray[i]['fields']['moq_type'];
-          if (itemPrices == "" || itemPrices == null) {
-            itemPricesArray?.add("Prices on demand");
-          } else {
-            if (units == "" || units == null) {
-              units = "units";
-            }
-            itemPricesArray?.add((itemPrices) + "/ " + (units));
-          }
-          var company = resultsArray[i]['fields']['tscode'];
-          companyNameArray?.add(company ?? "NA");
-
-          var city = resultsArray[i]['fields']['city'] ?? "";
-          locationsArray?.add(city);
-
-          var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-          localityArray?.add(locality);
-        }
-        print("list size=${titlesArray?[9]}");
-        setState(() {
-          items = resultsArray;
-        });
-        await addBannerOrAd(2, "ADEMPTY");
-        await addBannerOrAd(7, "ADEMPTY");
-        await addBannerOrAd(5, "isq_banner");
-        await addBannerOrAd(10, "PBRBANNER");
-        EasyLoading.dismiss();
-        Flushbar(
-          title: "DONE",
-          message: "API HITTING DONE",
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
-      }
-    } catch (e) {
-      EasyLoading.dismiss();
-      Flushbar(
-        title: "Error",
-        message: e.toString(),
-        flushbarStyle: FlushbarStyle.FLOATING,
-        isDismissible: true,
-        duration: const Duration(seconds: 4),
-        backgroundColor: Colors.red,
-        margin: const EdgeInsets.all(8),
-        borderRadius: BorderRadius.circular(8),
-        boxShadows: const [
-          BoxShadow(
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-      ).show(context);
-      // debugPrint(e.toString());
-    }
-  }
+  // getProductDetails(String category) async {
+  //   EasyLoading.show(status: 'Loading...');
+  //   try {
+  //     String pathUrl =
+  //
+  //         "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+  //     http.Response response = await http.get(Uri.parse(pathUrl));
+  //
+  //     print(pathUrl);
+  //     var code = json.decode(response.body)['CODE'];
+  //     if (code == "402") {
+  //       var msg = json.decode(response.body)['MESSAGE'];
+  //       EasyLoading.dismiss();
+  //       Flushbar(
+  //         title: code,
+  //         message: msg,
+  //         flushbarStyle: FlushbarStyle.FLOATING,
+  //         isDismissible: true,
+  //         duration: const Duration(seconds: 4),
+  //         backgroundColor: Colors.red,
+  //         margin: const EdgeInsets.all(8),
+  //         borderRadius: BorderRadius.circular(8),
+  //         boxShadows: const [
+  //           BoxShadow(
+  //             offset: Offset(0.0, 2.0),
+  //             blurRadius: 3.0,
+  //           )
+  //         ],
+  //       ).show(context);
+  //     } else if (response.statusCode == 200) {
+  //
+  //       start=0;
+  //       end=9;
+  //       dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
+  //
+  //       pbrimage = live_mcats[0]['smallimg'];
+  //
+  //       // pbrimage=this.pbrimage;
+  //       print("pbrimage=$pbrimage");
+  //       totalItemCount =
+  //           json.decode(response.body)['total_results_without_repetition'];
+  //       resultsArray = json.decode(response.body)['results'];
+  //       // itemCount = resultsArray.length;
+  //       imagesArray?.clear();
+  //       titlesArray?.clear();
+  //       itemPricesArray?.clear();
+  //       companyNameArray?.clear();
+  //       locationsArray?.clear();
+  //       localityArray?.clear();
+  //       for (var i = 0; i < resultsArray.length; i++) {
+  //         var image = resultsArray[i]['fields']['large_image'];
+  //         imagesArray?.add(image ?? "");
+  //
+  //         var title = resultsArray[i]['fields']['title'];
+  //         titlesArray?.add(title ?? "NA");
+  //
+  //         var itemPrices = resultsArray[i]['fields']['itemprice'];
+  //         var units = resultsArray[i]['fields']['moq_type'];
+  //         if (itemPrices == "" || itemPrices == null) {
+  //           itemPricesArray?.add("Prices on demand");
+  //         } else {
+  //           if (units == "" || units == null) {
+  //             units = "units";
+  //           }
+  //           itemPricesArray?.add((itemPrices) + "/ " + (units));
+  //         }
+  //         var company = resultsArray[i]['fields']['tscode'];
+  //         companyNameArray?.add(company ?? "NA");
+  //
+  //         var city = resultsArray[i]['fields']['city'] ?? "";
+  //         locationsArray?.add(city);
+  //
+  //         var locality = resultsArray[i]['fields']['locality'] ?? "NA";
+  //         localityArray?.add(locality);
+  //       }
+  //       print("list size=${titlesArray?[9]}");
+  //       setState(() {
+  //         items = resultsArray;
+  //       });
+  //       await addBannerOrAd(2, "ADEMPTY");
+  //       await addBannerOrAd(7, "ADEMPTY");
+  //       await addBannerOrAd(5, "isq_banner");
+  //       await addBannerOrAd(10, "PBRBANNER");
+  //       EasyLoading.dismiss();
+  //       Flushbar(
+  //         title: "DONE",
+  //         message: "API HITTING DONE",
+  //         flushbarStyle: FlushbarStyle.FLOATING,
+  //         isDismissible: true,
+  //         duration: const Duration(seconds: 1),
+  //         backgroundColor: Colors.green,
+  //         margin: const EdgeInsets.all(8),
+  //         borderRadius: BorderRadius.circular(8),
+  //         boxShadows: const [
+  //           BoxShadow(
+  //             offset: Offset(0.0, 2.0),
+  //             blurRadius: 3.0,
+  //           )
+  //         ],
+  //       ).show(context);
+  //     }
+  //   } catch (e) {
+  //     EasyLoading.dismiss();
+  //     Flushbar(
+  //       title: "Error",
+  //       message: e.toString(),
+  //       flushbarStyle: FlushbarStyle.FLOATING,
+  //       isDismissible: true,
+  //       duration: const Duration(seconds: 4),
+  //       backgroundColor: Colors.red,
+  //       margin: const EdgeInsets.all(8),
+  //       borderRadius: BorderRadius.circular(8),
+  //       boxShadows: const [
+  //         BoxShadow(
+  //           offset: Offset(0.0, 2.0),
+  //           blurRadius: 3.0,
+  //         )
+  //       ],
+  //     ).show(context);
+  //     // debugPrint(e.toString());
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -583,6 +591,7 @@ class ImportantSuppilesDetailsListState
                                   locality: localityArray?[index] ?? "NA",
                                   location: locationsArray?[index] ?? "NA",
                                   title: titlesArray?[index] ?? "NA",
+                                  phone:phoneArray?[index]??"NA"
                                 ),
                               ),
                             ],
@@ -609,6 +618,7 @@ class ImportantSuppilesDetailsListState
                                   locality: localityArray?[index] ?? "NA",
                                   location: locationsArray?[index] ?? "NA",
                                   title: titlesArray?[index] ?? "NA",
+                                  phone: phoneArray?[index] ?? "NA",
                                 ),
                               ),
                             ],
@@ -617,7 +627,7 @@ class ImportantSuppilesDetailsListState
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [CustomButton(), CustomButton2()],
+                          children: [CustomButton(phoneNo:phoneArray![index]), CustomButton2()],
                         )
                       ],
                     ),
@@ -658,6 +668,7 @@ class ImportantSuppilesDetailsListState
     companyNameArray?.insert(pos, "");
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
+    phoneArray?.insert(pos, "");
     items.length += 1;
     // itemCount++;
   }
@@ -668,11 +679,17 @@ class ImportantSuppilesDetailsListState
 }
 
 class CustomButton extends StatelessWidget {
+  String phoneNo;
+  CustomButton({required this.phoneNo});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Container(
+      child: InkWell(
+        onTap:(){print("Call Now pressed}");
+        _makePhoneCall('$phoneNo');},
+        child:Container(
         width: MediaQuery.of(context).size.width / 2 - 25,
         alignment: Alignment.center,
         padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
@@ -705,7 +722,27 @@ class CustomButton extends StatelessWidget {
           ),
         ),
       ),
+      )
     );
+  }
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final permissionStatus = await Permission.phone.request();
+    final call = "tel:+91 $phoneNumber";
+    if (permissionStatus.isGranted) {
+      if (await canLaunch(call)) {
+        await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+      } else {
+        throw 'Could not launch $call';
+      }
+    }
+    else{
+      if (await canLaunch(call)) {
+        await launch(call);
+      } else {
+        throw 'Could not launch $call';
+      }
+    }
+      
   }
 }
 
@@ -760,13 +797,15 @@ class Description extends StatefulWidget {
   String companyName;
   String location;
   String locality;
+  String phone;
   Description(
       {Key? key,
       required this.title,
       required this.itemPrice,
       required this.companyName,
       required this.location,
-      required this.locality})
+      required this.locality,
+      required this.phone})
       : super(key: key);
 }
 
