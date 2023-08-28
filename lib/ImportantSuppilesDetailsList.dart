@@ -403,7 +403,16 @@ class ImportantSuppilesDetailsListState
         automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.black,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -414,13 +423,6 @@ class ImportantSuppilesDetailsListState
                   ),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        color: Colors.black,
-                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(

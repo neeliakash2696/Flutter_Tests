@@ -34,8 +34,8 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   @override
   void dispose() {
     timer.cancel();
-    _stopListening();
     recording = false;
+    speechEnabled = false;
     super.dispose();
   }
 
@@ -54,7 +54,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
     setState(() {});
   }
 
-  Future _stopListening() async {
+  _stopListening() async {
     await speechToText.stop();
     print("stopped Listening");
     info = "Tap on the Mic to speak again";
@@ -77,15 +77,16 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
       oneSec,
       (Timer timer) {
         if (start == 0) {
-          setState(() {
+          timer.cancel();
+          if (lastWords == "") {
+            _stopListening();
+            setState(() {});
+          } else {
             timer.cancel();
-            if (lastWords == "") {
-              _stopListening();
-            } else {
-              _stopListening();
-              Navigator.pop(context, lastWords);
-            }
-          });
+            recording = false;
+            speechEnabled = false;
+            Navigator.pop(context, lastWords);
+          }
         } else {
           setState(() {
             start--;
@@ -126,24 +127,31 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                   height: 30,
                 ),
                 GestureDetector(
-                  onTap: () {
-                    setState(() async {
+                    onTap: () {
                       print("when clicked $recording");
                       if (recording) {
-                        await _stopListening().then((value) {
-                          Navigator.pop(context, lastWords);
-                        });
+                        _stopListening();
                       } else {
                         _startListening();
                       }
-                    });
-                  },
-                  child: const Icon(
-                    Icons.mic_rounded,
-                    size: 70,
-                    color: Colors.white,
-                  ),
-                ),
+                    },
+                    child: recording
+                        ? Container(
+                            height: 70,
+                            width: 70,
+                            decoration: const BoxDecoration(
+                              color: Colors.teal,
+                              image: DecorationImage(
+                                  image: AssetImage("images/Microphone.gif"),
+                                  fit: BoxFit.fill),
+                            ),
+                            alignment: Alignment.center,
+                          )
+                        : const Icon(
+                            Icons.mic_rounded,
+                            size: 70,
+                            color: Colors.white,
+                          )),
                 Container(
                   color: Colors.white,
                   height: 156,
