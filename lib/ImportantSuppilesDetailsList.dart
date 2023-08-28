@@ -119,6 +119,9 @@ class ImportantSuppilesDetailsListState
             fullscreenDialog: true));
     if (outputText != null) {
       print("output $outputText");
+      encodedQueryParam = encodeString(outputText);
+      widget.productName = outputText;
+      getProductDetails(encodedQueryParam);
     }
   }
 
