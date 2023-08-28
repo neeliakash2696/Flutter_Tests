@@ -70,7 +70,7 @@ class ImportantSuppilesDetailsListState
     currentPage=1;
     start=0;
     end=9;
-    getMoreDetails(widget.productName,0,9,currentPage);
+    getMoreDetails(encodedQueryParam,0,9,currentPage);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -86,7 +86,7 @@ class ImportantSuppilesDetailsListState
             end=totalItemCount;
           if(stop==false) {
             currentPage+=1;
-            getMoreDetails(widget.productName, start, end, currentPage);
+            getMoreDetails(encodedQueryParam, start, end, currentPage);
           } // Mark that you've reached the end
         });
       } else {
@@ -119,6 +119,7 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(selectedChip[0]);
       widget.productName = selectedChip[0];
       widget.productIndex = selectedChip[1];
+      items.length=0;
       getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
   }
@@ -133,7 +134,8 @@ class ImportantSuppilesDetailsListState
     if (outputText != null) {
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
-      getProductDetails(encodedQueryParam);
+      items.length=0;
+      getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
   }
 
@@ -227,7 +229,7 @@ class ImportantSuppilesDetailsListState
         else
           stop=true;
 
-        print("resultsArray=${items.length} ${titlesArray?.length},");
+        print("resultsArray=${items.length} ${resultsArray?.length},");
         EasyLoading.dismiss();
         scrolled = 1;
         if (resultsArray.length > 0) {
