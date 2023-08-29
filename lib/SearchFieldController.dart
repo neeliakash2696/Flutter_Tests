@@ -1,10 +1,6 @@
 // ignore_for_file: must_be_immutable, unrelated_type_equality_checks
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 
 class SearchFieldController extends StatefulWidget {
   @override
@@ -70,11 +66,19 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
+                          textInputAction: TextInputAction.search,
                           focusNode: focus,
                           autocorrect: false,
                           autofocus: true,
                           onChanged: (text) {
                             print(text);
+                          },
+                          onEditingComplete: () {
+                            print("Search Clicked");
+                            closeKeyboard(context);
+                          },
+                          onTapOutside: (event) {
+                            closeKeyboard(context);
                           },
                           onTap: () {
                             //

@@ -34,8 +34,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   @override
   void dispose() {
     timer.cancel();
-    recording = false;
-    speechEnabled = false;
+    _stopListening();
     super.dispose();
   }
 
@@ -61,7 +60,6 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
     info = "Tap on the Mic to speak again";
     recording = false;
     speechEnabled = false;
-    setState(() {});
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {

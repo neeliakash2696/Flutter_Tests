@@ -144,8 +144,14 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
-    Navigator.push(context,
+    var outputText = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => SearchFieldController()));
+    if (outputText != null && outputText != "") {
+      encodedQueryParam = encodeString(outputText);
+      widget.productName = outputText;
+      items.length = 0;
+      getMoreDetails(encodedQueryParam, 0, 9, 1);
+    }
   }
 
   getMoreDetails(String category, int start, int end, int currentPage) async {
