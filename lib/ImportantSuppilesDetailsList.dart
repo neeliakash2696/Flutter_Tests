@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
@@ -140,6 +141,11 @@ class ImportantSuppilesDetailsListState
       items.length = 0;
       getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
+  }
+
+  showSearchController() async {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SearchFieldController()));
   }
 
   getMoreDetails(String category, int start, int end, int currentPage) async {
@@ -315,6 +321,9 @@ class ImportantSuppilesDetailsListState
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
+                          onTap: () {
+                            showSearchController();
+                          },
                           controller: TextEditingController(
                               text: "${widget.productName}"),
                           decoration: const InputDecoration(
