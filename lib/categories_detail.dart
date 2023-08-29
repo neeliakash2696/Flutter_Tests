@@ -35,9 +35,18 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
           children: [
             Padding(
               padding: const EdgeInsets.all(4.0),
-              child: Text(widget.name,style: TextStyle(
-                  fontSize: 18
-              ),),
+              child:  Row(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back_ios, size: 25,color: Colors.black,)
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(child: Text(widget.name, style: TextStyle(fontSize: 18))),
+                ],
+              ),
             ),
             SizedBox(height: 10,),
             Row(
@@ -61,7 +70,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                             color: Colors.grey[600],
                           ),
                         ),
-                        SizedBox(width: 8),
+                        // SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             decoration: const InputDecoration(
@@ -71,6 +80,24 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                               alignLabelWithHint: true,
                               border: InputBorder.none,
                                 contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 8)
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                    image:
+                                    AssetImage("images/mic_icon_colored.png"),
+                                    fit: BoxFit.cover),
+                              ),
+                              alignment: Alignment.center,
                             ),
                           ),
                         ),

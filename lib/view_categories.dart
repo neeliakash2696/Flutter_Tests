@@ -61,7 +61,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                             color: Colors.grey[600],
                           ),
                         ),
-                        SizedBox(width: 8),
+                        // SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             decoration: const InputDecoration(
@@ -71,6 +71,24 @@ class _ViewCategoriesState extends State<ViewCategories> {
                               alignLabelWithHint: true,
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 8)
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                    image:
+                                    AssetImage("images/mic_icon_colored.png"),
+                                    fit: BoxFit.cover),
+                              ),
+                              alignment: Alignment.center,
                             ),
                           ),
                         ),
