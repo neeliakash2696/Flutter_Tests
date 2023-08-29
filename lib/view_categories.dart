@@ -41,12 +41,12 @@ class _ViewCategoriesState extends State<ViewCategories> {
             ),
             SizedBox(height: 10,),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Container(
-                    height: 50,
+                    height: 40,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
@@ -66,11 +66,11 @@ class _ViewCategoriesState extends State<ViewCategories> {
                           child: TextField(
                             decoration: const InputDecoration(
                               hintStyle: TextStyle(
-                                  fontSize: 15, color: Colors.grey),
+                                  fontSize: 14, color: Colors.grey),
                               hintText: 'Search for Products & Services',
                               alignLabelWithHint: true,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.all(0),
+                              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 8)
                             ),
                           ),
                         ),
