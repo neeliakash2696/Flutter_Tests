@@ -8,12 +8,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
+import 'package:flutter_tests/view_categories.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(MyApp());
+  runApp(ViewCategories());
 }
 
 class MyApp extends StatelessWidget {

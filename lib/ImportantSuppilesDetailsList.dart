@@ -227,13 +227,13 @@ class ImportantSuppilesDetailsListState
         });
 
         if (resultsArray.length > 0) if (currentPage > 1) {
-          if(!kIsWeb)
-          addBannerOrAd(end, "ADEMPTY");
+          // if(!kIsWeb)
+          // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
           if(!kIsWeb) {
-            addBannerOrAd(2, "ADEMPTY");
-            addBannerOrAd(7, "ADEMPTY");
+            // addBannerOrAd(2, "ADEMPTY");
+            // addBannerOrAd(7, "ADEMPTY");
           }
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
@@ -645,9 +645,11 @@ class ImportantSuppilesDetailsListState
                   } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(
                         productName: widget.productName, img: pbrimage);
-                  } else if (titlesArray?[index] == "ADEMPTY") {
-                    return AdClass();
-                  } else {
+                  }
+                  // else if (titlesArray?[index] == "ADEMPTY") {
+                  //   return AdClass();
+                  // }
+                  else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -676,7 +678,7 @@ class ImportantSuppilesDetailsListState
     items.length += 1;
     // itemCount++;
   }
-
+//
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
