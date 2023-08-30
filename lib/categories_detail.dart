@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:http/http.dart' as http;
 
 class CategoriesDetail extends StatefulWidget {
@@ -43,18 +44,19 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back_ios,
                         size: 25,
                         color: Colors.black,
                       )),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
-                      child: Text(widget.name, style: TextStyle(fontSize: 18))),
+                      child: Text(widget.name,
+                          style: const TextStyle(fontSize: 18))),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
@@ -83,6 +85,17 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                         // SizedBox(width: 8),
                         Expanded(
                           child: TextField(
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchFieldController(
+                                            fromScreen:
+                                                FromScreen.categoriesDetail,
+                                          )));
+                            },
                             decoration: const InputDecoration(
                                 hintStyle:
                                     TextStyle(fontSize: 14, color: Colors.grey),
@@ -124,7 +137,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
           future: getCategories(),
           builder: (context, snapshot) {
             return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, childAspectRatio: 0.8
                     // mainAxisSpacing: 4.0, // Space between rows
                     // crossAxisSpacing: 4.0,
@@ -168,13 +181,14 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                             Container(
                               height: 58,
                               width: gridTileWidth,
-                              decoration: BoxDecoration(color: Colors.teal),
+                              decoration:
+                                  const BoxDecoration(color: Colors.teal),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   nameArray[index],
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 15,
                                       // fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -193,7 +207,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
 
   Future<void> getCategories() async {
     String path =
-        "https://mapi.indiamart.com/wservce/im/category/?flname=${widget.fname}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${widget.id}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+        "https://mapi.indiamart.com/wservce/im/category/?flname=${widget.fname}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${widget.id}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
     // print("path=$path")
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];

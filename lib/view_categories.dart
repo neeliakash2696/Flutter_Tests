@@ -36,14 +36,14 @@ class _ViewCategoriesState extends State<ViewCategories> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(4.0),
+            const Padding(
+              padding: EdgeInsets.all(4.0),
               child: Text(
                 "All Categories",
                 style: TextStyle(fontSize: 18),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
@@ -79,7 +79,10 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          SearchFieldController()));
+                                          SearchFieldController(
+                                            fromScreen:
+                                                FromScreen.viewCategories,
+                                          )));
                             },
                             decoration: const InputDecoration(
                                 hintStyle:
@@ -122,7 +125,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
           future: getCategories(),
           builder: (context, snapshot) {
             return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3, childAspectRatio: 0.7),
                 itemCount: resultsArray.length,
                 itemBuilder: (context, index) {
@@ -163,7 +166,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                             child: Text(
                               nameArray[index],
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 11, fontWeight: FontWeight.bold),
                             ),
                           )
@@ -178,7 +181,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
 
   Future<void> getCategories() async {
     String path =
-        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
     if (code == "402") {

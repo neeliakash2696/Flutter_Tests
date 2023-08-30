@@ -25,13 +25,13 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
-  int productIndex;
-  List<String> categoriesList;
+  int? productIndex;
+  List<String>? categoriesList;
   ImportantSuppilesDetailsList(
       {Key? key,
       required this.productName,
-      required this.productIndex,
-      required this.categoriesList})
+      this.productIndex,
+      this.categoriesList})
       : super(key: key);
 }
 
@@ -112,9 +112,9 @@ class ImportantSuppilesDetailsListState
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-                  categoriesList: widget.categoriesList,
+                  categoriesList: widget.categoriesList ?? [],
                   isSellerType: isSellerType,
-                  productIndex: widget.productIndex,
+                  productIndex: widget.productIndex ?? 0,
                 ),
             opaque: false,
             fullscreenDialog: true));
@@ -144,8 +144,12 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
-    var outputText = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => SearchFieldController()));
+    var outputText = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SearchFieldController(
+                  fromScreen: FromScreen.impSuppliesList,
+                )));
     if (outputText != null && outputText != "") {
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
@@ -160,7 +164,7 @@ class ImportantSuppilesDetailsListState
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
 
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -308,11 +312,11 @@ class ImportantSuppilesDetailsListState
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.arrow_back_ios),
+              color: Colors.white,
               onPressed: () {
                 Navigator.pop(context);
               },
-              color: Colors.black,
             ),
             Expanded(
               child: Padding(
@@ -605,6 +609,7 @@ class ImportantSuppilesDetailsListState
     items.length += 1;
     // itemCount++;
   }
+
 //
   @override
   // TODO: implement wantKeepAlive
