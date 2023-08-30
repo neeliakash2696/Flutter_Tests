@@ -14,7 +14,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(ViewCategories());
+  // runApp(MyApp());
+  runApp(MaterialApp(
+    home: ViewCategories(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -127,6 +130,10 @@ class SectionWidget extends StatelessWidget {
                     size: 30,
                   ),
                   onTap: () {
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => ViewCategories()));
                     Navigator.push(
                         context,
                         MaterialPageRoute(

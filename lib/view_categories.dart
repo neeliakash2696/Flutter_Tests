@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/categories_detail.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,6 +72,15 @@ class _ViewCategoriesState extends State<ViewCategories> {
                         // SizedBox(width: 8),
                         Expanded(
                           child: TextField(
+                            keyboardType: TextInputType.none,
+                            controller: TextEditingController(text: ""),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchFieldController()));
+                            },
                             decoration: const InputDecoration(
                                 hintStyle:
                                     TextStyle(fontSize: 14, color: Colors.grey),
