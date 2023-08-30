@@ -221,15 +221,6 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                     fit: BoxFit.fill,
                                   ),),
                               ),
-                              Container(
-                                height: 58,
-                                  width: gridTileWidth,
-                                decoration: BoxDecoration(
-                                  color: Colors.teal
-
-                                ),
-                              ),
-                            ),
                             Container(
                               height: 58,
                               width: gridTileWidth,
