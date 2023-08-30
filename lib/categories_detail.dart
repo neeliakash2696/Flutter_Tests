@@ -58,7 +58,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       child: const Icon(
                         Icons.arrow_back_ios,
                         size: 25,
-                        color: Colors.black,
+                        color: Colors.white,
                       )),
                   const SizedBox(width: 10),
                   Expanded(
