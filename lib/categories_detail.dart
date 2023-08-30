@@ -39,9 +39,9 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 100,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +245,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                   }));
                 });
           }),
-    ));
+    );
   }
 
 
