@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
+    as FlutterTests;
 
 enum SearchingFromScreen {
   def,
@@ -85,7 +87,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl =
-          "https://mapi.indiamart.com//wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-rcnt:pos=6:cat=-2:mcat=-2&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=Chennai&APP_MODID=ANDROID&q=$query&modeId=android.search&APP_ACCURACY=0.0&prdsrc=1&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com//wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-rcnt:pos=6:cat=-2:mcat=-2&options_start=0&options_end=9&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=Chennai&APP_MODID=ANDROID&q=$query&modeId=android.search&APP_ACCURACY=0.0&prdsrc=1&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402" || code == "401") {
