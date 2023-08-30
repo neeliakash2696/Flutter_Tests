@@ -41,9 +41,9 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 100,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +60,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       child: const Icon(
                         Icons.arrow_back_ios,
                         size: 25,
-                        color: Colors.black,
+                        color: Colors.white,
                       )),
                   const SizedBox(width: 10),
                   Expanded(
@@ -243,7 +243,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                   }));
                 });
           }),
-    ));
+    );
   }
 
   Future<void> getCategories() async {

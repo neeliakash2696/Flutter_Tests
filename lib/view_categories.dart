@@ -31,8 +31,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
         title: Column(
@@ -194,7 +193,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                   );
                 });
           }),
-    ));
+    );
   }
 
   Future<void> getCategories() async {
