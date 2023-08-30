@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
+import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:http/http.dart' as http;
 
 class CategoriesDetail extends StatefulWidget {
@@ -92,8 +93,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           SearchFieldController(
-                                            fromScreen:
-                                                FromScreen.categoriesDetail,
+                                            fromScreen: SearchingFromScreen
+                                                .categoriesDetail,
                                           )));
                             },
                             decoration: const InputDecoration(
@@ -107,7 +108,18 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) =>
+                                        VoiceToTextConverter(
+                                          fromScreen: VoiceSearchFromScreen
+                                              .categoriesDetail,
+                                        ),
+                                    opaque: false,
+                                    fullscreenDialog: true));
+                          },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(

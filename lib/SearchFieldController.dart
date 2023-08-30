@@ -7,12 +7,17 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-enum FromScreen { def, impSuppliesList, viewCategories, categoriesDetail }
+enum SearchingFromScreen {
+  def,
+  impSuppliesList,
+  viewCategories,
+  categoriesDetail
+}
 
 class SearchFieldController extends StatefulWidget {
   @override
   SearchFieldControllerState createState() => SearchFieldControllerState();
-  FromScreen fromScreen;
+  SearchingFromScreen fromScreen;
   SearchFieldController({Key? key, required this.fromScreen}) : super(key: key);
 }
 
@@ -45,7 +50,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
 
   proceedForSearch() {
     switch (widget.fromScreen) {
-      case FromScreen.def:
+      case SearchingFromScreen.def:
         Navigator.pop(context);
         Navigator.push(
             context,
@@ -54,10 +59,10 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                       productName: searchQuery,
                     )));
         break;
-      case FromScreen.impSuppliesList:
+      case SearchingFromScreen.impSuppliesList:
         Navigator.pop(context, searchQuery);
         break;
-      case FromScreen.viewCategories:
+      case SearchingFromScreen.viewCategories:
         Navigator.pop(context);
         Navigator.push(
             context,
@@ -65,7 +70,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
                     )));
-      case FromScreen.categoriesDetail:
+      case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
@@ -116,7 +121,6 @@ class SearchFieldControllerState extends State<SearchFieldController> {
           }
         }
         setState(() {});
-        print("dataArray" "$dataArray");
         EasyLoading.dismiss();
       }
     } catch (e) {

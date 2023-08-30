@@ -132,7 +132,9 @@ class ImportantSuppilesDetailsListState
     var outputText = await Navigator.push(
         context,
         PageRouteBuilder(
-            pageBuilder: (_, __, ___) => VoiceToTextConverter(),
+            pageBuilder: (_, __, ___) => VoiceToTextConverter(
+                  fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                ),
             opaque: false,
             fullscreenDialog: true));
     if (outputText != null && outputText != "") {
@@ -148,7 +150,7 @@ class ImportantSuppilesDetailsListState
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
-                  fromScreen: FromScreen.impSuppliesList,
+                  fromScreen: SearchingFromScreen.impSuppliesList,
                 )));
     if (outputText != null && outputText != "") {
       encodedQueryParam = encodeString(outputText);

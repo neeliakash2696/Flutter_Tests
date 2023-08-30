@@ -3,16 +3,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+
+enum VoiceSearchFromScreen {
+  def,
+  impSuppliesList,
+  viewCategories,
+  categoriesDetail
+}
 
 class VoiceToTextConverter extends StatefulWidget {
   @override
   VoiceToTextConverterState createState() => VoiceToTextConverterState();
-
-  VoiceToTextConverter({
-    Key? key,
-  }) : super(key: key);
+  VoiceSearchFromScreen fromScreen;
+  VoiceToTextConverter({Key? key, required this.fromScreen}) : super(key: key);
 }
 
 class VoiceToTextConverterState extends State<VoiceToTextConverter> {
@@ -36,6 +42,39 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
     timer.cancel();
     _stopListening();
     super.dispose();
+  }
+
+  proceedForSearch() {
+    switch (widget.fromScreen) {
+      case VoiceSearchFromScreen.def:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: voiceConvertedText,
+                    )));
+        break;
+      case VoiceSearchFromScreen.impSuppliesList:
+        Navigator.pop(context, voiceConvertedText);
+        break;
+      case VoiceSearchFromScreen.viewCategories:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: voiceConvertedText,
+                    )));
+      case VoiceSearchFromScreen.categoriesDetail:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: voiceConvertedText,
+                    )));
+    }
   }
 
   Future _initSpeech() async {
@@ -85,7 +124,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             recording = false;
             speechEnabled = false;
             _stopListening();
-            Navigator.pop(context, voiceConvertedText);
+            proceedForSearch();
           }
         } else {
           setState(() {
