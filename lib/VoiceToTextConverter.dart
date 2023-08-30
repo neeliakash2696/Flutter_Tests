@@ -153,6 +153,9 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
           child: Padding(
             padding: const EdgeInsets.only(top: 25),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 const Text(
                   "Tell us What you need",
@@ -193,7 +196,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                           )),
                 Container(
                   color: Colors.white,
-                  height: 156,
+                  height: 153,
                   width: 300,
                   child: Center(
                     child: Column(
