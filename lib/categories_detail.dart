@@ -1,17 +1,15 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:http/http.dart' as http;
-
-
 import 'ImportantSuppilesDetailsList.dart';
+import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
+    as FlutterTests;
 
-class CategoriesDetail extends StatefulWidget{
-
+class CategoriesDetail extends StatefulWidget {
   @override
   State<CategoriesDetail> createState() => _CategoriesDetailState();
   String fname;
@@ -20,16 +18,20 @@ class CategoriesDetail extends StatefulWidget{
 
   String api;
   int pageNo;
-  CategoriesDetail({required this.fname,required this.id, required this.name, required  this.api,required this.pageNo});
+  CategoriesDetail(
+      {required this.fname,
+      required this.id,
+      required this.name,
+      required this.api,
+      required this.pageNo});
 }
 
 class _CategoriesDetailState extends State<CategoriesDetail> {
-  dynamic resultsArray=[];
-  List<String> nameArray=[];
-  List<String> fnameArray=[];
-  List<String> imagesArray=[];
-  List<String> idsArray=[];
-
+  dynamic resultsArray = [];
+  List<String> nameArray = [];
+  List<String> fnameArray = [];
+  List<String> imagesArray = [];
+  List<String> idsArray = [];
 
   @override
   void initState() {
@@ -156,71 +158,67 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
         backgroundColor: Colors.teal[400],
       ),
       body: FutureBuilder<void>(
-
-        future: getCategories(),
-        builder: (context,snapshot) {
-          return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8
-                  // mainAxisSpacing: 4.0, // Space between rows
-                  // crossAxisSpacing: 4.0,
-              ),
-              itemCount: resultsArray.length,
-              itemBuilder: (context, index) {
-                // if(widget.pageNo=="2")
-                return Card(
-                    child: LayoutBuilder(
-                      builder: (BuildContext context, BoxConstraints constraints) {
-                      double gridTileWidth = constraints.maxWidth;
-                      double gridTileHeight = constraints.maxHeight;
-                      return GestureDetector(
-                        onTap: (){
-                          print("pageno");
-                          print(widget.pageNo);
-                          if(widget.pageNo>=3)
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ImportantSuppilesDetailsList(
-                                      productName: nameArray[index],
-                                      categoriesList: fnameArray,
-                                      productIndex: index,
-                                    )));
-                            else
+          future: getCategories(),
+          builder: (context, snapshot) {
+            return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, childAspectRatio: 0.8
+                    // mainAxisSpacing: 4.0, // Space between rows
+                    // crossAxisSpacing: 4.0,
+                    ),
+                itemCount: resultsArray.length,
+                itemBuilder: (context, index) {
+                  // if(widget.pageNo=="2")
+                  return Card(child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                    double gridTileWidth = constraints.maxWidth;
+                    double gridTileHeight = constraints.maxHeight;
+                    return GestureDetector(
+                      onTap: () {
+                        print("pageno");
+                        print(widget.pageNo);
+                        if (widget.pageNo >= 3)
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      CategoriesDetail(
-                                          fname: fnameArray[index],
-                                          id: idsArray[index],
-                                          name: nameArray[index],
-                                          api: "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
-                                          pageNo: (widget.pageNo)+1,
+                                      ImportantSuppilesDetailsList(
+                                        productName: nameArray[index],
+                                        categoriesList: fnameArray,
+                                        productIndex: index,
                                       )));
-                        },
-                        behavior: HitTestBehavior.deferToChild,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade200)
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                child: Container(
-                                  width: gridTileWidth,
-                                  height: gridTileHeight-60,
-                                  child: Image(
-                                    image: NetworkImage(
-                                        imagesArray?[
-                                        index] ??
-                                            "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                    fit: BoxFit.fill,
-                                  ),),
+                        else
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CategoriesDetail(
+                                        fname: fnameArray[index],
+                                        id: idsArray[index],
+                                        name: nameArray[index],
+                                        api:
+                                            "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=${FlutterTests.AK}&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
+                                        pageNo: (widget.pageNo) + 1,
+                                      )));
+                      },
+                      behavior: HitTestBehavior.deferToChild,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade200)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: Container(
+                                width: gridTileWidth,
+                                height: gridTileHeight - 60,
+                                child: Image(
+                                  image: NetworkImage(imagesArray?[index] ??
+                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                  fit: BoxFit.fill,
+                                ),
                               ),
+                            ),
                             Container(
                               height: 58,
                               width: gridTileWidth,
@@ -248,9 +246,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
     );
   }
 
-
-  Future<void> getCategories() async{
-    String path=widget.api;
+  Future<void> getCategories() async {
+    String path = widget.api;
     print("api=$path");
 
     http.Response response = await http.get(Uri.parse(path));
@@ -260,7 +257,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
       print("message=$msg");
     } else if (response.statusCode == 200) {
       print(widget.pageNo);
-      if(widget.pageNo==2)
+      if (widget.pageNo == 2)
         resultsArray = json.decode(response.body)['scats']['scat'];
       else
         resultsArray = json.decode(response.body)['mcats']['mcat'];
@@ -270,7 +267,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
       idsArray.clear();
       for (var i = 0; i < resultsArray.length; i++) {
         nameArray.add(resultsArray[i]['name']);
-        if(widget.pageNo==2) {
+        if (widget.pageNo == 2) {
           imagesArray.add(resultsArray[i]['auto-image']);
           fnameArray.add(resultsArray[i]['dir-fname']);
         } else {
