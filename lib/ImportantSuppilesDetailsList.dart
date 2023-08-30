@@ -25,13 +25,13 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
-  int productIndex;
-  List<String> categoriesList;
+  int? productIndex;
+  List<String>? categoriesList;
   ImportantSuppilesDetailsList(
       {Key? key,
       required this.productName,
-      required this.productIndex,
-      required this.categoriesList})
+      this.productIndex,
+      this.categoriesList})
       : super(key: key);
 }
 
@@ -112,9 +112,9 @@ class ImportantSuppilesDetailsListState
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-                  categoriesList: widget.categoriesList,
+                  categoriesList: widget.categoriesList ?? [],
                   isSellerType: isSellerType,
-                  productIndex: widget.productIndex,
+                  productIndex: widget.productIndex ?? 0,
                 ),
             opaque: false,
             fullscreenDialog: true));
@@ -132,7 +132,9 @@ class ImportantSuppilesDetailsListState
     var outputText = await Navigator.push(
         context,
         PageRouteBuilder(
-            pageBuilder: (_, __, ___) => VoiceToTextConverter(),
+            pageBuilder: (_, __, ___) => VoiceToTextConverter(
+                  fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                ),
             opaque: false,
             fullscreenDialog: true));
     if (outputText != null && outputText != "") {
@@ -144,8 +146,12 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
-    var outputText = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => SearchFieldController()));
+    var outputText = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SearchFieldController(
+                  fromScreen: SearchingFromScreen.impSuppliesList,
+                )));
     if (outputText != null && outputText != "") {
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
@@ -308,11 +314,11 @@ class ImportantSuppilesDetailsListState
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.arrow_back_ios),
+              color: Colors.white,
               onPressed: () {
                 Navigator.pop(context);
               },
-              color: Colors.black,
             ),
             Expanded(
               child: Padding(
@@ -605,6 +611,7 @@ class ImportantSuppilesDetailsListState
     items.length += 1;
     // itemCount++;
   }
+
 //
   @override
   // TODO: implement wantKeepAlive

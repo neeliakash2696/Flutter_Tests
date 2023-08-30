@@ -1,26 +1,32 @@
 // ignore_for_file: must_be_immutable, unrelated_type_equality_checks, use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:http/http.dart' as http;
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+enum SearchingFromScreen {
+  def,
+  impSuppliesList,
+  viewCategories,
+  categoriesDetail
+}
+
 class SearchFieldController extends StatefulWidget {
   @override
   SearchFieldControllerState createState() => SearchFieldControllerState();
-
-  SearchFieldController({
-    Key? key,
-  }) : super(key: key);
+  SearchingFromScreen fromScreen;
+  SearchFieldController({Key? key, required this.fromScreen}) : super(key: key);
 }
 
 class SearchFieldControllerState extends State<SearchFieldController> {
   TextEditingController searchBar = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   FocusNode focus = FocusNode();
-
   List<dynamic> dataArray = [];
+  String searchQuery = "";
 
   // View Did Load
   @override
@@ -42,11 +48,44 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     }
   }
 
+  proceedForSearch() {
+    switch (widget.fromScreen) {
+      case SearchingFromScreen.def:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: searchQuery,
+                    )));
+        break;
+      case SearchingFromScreen.impSuppliesList:
+        Navigator.pop(context, searchQuery);
+        break;
+      case SearchingFromScreen.viewCategories:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: searchQuery,
+                    )));
+      case SearchingFromScreen.categoriesDetail:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: searchQuery,
+                    )));
+    }
+  }
+
   getRecents(String query) async {
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl =
-          "https://mapi.indiamart.com//wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-rcnt:pos=6:cat=-2:mcat=-2&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=Chennai&APP_MODID=ANDROID&q=$query&modeId=android.search&APP_ACCURACY=0.0&prdsrc=1&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com//wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-rcnt:pos=6:cat=-2:mcat=-2&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=Chennai&APP_MODID=ANDROID&q=$query&modeId=android.search&APP_ACCURACY=0.0&prdsrc=1&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402" || code == "401") {
@@ -82,7 +121,6 @@ class SearchFieldControllerState extends State<SearchFieldController> {
           }
         }
         setState(() {});
-        print("dataArray" "$dataArray");
         EasyLoading.dismiss();
       }
     } catch (e) {
@@ -132,11 +170,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           autofocus: true,
                           onChanged: (searchingText) {
                             print(searchingText);
-                            getRecents(searchingText);
+                            searchQuery = searchingText;
+                            getRecents(searchQuery);
                           },
                           onEditingComplete: () {
                             print("Search Clicked");
                             closeKeyboard(context);
+                            proceedForSearch();
                           },
                           onTapOutside: (event) {
                             closeKeyboard(context);
@@ -197,7 +237,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 var inkWell = InkWell(
                   onTap: () {
                     closeKeyboard(context);
-                    Navigator.pop(context, dataArray[index]);
+                    searchQuery = dataArray[index];
+                    proceedForSearch();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

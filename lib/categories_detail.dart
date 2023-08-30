@@ -3,16 +3,21 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tests/SearchFieldController.dart';
+import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:http/http.dart' as http;
+
 
 import 'ImportantSuppilesDetailsList.dart';
 
 class CategoriesDetail extends StatefulWidget{
+
   @override
   State<CategoriesDetail> createState() => _CategoriesDetailState();
   String fname;
   String id;
   String name;
+
   String api;
   int pageNo;
   CategoriesDetail({required this.fname,required this.id, required this.name, required  this.api,required this.pageNo});
@@ -25,6 +30,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
   List<String> imagesArray=[];
   List<String> idsArray=[];
 
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +39,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home:Scaffold(
+    return MaterialApp(
+        home: Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
         title: Column(
@@ -42,20 +49,27 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
           children: [
             Padding(
               padding: const EdgeInsets.all(4.0),
-              child:  Row(
+              child: Row(
                 children: [
                   GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.arrow_back_ios, size: 25,color: Colors.black,)
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(child: Text(widget.name, style: TextStyle(fontSize: 18))),
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        size: 25,
+                        color: Colors.black,
+                      )),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Text(widget.name,
+                          style: const TextStyle(fontSize: 18))),
                 ],
               ),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,27 +85,50 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       children: [
                         Container(
                           child: IconButton(
-                            icon: const Icon(Icons.search,size: 30,),
-                            onPressed: () {
-                            },
+                            icon: const Icon(
+                              Icons.search,
+                              size: 30,
+                            ),
+                            onPressed: () {},
                             color: Colors.grey[600],
                           ),
                         ),
                         // SizedBox(width: 8),
                         Expanded(
                           child: TextField(
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchFieldController(
+                                            fromScreen: SearchingFromScreen
+                                                .categoriesDetail,
+                                          )));
+                            },
                             decoration: const InputDecoration(
-                              hintStyle: TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                              hintText: 'Search for Products & Services',
-                              alignLabelWithHint: true,
-                              border: InputBorder.none,
-                                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 8)
-                            ),
+                                hintStyle:
+                                    TextStyle(fontSize: 14, color: Colors.grey),
+                                hintText: 'Search for Products & Services',
+                                alignLabelWithHint: true,
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(0, 0, 0, 8)),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
+                            Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) =>
+                                        VoiceToTextConverter(
+                                          fromScreen: VoiceSearchFromScreen
+                                              .categoriesDetail,
+                                        ),
+                                    opaque: false,
+                                    fullscreenDialog: true));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -100,8 +137,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                               width: 30,
                               decoration: const BoxDecoration(
                                 image: DecorationImage(
-                                    image:
-                                    AssetImage("images/mic_icon_colored.png"),
+                                    image: AssetImage(
+                                        "images/mic_icon_colored.png"),
                                     fit: BoxFit.cover),
                               ),
                               alignment: Alignment.center,
@@ -119,6 +156,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
         backgroundColor: Colors.teal[400],
       ),
       body: FutureBuilder<void>(
+
         future: getCategories(),
         builder: (context,snapshot) {
           return GridView.builder(
@@ -188,32 +226,42 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                   width: gridTileWidth,
                                 decoration: BoxDecoration(
                                   color: Colors.teal
+
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    nameArray[index], textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        // fontWeight: FontWeight.bold,
-                                      color: Colors.white
-                                    ),),
+                              ),
+                            ),
+                            Container(
+                              height: 58,
+                              width: gridTileWidth,
+                              decoration:
+                                  const BoxDecoration(color: Colors.teal),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  nameArray[index],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      // fontWeight: FontWeight.bold,
+                                      color: Colors.white),
                                 ),
-                              )
-                            ],
-                          ),
+                              ),
+                            )
+                          ],
                         ),
-                      );}
-                    ));
-              });
-        }
-      ),
+                      ),
+                    );
+                  }));
+                });
+          }),
     ));
   }
+
 
   Future<void> getCategories() async{
     String path=widget.api;
     print("api=$path");
+
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
     if (code == "402") {
@@ -240,8 +288,6 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
         }
         idsArray.add(resultsArray[i]['id']);
       }
-      if(widget.pageNo==3)
-        print(imagesArray);
     }
   }
 }
