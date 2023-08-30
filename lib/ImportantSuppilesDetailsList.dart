@@ -160,7 +160,7 @@ class ImportantSuppilesDetailsListState
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzMwNTIxNCwiaWF0IjoxNjkzMjE4ODE0LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.hibJXMzWjrvaAUc63RXA-xLvLaqt2JbzYsInucWh6uo&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
 
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -202,7 +202,7 @@ class ImportantSuppilesDetailsListState
         }
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
-          imagesArray?.add(image ?? "");
+          imagesArray?.add(image);
 
           var title = resultsArray[i]['fields']['title'];
           titlesArray?.add(title ?? "NA");
@@ -464,18 +464,38 @@ class ImportantSuppilesDetailsListState
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.all(10),
-                                height: 150,
-                                width: 100,
-                                alignment: Alignment.topCenter,
-                                child: Image(
-                                  image: CachedNetworkImageProvider(imagesArray?[
-                                          index] ??
-                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                  fit: BoxFit.fill,
+                              if (imagesArray?[index] == "") ...[
+                                Container(
+                                    margin: const EdgeInsets.all(10),
+                                    height: 150,
+                                    width: 100,
+                                    color: Colors.grey.shade200,
+                                    alignment: Alignment.topCenter,
+                                    child: const Center(
+                                      child: Text(
+                                        "No Image Available",
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 103, 97, 97),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w900),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )),
+                              ] else ...[
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  height: 150,
+                                  width: 100,
+                                  alignment: Alignment.topCenter,
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(imagesArray?[
+                                            index] ??
+                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                              ),
+                              ],
                               Flexible(
                                 child: Description(
                                     companyName: companyNameArray?[index] ?? "",
@@ -492,15 +512,35 @@ class ImportantSuppilesDetailsListState
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.all(10),
-                                alignment: Alignment.topCenter,
-                                child: Image(
-                                  image: CachedNetworkImageProvider(imagesArray?[
-                                          index] ??
-                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                              if (imagesArray?[index] == "") ...[
+                                Container(
+                                  height: 150,
+                                  color: Colors.grey.shade200,
+                                  margin: const EdgeInsets.all(10),
+                                  alignment: Alignment.topCenter,
+                                  child: const Center(
+                                    child: Text(
+                                      "No Image Available",
+                                      style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 103, 97, 97),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ] else ...[
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  alignment: Alignment.topCenter,
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(imagesArray?[
+                                            index] ??
+                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                  ),
+                                ),
+                              ],
                               Padding(
                                 padding: const EdgeInsets.only(left: 20),
                                 child: Description(
