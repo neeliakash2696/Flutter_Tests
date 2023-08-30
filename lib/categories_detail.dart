@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'ImportantSuppilesDetailsList.dart';
+
 class CategoriesDetail extends StatefulWidget{
   @override
   State<CategoriesDetail> createState() => _CategoriesDetailState();
@@ -136,6 +138,18 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       double gridTileHeight = constraints.maxHeight;
                       return GestureDetector(
                         onTap: (){
+                          print("pageno");
+                          print(widget.pageNo);
+                          if(widget.pageNo>=3)
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ImportantSuppilesDetailsList(
+                                      productName: nameArray[index],
+                                      categoriesList: fnameArray,
+                                      productIndex: index,
+                                    )));
+                            else
                           Navigator.push(
                               context,
                               MaterialPageRoute(
