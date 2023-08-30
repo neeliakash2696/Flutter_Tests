@@ -572,9 +572,11 @@ class ImportantSuppilesDetailsListState
                   } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(
                         productName: widget.productName, img: pbrimage);
-                  } else if (titlesArray?[index] == "ADEMPTY") {
-                    return AdClass();
-                  } else {
+                  }
+                  // else if (titlesArray?[index] == "ADEMPTY") {
+                  //   return AdClass();
+                  // }
+                  else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -603,7 +605,7 @@ class ImportantSuppilesDetailsListState
     items.length += 1;
     // itemCount++;
   }
-
+//
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
