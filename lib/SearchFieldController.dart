@@ -46,7 +46,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   proceedForSearch() {
     switch (widget.fromScreen) {
       case FromScreen.def:
-        Navigator.pop(context, searchQuery);
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                      productName: searchQuery,
+                    )));
         break;
       case FromScreen.impSuppliesList:
         Navigator.pop(context, searchQuery);
