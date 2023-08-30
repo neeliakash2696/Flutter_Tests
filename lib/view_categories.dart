@@ -149,10 +149,15 @@ class _ViewCategoriesState extends State<ViewCategories> {
                               builder: (context) => CategoriesDetail(
                                   fname: fnameArray[index],
                                   id: idsArray[index],
-                                  name: nameArray[index])));
-                    },
-                    child: GridTile(
-                        child: Container(
+
+                                  name: nameArray[index],
+                                  api: "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${idsArray[index]}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
+                                  pageNo: 2,
+                              )));
+                },
+                child: GridTile(
+                    child: Container(
+
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade200)),
                       child: Column(
@@ -191,8 +196,10 @@ class _ViewCategoriesState extends State<ViewCategories> {
     ));
   }
 
-  Future<void> getCategories() async {
-    String path =
+
+  Future<void> getCategories() async{
+    String path=
+
         "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzQwNTg5MCwiaWF0IjoxNjkzMzE5NDkwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.732rXOiilzyC6vA3NTcJHg5CA_KI6f6lkdk9-SReF2k&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
@@ -211,7 +218,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
         fnameArray.add(resultsArray[i]['fname']);
         idsArray.add(resultsArray[i]['id']);
       }
-      print(imagesArray);
+
     }
   }
 }
