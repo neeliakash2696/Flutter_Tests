@@ -20,7 +20,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   SpeechToText speechToText = SpeechToText();
   bool speechEnabled = false;
   bool recording = false;
-  String lastWords = '';
+  String voiceConvertedText = '';
   late Timer timer;
   late int start;
 
@@ -34,8 +34,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
   @override
   void dispose() {
     timer.cancel();
-    recording = false;
-    speechEnabled = false;
+    _stopListening();
     super.dispose();
   }
 
@@ -46,8 +45,9 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
 
   void _startListening() async {
     startTimer();
+    voiceConvertedText = "";
     await speechToText.listen(onResult: _onSpeechResult);
-    lastWords = "";
+    voiceConvertedText = "";
     print("Started Lsitening");
     info = "Listening...";
     recording = true;
@@ -60,13 +60,12 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
     info = "Tap on the Mic to speak again";
     recording = false;
     speechEnabled = false;
-    setState(() {});
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
-      lastWords = result.recognizedWords;
-      print(lastWords);
+      voiceConvertedText = result.recognizedWords;
+      print(voiceConvertedText);
     });
   }
 
@@ -78,14 +77,15 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
       (Timer timer) {
         if (start == 0) {
           timer.cancel();
-          if (lastWords == "") {
+          if (voiceConvertedText == "") {
             _stopListening();
             setState(() {});
           } else {
             timer.cancel();
             recording = false;
             speechEnabled = false;
-            Navigator.pop(context, lastWords);
+            _stopListening();
+            Navigator.pop(context, voiceConvertedText);
           }
         } else {
           setState(() {
@@ -154,7 +154,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                           )),
                 Container(
                   color: Colors.white,
-                  height: 153,
+                  height: 156,
                   width: 300,
                   child: Center(
                     child: Column(
@@ -162,7 +162,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "$lastWords",
+                          "$voiceConvertedText",
                           style: const TextStyle(
                             color: Colors.teal,
                             fontSize: 16,

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
@@ -72,7 +73,6 @@ class ImportantSuppilesDetailsListState
     super.initState();
     encodedQueryParam = encodeString(widget.productName);
     print(encodedQueryParam);
-
     currentPage = 1;
     start = 0;
     end = 9;
@@ -123,7 +123,7 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(selectedChip[0]);
       widget.productName = selectedChip[0];
       widget.productIndex = selectedChip[1];
-      items.length=0;
+      items.length = 0;
       getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
   }
@@ -138,9 +138,18 @@ class ImportantSuppilesDetailsListState
     if (outputText != null && outputText != "") {
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
+      items.length = 0;
+      getMoreDetails(encodedQueryParam, 0, 9, 1);
+    }
+  }
 
-      items.length=0;
-
+  showSearchController() async {
+    var outputText = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SearchFieldController()));
+    if (outputText != null && outputText != "") {
+      encodedQueryParam = encodeString(outputText);
+      widget.productName = outputText;
+      items.length = 0;
       getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
   }
@@ -151,7 +160,7 @@ class ImportantSuppilesDetailsListState
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzM4ODM1MSwiaWF0IjoxNjkzMzAxOTUxLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOS0wOC0yMDIzIn0.phvTU5OoFbvkbmU9UhoqP-2RjaRQYys9dkJZGxC7ubY&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
 
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -193,7 +202,7 @@ class ImportantSuppilesDetailsListState
         }
         for (var i = 0; i < resultsArray.length; i++) {
           var image = resultsArray[i]['fields']['large_image'];
-          imagesArray?.add(image ?? "");
+          imagesArray?.add(image);
 
           var title = resultsArray[i]['fields']['title'];
           titlesArray?.add(title ?? "NA");
@@ -227,13 +236,12 @@ class ImportantSuppilesDetailsListState
         });
 
         if (resultsArray.length > 0) if (currentPage > 1) {
-          // if(!kIsWeb)
-          // addBannerOrAd(end, "ADEMPTY");
+          if (!kIsWeb) addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
-          if(!kIsWeb) {
-            // addBannerOrAd(2, "ADEMPTY");
-            // addBannerOrAd(7, "ADEMPTY");
+          if (!kIsWeb) {
+            addBannerOrAd(2, "ADEMPTY");
+            addBannerOrAd(7, "ADEMPTY");
           }
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
@@ -284,132 +292,6 @@ class ImportantSuppilesDetailsListState
     }
   }
 
-
-  // getProductDetails(String category) async {
-  //   EasyLoading.show(status: 'Loading...');
-  //   try {
-  //     String pathUrl =
-  //
-  //         "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=0&options_end=9&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5MzI4MzA0MiwiaWF0IjoxNjkzMTk2NjQyLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIyOC0wOC0yMDIzIn0.UM1QLnDek5CAN21h9EDnH_fbqEJyl8ys-Ru_qD4-i7o&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-  //     http.Response response = await http.get(Uri.parse(pathUrl));
-  //
-  //     print(pathUrl);
-  //     var code = json.decode(response.body)['CODE'];
-  //     if (code == "402") {
-  //       var msg = json.decode(response.body)['MESSAGE'];
-  //       EasyLoading.dismiss();
-  //       Flushbar(
-  //         title: code,
-  //         message: msg,
-  //         flushbarStyle: FlushbarStyle.FLOATING,
-  //         isDismissible: true,
-  //         duration: const Duration(seconds: 4),
-  //         backgroundColor: Colors.red,
-  //         margin: const EdgeInsets.all(8),
-  //         borderRadius: BorderRadius.circular(8),
-  //         boxShadows: const [
-  //           BoxShadow(
-  //             offset: Offset(0.0, 2.0),
-  //             blurRadius: 3.0,
-  //           )
-  //         ],
-  //       ).show(context);
-  //     } else if (response.statusCode == 200) {
-  //
-  //       start=0;
-  //       end=9;
-  //       dynamic live_mcats=json.decode(response.body)['guess']['guess']['live_mcats'];
-  //
-  //       pbrimage = live_mcats[0]['smallimg'];
-  //
-  //       // pbrimage=this.pbrimage;
-  //       print("pbrimage=$pbrimage");
-  //       totalItemCount =
-  //           json.decode(response.body)['total_results_without_repetition'];
-  //       resultsArray = json.decode(response.body)['results'];
-  //       // itemCount = resultsArray.length;
-  //       imagesArray?.clear();
-  //       titlesArray?.clear();
-  //       itemPricesArray?.clear();
-  //       companyNameArray?.clear();
-  //       locationsArray?.clear();
-  //       localityArray?.clear();
-  //       for (var i = 0; i < resultsArray.length; i++) {
-  //         var image = resultsArray[i]['fields']['large_image'];
-  //         imagesArray?.add(image ?? "");
-  //
-  //         var title = resultsArray[i]['fields']['title'];
-  //         titlesArray?.add(title ?? "NA");
-  //
-  //         var itemPrices = resultsArray[i]['fields']['itemprice'];
-  //         var units = resultsArray[i]['fields']['moq_type'];
-  //         if (itemPrices == "" || itemPrices == null) {
-  //           itemPricesArray?.add("Prices on demand");
-  //         } else {
-  //           if (units == "" || units == null) {
-  //             units = "units";
-  //           }
-  //           itemPricesArray?.add((itemPrices) + "/ " + (units));
-  //         }
-  //         var company = resultsArray[i]['fields']['tscode'];
-  //         companyNameArray?.add(company ?? "NA");
-  //
-  //         var city = resultsArray[i]['fields']['city'] ?? "";
-  //         locationsArray?.add(city);
-  //
-  //         var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-  //         localityArray?.add(locality);
-  //       }
-  //       print("list size=${titlesArray?[9]}");
-  //       setState(() {
-  //         items = resultsArray;
-  //       });
-  //       await addBannerOrAd(2, "ADEMPTY");
-  //       await addBannerOrAd(7, "ADEMPTY");
-  //       await addBannerOrAd(5, "isq_banner");
-  //       await addBannerOrAd(10, "PBRBANNER");
-  //       EasyLoading.dismiss();
-  //       Flushbar(
-  //         title: "DONE",
-  //         message: "API HITTING DONE",
-  //         flushbarStyle: FlushbarStyle.FLOATING,
-  //         isDismissible: true,
-  //         duration: const Duration(seconds: 1),
-  //         backgroundColor: Colors.green,
-  //         margin: const EdgeInsets.all(8),
-  //         borderRadius: BorderRadius.circular(8),
-  //         boxShadows: const [
-  //           BoxShadow(
-  //             offset: Offset(0.0, 2.0),
-  //             blurRadius: 3.0,
-  //           )
-  //         ],
-  //       ).show(context);
-  //     }
-  //   } catch (e) {
-  //     EasyLoading.dismiss();
-  //     Flushbar(
-  //       title: "Error",
-  //       message: e.toString(),
-  //       flushbarStyle: FlushbarStyle.FLOATING,
-  //       isDismissible: true,
-  //       duration: const Duration(seconds: 4),
-  //       backgroundColor: Colors.red,
-  //       margin: const EdgeInsets.all(8),
-  //       borderRadius: BorderRadius.circular(8),
-  //       boxShadows: const [
-  //         BoxShadow(
-  //           offset: Offset(0.0, 2.0),
-  //           blurRadius: 3.0,
-  //         )
-  //       ],
-  //     ).show(context);
-  //     // debugPrint(e.toString());
-  //   }
-  // }
-
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
     if (items.length - 1 < 0) {
@@ -445,6 +327,9 @@ class ImportantSuppilesDetailsListState
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
+                          onTap: () {
+                            showSearchController();
+                          },
                           controller: TextEditingController(
                               text: "${widget.productName}"),
                           decoration: const InputDecoration(
@@ -579,27 +464,46 @@ class ImportantSuppilesDetailsListState
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.all(10),
-                                height: 150,
-                                width: 100,
-                                alignment: Alignment.topCenter,
-                                child: Image(
-                                  image: CachedNetworkImageProvider(imagesArray?[
-                                          index] ??
-                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                  fit: BoxFit.fill,
+                              if (imagesArray?[index] == "") ...[
+                                Container(
+                                    margin: const EdgeInsets.all(10),
+                                    height: 150,
+                                    width: 100,
+                                    color: Colors.grey.shade200,
+                                    alignment: Alignment.topCenter,
+                                    child: const Center(
+                                      child: Text(
+                                        "No Image Available",
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 103, 97, 97),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w900),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )),
+                              ] else ...[
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  height: 150,
+                                  width: 100,
+                                  alignment: Alignment.topCenter,
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(imagesArray?[
+                                            index] ??
+                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                              ),
+                              ],
                               Flexible(
                                 child: Description(
-                                  companyName: companyNameArray?[index] ?? "",
-                                  itemPrice: itemPricesArray?[index] ?? "NA",
-                                  locality: localityArray?[index] ?? "NA",
-                                  location: locationsArray?[index] ?? "NA",
-                                  title: titlesArray?[index] ?? "NA",
-                                  phone:phoneArray?[index]??"NA"
-                                ),
+                                    companyName: companyNameArray?[index] ?? "",
+                                    itemPrice: itemPricesArray?[index] ?? "NA",
+                                    locality: localityArray?[index] ?? "NA",
+                                    location: locationsArray?[index] ?? "NA",
+                                    title: titlesArray?[index] ?? "NA",
+                                    phone: phoneArray?[index] ?? "NA"),
                               ),
                             ],
                           ),
@@ -608,15 +512,35 @@ class ImportantSuppilesDetailsListState
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.all(10),
-                                alignment: Alignment.topCenter,
-                                child: Image(
-                                  image: CachedNetworkImageProvider(imagesArray?[
-                                          index] ??
-                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                              if (imagesArray?[index] == "") ...[
+                                Container(
+                                  height: 150,
+                                  color: Colors.grey.shade200,
+                                  margin: const EdgeInsets.all(10),
+                                  alignment: Alignment.topCenter,
+                                  child: const Center(
+                                    child: Text(
+                                      "No Image Available",
+                                      style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 103, 97, 97),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ] else ...[
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  alignment: Alignment.topCenter,
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(imagesArray?[
+                                            index] ??
+                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                  ),
+                                ),
+                              ],
                               Padding(
                                 padding: const EdgeInsets.only(left: 20),
                                 child: Description(
@@ -634,7 +558,10 @@ class ImportantSuppilesDetailsListState
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [CustomButton(phoneNo:phoneArray![index]), CustomButton2()],
+                          children: [
+                            CustomButton(phoneNo: phoneArray![index]),
+                            CustomButton2()
+                          ],
                         )
                       ],
                     ),
@@ -691,49 +618,52 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: InkWell(
-        onTap:(){print("Call Now pressed}");
-        _makePhoneCall('$phoneNo');},
-        child:Container(
-        width: MediaQuery.of(context).size.width / 2 - 25,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.teal), // Rectangle border
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(25), // Top-left circular border
-            bottomLeft: Radius.circular(25), // Bottom-left circular border
-          ),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 30,
-                width: 30,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("images/call.png"), fit: BoxFit.cover),
-                ),
-                alignment: Alignment.center,
+        padding: const EdgeInsets.all(10.0),
+        child: InkWell(
+          onTap: () {
+            print("Call Now pressed}");
+            _makePhoneCall('$phoneNo');
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width / 2 - 25,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.teal), // Rectangle border
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25), // Top-left circular border
+                bottomLeft: Radius.circular(25), // Bottom-left circular border
               ),
-              const Text(
-                'Call Now',
-                style:
-                    TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+            ),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 30,
+                    width: 30,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("images/call.png"),
+                          fit: BoxFit.cover),
+                    ),
+                    alignment: Alignment.center,
+                  ),
+                  const Text(
+                    'Call Now',
+                    style: TextStyle(
+                        color: Colors.teal, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-      )
-    );
+        ));
   }
+
   Future<void> _makePhoneCall(String phoneNumber) async {
     final call = "tel:+91 $phoneNumber";
-    if(!kIsWeb) {
+    if (!kIsWeb) {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
         if (await canLaunch(call)) {
@@ -741,22 +671,20 @@ class CustomButton extends StatelessWidget {
         } else {
           throw 'Could not launch $call';
         }
-      }
-      else{
+      } else {
         if (await canLaunch(call)) {
           await launch(call);
         } else {
           throw 'Could not launch $call';
         }
       }
-    } else{
+    } else {
       if (await canLaunch(call)) {
         await launch(call);
       } else {
         throw 'Could not launch $call';
       }
     }
-      
   }
 }
 
