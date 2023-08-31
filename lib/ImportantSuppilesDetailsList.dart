@@ -12,6 +12,7 @@ import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
+import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,6 +46,8 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
+  List<String> sellerTypeModelList = ["All"];
+  List<dynamic> sellerTypeArray = [];
   var currentLayout = ScreenLayout.details;
   final ScrollController _scrollController = ScrollController();
   bool _isAtEnd = false;
@@ -114,6 +117,7 @@ class ImportantSuppilesDetailsListState
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: related,
+                  sellerTypeItems:sellerTypeModelList ,
                   isSellerType: isSellerType,
                   productIndex: 0,
                 ),
@@ -192,13 +196,22 @@ class ImportantSuppilesDetailsListState
         ).show(context);
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['results'];
+        sellerTypeArray= json.decode(response.body)['facet_fields']['biztype'];
+        List<String> stringsOnly = [];
+        for (var item in sellerTypeArray) {
+          if (item is String) {
+            stringsOnly.add(item);
+            if(SellerTypeData.getNameOfSellerType(item)!="null")
+            sellerTypeModelList.add(SellerTypeData.getNameOfSellerType(item));
+          }
+        }
         if (currentPage == 1) {
           dynamic live_mcats =
               json.decode(response.body)['guess']['guess']['live_mcats'];
           pbrimage = live_mcats[0]['smallimg'];
           for(var i=0;i<live_mcats.length;i++)
             related.add(live_mcats[i]['name']);
-          print("pbrimage=$related");
+          print("pbrimage=$sellerTypeModelList");
           totalItemCount =
               json.decode(response.body)['total_results_without_repetition'];
           imagesArray?.clear();

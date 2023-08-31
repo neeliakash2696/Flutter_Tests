@@ -6,11 +6,13 @@ class Filters extends StatefulWidget {
   @override
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
+  List<String> sellerTypeItems;
   bool isSellerType;
   int productIndex;
   Filters(
       {Key? key,
       required this.categoriesList,
+      required this.sellerTypeItems,
       required this.isSellerType,
       required this.productIndex})
       : super(key: key);
@@ -18,13 +20,6 @@ class Filters extends StatefulWidget {
 
 class FiltersState extends State<Filters> {
   int? _value = 0;
-  var sellerTypeItems = [
-    'All',
-    'Manufacturer',
-    'Wholesaler',
-    'Retailer',
-    'Exporter',
-  ];
 
 // View Did Load
   @override
@@ -69,14 +64,14 @@ class FiltersState extends State<Filters> {
                             spacing: 15.0,
                             children: List<Widget>.generate(
                               widget.isSellerType
-                                  ? sellerTypeItems.length
+                                  ? widget.sellerTypeItems.length
                                   : widget.categoriesList.length,
                               (int index) {
                                 return ChoiceChip(
                                   selectedColor: Colors.teal,
                                   label: Text(
                                     widget.isSellerType
-                                        ? sellerTypeItems[index]
+                                        ? widget.sellerTypeItems[index]
                                         : widget.categoriesList[index],
                                     style: const TextStyle(
                                       fontSize: 16,
@@ -90,7 +85,7 @@ class FiltersState extends State<Filters> {
                                         Navigator.pop(context);
                                       } else {
                                         var selectedChip = widget.isSellerType
-                                            ? sellerTypeItems[index]
+                                            ? widget.sellerTypeItems[index]
                                             : widget.categoriesList[index];
                                         _value = index;
                                         var selectedChipDetails = [
