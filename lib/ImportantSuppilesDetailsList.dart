@@ -28,9 +28,14 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
+  int productIndex;
+  String biztype;
   ImportantSuppilesDetailsList(
       {Key? key,
-      required this.productName,})
+      required this.productName,
+      required this.productIndex,
+      required this.biztype
+      })
       : super(key: key);
 }
 
@@ -46,7 +51,7 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
-  List<String> sellerTypeModelList = ["All"];
+  List<String> sellerTypeModelList = [];
   List<dynamic> sellerTypeArray = [];
   var currentLayout = ScreenLayout.details;
   final ScrollController _scrollController = ScrollController();
@@ -79,7 +84,7 @@ class ImportantSuppilesDetailsListState
     currentPage = 1;
     start = 0;
     end = 9;
-    getMoreDetails(encodedQueryParam, 0, 9, currentPage);
+    getMoreDetails(encodedQueryParam, widget.biztype,0, 9, currentPage,true);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -93,7 +98,7 @@ class ImportantSuppilesDetailsListState
           if (end > totalItemCount) end = totalItemCount;
           if (stop == false) {
             currentPage += 1;
-            getMoreDetails(encodedQueryParam, start, end, currentPage);
+            getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false);
           } // Mark that you've reached the end
         });
       } else {
@@ -110,26 +115,29 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool isSellerType) async {
-    print("related=$related");
+  openFilters(bool isSellerType,List<String> list) async {
     var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-                  categoriesList: related,
-                  sellerTypeItems:sellerTypeModelList ,
+                  categoriesList: list,
                   isSellerType: isSellerType,
-                  productIndex: 0,
+                  productIndex: widget.productIndex,
                 ),
             opaque: false,
             fullscreenDialog: true));
 
     if (selectedChip != null) {
-      encodedQueryParam = encodeString(selectedChip[0]);
-      widget.productName = selectedChip[0];
-      // widget.productIndex = selectedChip[1];
+      encodedQueryParam =encodeString(widget.productName);
+      print("issellertype=$isSellerType biztype=${selectedChip[0]}");
+      if(!isSellerType) {
+        encodedQueryParam = encodeString(selectedChip[0]);
+        widget.productName = selectedChip[0];
+      } else
+        widget.biztype=selectedChip[0];
+      widget.productIndex = selectedChip[1];
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false);
     }
   }
 
@@ -146,7 +154,7 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true);
     }
   }
 
@@ -161,17 +169,21 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true);
     }
   }
 
-  getMoreDetails(String category, int start, int end, int currentPage) async {
+  getMoreDetails(String category, String biztype,int start, int end, int currentPage, bool shouldUpdateSellerTypeList) async {
     EasyLoading.show(status: 'Loading...');
     print(
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
+      String biztype_data="";
+      if(SellerTypeData.getValueFromName(biztype)!="")
+        biztype_data=SellerTypeData.getValueFromName(biztype);
+      print("biztype_data=$biztype_data");
       String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -198,18 +210,24 @@ class ImportantSuppilesDetailsListState
         resultsArray = json.decode(response.body)['results'];
         sellerTypeArray= json.decode(response.body)['facet_fields']['biztype'];
         List<String> stringsOnly = [];
-        for (var item in sellerTypeArray) {
-          if (item is String) {
-            stringsOnly.add(item);
-            if(SellerTypeData.getNameOfSellerType(item)!="null")
-            sellerTypeModelList.add(SellerTypeData.getNameOfSellerType(item));
+        if(shouldUpdateSellerTypeList) {
+          sellerTypeModelList.clear();
+          sellerTypeModelList.add("All");
+          for (var item in sellerTypeArray) {
+            if (item is String) {
+              stringsOnly.add(item);
+              if (SellerTypeData.getNameOfSellerType(item) != "")
+                sellerTypeModelList.add(
+                    SellerTypeData.getNameOfSellerType(item));
+            }
           }
         }
         if (currentPage == 1) {
           dynamic live_mcats =
               json.decode(response.body)['guess']['guess']['live_mcats'];
           pbrimage = live_mcats[0]['smallimg'];
-          for(var i=0;i<live_mcats.length;i++)
+          related.clear();
+          for(var i=1;i<live_mcats.length;i++)
             related.add(live_mcats[i]['name']);
           print("pbrimage=$sellerTypeModelList");
           totalItemCount =
@@ -396,7 +414,7 @@ class ImportantSuppilesDetailsListState
               children: [
                 TextButton(
                   onPressed: () {
-                    openFilters(true);
+                    openFilters(true,sellerTypeModelList);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -418,7 +436,7 @@ class ImportantSuppilesDetailsListState
                 const Divider(),
                 TextButton(
                   onPressed: () {
-                    openFilters(false);
+                    openFilters(false,related);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

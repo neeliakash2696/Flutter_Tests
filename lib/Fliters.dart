@@ -6,13 +6,11 @@ class Filters extends StatefulWidget {
   @override
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
-  List<String> sellerTypeItems;
   bool isSellerType;
   int productIndex;
   Filters(
       {Key? key,
       required this.categoriesList,
-      required this.sellerTypeItems,
       required this.isSellerType,
       required this.productIndex})
       : super(key: key);
@@ -25,7 +23,7 @@ class FiltersState extends State<Filters> {
   @override
   void initState() {
     super.initState();
-    if (!widget.isSellerType) {
+    if (widget.isSellerType) {
       setState(() {
         _value = widget.productIndex;
       });
@@ -63,16 +61,11 @@ class FiltersState extends State<Filters> {
                           child: Wrap(
                             spacing: 15.0,
                             children: List<Widget>.generate(
-                              widget.isSellerType
-                                  ? widget.sellerTypeItems.length
-                                  : widget.categoriesList.length,
+                                  widget.categoriesList.length,
                               (int index) {
                                 return ChoiceChip(
-                                  selectedColor: Colors.teal,
-                                  label: Text(
-                                    widget.isSellerType
-                                        ? widget.sellerTypeItems[index]
-                                        : widget.categoriesList[index],
+                                  selectedColor: (widget.isSellerType)?Colors.teal:Colors.grey[350],
+                                  label: Text(widget.categoriesList[index],
                                     style: const TextStyle(
                                       fontSize: 16,
                                     ),
@@ -80,13 +73,11 @@ class FiltersState extends State<Filters> {
                                   selected: _value == index,
                                   onSelected: (bool selected) {
                                     setState(() {
-                                      if (_value == index) {
+                                      if (widget.isSellerType && _value == index) {
                                         _value = index;
                                         Navigator.pop(context);
                                       } else {
-                                        var selectedChip = widget.isSellerType
-                                            ? widget.sellerTypeItems[index]
-                                            : widget.categoriesList[index];
+                                        var selectedChip = widget.categoriesList[index];
                                         _value = index;
                                         var selectedChipDetails = [
                                           selectedChip,

@@ -31,6 +31,15 @@ class SellerTypeData {
         }
       }
     }
-    return "null";
+    return "";
+  }
+
+  static String getValueFromName(String name) {
+    for (var entry in _data.entries) {
+      if (name.toLowerCase() == entry.value.name.toLowerCase()) {
+        return entry.value.id;
+      }
+    }
+    return "";
   }
 }
