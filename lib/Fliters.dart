@@ -58,41 +58,45 @@ class FiltersState extends State<Filters> {
                           width: MediaQuery.of(context).size.width,
                           padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
                           color: Colors.white,
-                          child: Wrap(
-                            spacing: 15.0,
-                            children: List<Widget>.generate(
-                                  widget.categoriesList.length,
-                              (int index) {
-                                return ChoiceChip(
-                                  selectedColor: (widget.isSellerType)?Colors.teal:Colors.grey[350],
-                                  label: Text(widget.categoriesList[index],
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Wrap(
+                              spacing: 15.0,
+                              runSpacing: 10.0,
+                              children: List<Widget>.generate(
+                                    widget.categoriesList.length,
+                                (int index) {
+                                  return ChoiceChip(
+                                    selectedColor: (widget.isSellerType)?Colors.teal:Colors.grey[350],
+                                    label: Text(widget.categoriesList[index],
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                  selected: _value == index,
-                                  onSelected: (bool selected) {
-                                    setState(() {
-                                      if (widget.isSellerType && _value == index) {
-                                        _value = index;
-                                        Navigator.pop(context);
-                                      } else {
-                                        var selectedChip = widget.categoriesList[index];
-                                        _value = index;
-                                        var selectedChipDetails = [
-                                          selectedChip,
-                                          index,
-                                        ];
-                                        print(
-                                            "selectedChipDetails $selectedChipDetails");
-                                        Navigator.pop(
-                                            context, selectedChipDetails);
-                                      }
-                                    });
-                                  },
-                                );
-                              },
-                            ).toList(),
+                                    selected: _value == index,
+                                    onSelected: (bool selected) {
+                                      setState(() {
+                                        if (widget.isSellerType && _value == index) {
+                                          _value = index;
+                                          Navigator.pop(context);
+                                        } else {
+                                          var selectedChip = widget.categoriesList[index];
+                                          _value = index;
+                                          var selectedChipDetails = [
+                                            selectedChip,
+                                            index,
+                                          ];
+                                          print(
+                                              "selectedChipDetails $selectedChipDetails");
+                                          Navigator.pop(
+                                              context, selectedChipDetails);
+                                        }
+                                      });
+                                    },
+                                  );
+                                },
+                              ).toList(),
+                            ),
                           ),
                         )
                       ],
