@@ -183,9 +183,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
-                                        productName: nameArray[index],
-                                        categoriesList: fnameArray,
-                                        productIndex: index,
+                                        productName: nameArray[index]
                                       )));
                         else
                           Navigator.push(

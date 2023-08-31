@@ -27,13 +27,9 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
-  int? productIndex;
-  List<String>? categoriesList;
   ImportantSuppilesDetailsList(
       {Key? key,
-      required this.productName,
-      this.productIndex,
-      this.categoriesList})
+      required this.productName,})
       : super(key: key);
 }
 
@@ -119,7 +115,7 @@ class ImportantSuppilesDetailsListState
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: related,
                   isSellerType: isSellerType,
-                  productIndex: widget.productIndex ?? 0,
+                  productIndex: 0,
                 ),
             opaque: false,
             fullscreenDialog: true));
@@ -127,7 +123,7 @@ class ImportantSuppilesDetailsListState
     if (selectedChip != null) {
       encodedQueryParam = encodeString(selectedChip[0]);
       widget.productName = selectedChip[0];
-      widget.productIndex = selectedChip[1];
+      // widget.productIndex = selectedChip[1];
       items.length = 0;
       getMoreDetails(encodedQueryParam, 0, 9, 1);
     }
