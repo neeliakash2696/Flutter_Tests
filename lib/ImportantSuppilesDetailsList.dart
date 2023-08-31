@@ -69,6 +69,8 @@ class ImportantSuppilesDetailsListState
 
   int currentPage = 0;
 
+  List<String> related=[];
+
   // View Did Load
   @override
   void initState() {
@@ -110,11 +112,12 @@ class ImportantSuppilesDetailsListState
   }
 
   openFilters(bool isSellerType) async {
+    print("related=$related");
     var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-                  categoriesList: widget.categoriesList ?? [],
+                  categoriesList: related,
                   isSellerType: isSellerType,
                   productIndex: widget.productIndex ?? 0,
                 ),
@@ -169,7 +172,7 @@ class ImportantSuppilesDetailsListState
     try {
       String pathUrl =
           "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-
+      print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -197,7 +200,9 @@ class ImportantSuppilesDetailsListState
           dynamic live_mcats =
               json.decode(response.body)['guess']['guess']['live_mcats'];
           pbrimage = live_mcats[0]['smallimg'];
-          print("pbrimage=$pbrimage");
+          for(var i=0;i<live_mcats.length;i++)
+            related.add(live_mcats[i]['name']);
+          print("pbrimage=$related");
           totalItemCount =
               json.decode(response.body)['total_results_without_repetition'];
           imagesArray?.clear();
