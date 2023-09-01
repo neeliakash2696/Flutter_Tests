@@ -12,6 +12,7 @@ import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
+import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,13 +28,15 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
-  int? productIndex;
-  List<String>? categoriesList;
+  int productIndex;
+  String biztype;
+  String screen;
   ImportantSuppilesDetailsList(
       {Key? key,
       required this.productName,
-      this.productIndex,
-      this.categoriesList})
+      required this.productIndex,
+      required this.biztype, required this.screen
+      })
       : super(key: key);
 }
 
@@ -49,6 +52,9 @@ class ImportantSuppilesDetailsListState
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
+  List<String> sellerTypeModelList = [];
+  List<dynamic> sellerTypeArray = [];
+  List<dynamic> bizWiseArray = [];
   var currentLayout = ScreenLayout.details;
   final ScrollController _scrollController = ScrollController();
   bool _isAtEnd = false;
@@ -69,6 +75,9 @@ class ImportantSuppilesDetailsListState
 
   int currentPage = 0;
 
+  List<String> related=[];
+  List<String> relatedfname=[];
+
   // View Did Load
   @override
   void initState() {
@@ -78,7 +87,7 @@ class ImportantSuppilesDetailsListState
     currentPage = 1;
     start = 0;
     end = 9;
-    getMoreDetails(encodedQueryParam, 0, 9, currentPage);
+    getMoreDetails(encodedQueryParam, widget.biztype,0, 9, currentPage,true,widget.screen);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -92,7 +101,7 @@ class ImportantSuppilesDetailsListState
           if (end > totalItemCount) end = totalItemCount;
           if (stop == false) {
             currentPage += 1;
-            getMoreDetails(encodedQueryParam, start, end, currentPage);
+            getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false,widget.screen);
           } // Mark that you've reached the end
         });
       } else {
@@ -109,24 +118,33 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool isSellerType) async {
+  openFilters(bool isSellerType,List<String> list,List<String> list1) async {
     var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-                  categoriesList: widget.categoriesList ?? [],
+                  categoriesList: list,
+                  backList:list1,
                   isSellerType: isSellerType,
-                  productIndex: widget.productIndex ?? 0,
+                  productIndex: widget.productIndex,
                 ),
             opaque: false,
             fullscreenDialog: true));
 
     if (selectedChip != null) {
-      encodedQueryParam = encodeString(selectedChip[0]);
-      widget.productName = selectedChip[0];
-      widget.productIndex = selectedChip[1];
+      encodedQueryParam =encodeString(widget.productName);
+      print("issellertype=$isSellerType biztype=${selectedChip[0]}");
+      if(!isSellerType) {
+        encodedQueryParam = encodeString(selectedChip[1]);
+        widget.productName = selectedChip[0];
+      } else {
+        widget.biztype = selectedChip[0];
+        widget.productIndex = selectedChip[2];
+      }
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      if(!isSellerType)
+        widget.screen="impcat";
+        getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false,widget.screen);
     }
   }
 
@@ -143,7 +161,8 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      widget.screen="search";
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
     }
   }
 
@@ -158,18 +177,31 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam, 0, 9, 1);
+      widget.screen="search";
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
     }
   }
 
-  getMoreDetails(String category, int start, int end, int currentPage) async {
+  getMoreDetails(String category, String biztype,int start, int end, int currentPage, bool shouldUpdateSellerTypeList, String screen_name) async {
     EasyLoading.show(status: 'Loading...');
+    print("cateory=$category");
     print(
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
-      String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-
+      String biztype_data="";
+      if(SellerTypeData.getValueFromName(biztype)!="")
+        biztype_data=SellerTypeData.getValueFromName(biztype);
+      print("biztype_data=$biztype_data");
+      String pathUrl ="";
+      if(screen_name=="search")
+        pathUrl="https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      else {
+        category = category.toLowerCase().replaceAll("%20", '-');
+        pathUrl =
+        "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests
+            .AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
+      }
+      print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
@@ -192,14 +224,63 @@ class ImportantSuppilesDetailsListState
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
-        resultsArray = json.decode(response.body)['results'];
+        if (screen_name == "search") {
+          resultsArray = json.decode(response.body)['results'];
+          sellerTypeArray =
+          json.decode(response.body)['facet_fields']['biztype'];
+        }
+        else {
+          resultsArray = json.decode(response.body)['data'];
+          bizWiseArray = json.decode(response.body)['biz_wise_count'];
+          sellerTypeArray.clear();
+          for (int i = 0; i < bizWiseArray.length; i++)
+            sellerTypeArray.add(
+                (bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
+          print("resultsArray=$resultsArray $sellerTypeArray");
+        }
+        List<String> stringsOnly = [];
+        if (shouldUpdateSellerTypeList) {
+          sellerTypeModelList.clear();
+          sellerTypeModelList.add("All");
+          for (var item in sellerTypeArray) {
+            if (item is String) {
+              stringsOnly.add(item);
+              if (SellerTypeData.getNameOfSellerType(item) != "")
+                sellerTypeModelList.add(
+                    SellerTypeData.getNameOfSellerType(item));
+            }
+          }
+        }
         if (currentPage == 1) {
-          dynamic live_mcats =
-              json.decode(response.body)['guess']['guess']['live_mcats'];
-          pbrimage = live_mcats[0]['smallimg'];
-          print("pbrimage=$pbrimage");
-          totalItemCount =
-              json.decode(response.body)['total_results_without_repetition'];
+          if (screen_name == "search") {
+            dynamic live_mcats =
+            json.decode(response.body)['guess']['guess']['live_mcats'];
+            pbrimage = live_mcats[0]['smallimg'];
+            related.clear();
+            relatedfname.clear();
+            for (var i = 0; i < live_mcats.length; i++) {
+              related.add(live_mcats[i]['name']);
+              relatedfname.add(live_mcats[i]['filename']);
+            }
+            totalItemCount =
+            json.decode(response.body)['total_results_without_repetition'];
+          }
+          else {
+            dynamic live_mcats =
+            json.decode(response.body)['mcatdata'];
+            pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
+            related.clear();
+            relatedfname.clear();
+            for (var i = 0; i < live_mcats.length; i++) {
+              related.add(live_mcats[i]['GLCAT_MCAT_NAME']);
+              relatedfname.add(live_mcats[i]['GLCAT_MCAT_FLNAME']);
+            }
+            print("pbrimage=$sellerTypeModelList");
+            print("pbrimage=${json.decode(
+                response.body)['out_total_unq_count']}");
+            totalItemCount =
+            int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+          }
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -209,47 +290,86 @@ class ImportantSuppilesDetailsListState
           localityArray?.clear();
         }
         for (var i = 0; i < resultsArray.length; i++) {
-          var image = resultsArray[i]['fields']['large_image'];
-          imagesArray?.add(image);
+          if (screen_name == "search") {
+            var image = resultsArray[i]['fields']['large_image'];
+            imagesArray?.add(image);
 
-          var title = resultsArray[i]['fields']['title'];
-          titlesArray?.add(title ?? "NA");
+            var title = resultsArray[i]['fields']['title'];
+            titlesArray?.add(title ?? "NA");
 
-          var phoneNo = resultsArray[i]['fields']['pns'];
-          phoneArray?.add(phoneNo ?? "NA");
-          print("phoine=$phoneNo");
-          var itemPrices = resultsArray[i]['fields']['itemprice'];
-          var units = resultsArray[i]['fields']['moq_type'];
-          if (itemPrices == "" || itemPrices == null) {
-            itemPricesArray?.add("Prices on demand");
-          } else {
-            if (units == "" || units == null) {
-              units = "units";
+            var phoneNo = resultsArray[i]['fields']['pns'];
+            phoneArray?.add(phoneNo ?? "NA");
+            print("phoine=$phoneNo");
+            var itemPrices = resultsArray[i]['fields']['itemprice'];
+            var units = resultsArray[i]['fields']['moq_type'];
+            if (itemPrices == "" || itemPrices == null) {
+              itemPricesArray?.add("Prices on demand");
+            } else {
+              if (units == "" || units == null) {
+                units = "units";
+              }
+              itemPricesArray?.add((itemPrices) + "/ " + (units));
             }
-            itemPricesArray?.add((itemPrices) + "/ " + (units));
+            var company = resultsArray[i]['fields']['companyname'];
+            companyNameArray?.add(company ?? "NA");
+
+            var city = resultsArray[i]['fields']['city'] ?? "";
+            locationsArray?.add("Deals in $city");
+
+            var locality = resultsArray[i]['fields']['locality'] ?? "NA";
+            if(locality==""||locality=="NA")
+              localityArray?.add(city);
+            else if(city!="")
+              localityArray?.add(city+" - "+locality);
+          } else if (screen_name == "impcat") {
+            var image = resultsArray[i]['photo_250'] ?? "NA";
+            imagesArray?.add(image);
+
+            var title = resultsArray[i]['prd_name'] ?? "NA";
+            titlesArray?.add(title);
+
+            var phoneNo = resultsArray[i]['comp_contct'] ?? "NA";
+            phoneArray?.add(phoneNo);
+
+            print("phone=$phoneNo");
+
+            var itemPrices = resultsArray[i]['prd_price'];
+            if (itemPrices == "" || itemPrices == null) {
+              itemPricesArray?.add("Prices on demand");
+            } else {
+              itemPricesArray?.add(itemPrices);
+            }
+
+            var company = resultsArray[i]['COMPANY'] ?? "NA";
+            companyNameArray?.add(company);
+
+            var city = resultsArray[i]['city_orig'] ?? "NA";
+            var localityForAddress=resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
+            if(localityForAddress=="" || locationsArray=="NA")
+              localityArray?.add(city);
+            else if(city!="")
+              localityArray?.add(city+" - "+localityForAddress);
+
+            var locality = resultsArray[i]['city'] ?? "";
+            locationsArray?.add("Deals in $locality");
           }
-          var company = resultsArray[i]['fields']['tscode'];
-          companyNameArray?.add(company ?? "NA");
-
-          var city = resultsArray[i]['fields']['city'] ?? "";
-          locationsArray?.add(city);
-
-          var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-          localityArray?.add(locality);
         }
+      }
         setState(() {
           items.addAll(resultsArray);
           print(
               "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
 
-        if (resultsArray.length > 0) if (currentPage > 1) {
-          if (!kIsWeb) addBannerOrAd(end, "ADEMPTY");
+        if (resultsArray.length > 0)
+          if (currentPage > 1 && totalItemCount>10) {
+          if (!kIsWeb)
+            // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
           if (!kIsWeb) {
-            addBannerOrAd(2, "ADEMPTY");
-            addBannerOrAd(7, "ADEMPTY");
+            // addBannerOrAd(2, "ADEMPTY");
+            // addBannerOrAd(7, "ADEMPTY");
           }
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
@@ -277,8 +397,7 @@ class ImportantSuppilesDetailsListState
             ],
           ).show(context);
         }
-      }
-    } catch (e) {
+      } catch (e) {
       EasyLoading.dismiss();
       Flushbar(
         title: "Error",
@@ -382,7 +501,7 @@ class ImportantSuppilesDetailsListState
               children: [
                 TextButton(
                   onPressed: () {
-                    openFilters(true);
+                    openFilters(true,sellerTypeModelList,sellerTypeModelList);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -404,7 +523,7 @@ class ImportantSuppilesDetailsListState
                 const Divider(),
                 TextButton(
                   onPressed: () {
-                    openFilters(false);
+                    openFilters(false,related,relatedfname);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -856,17 +975,21 @@ class _DescriptionState extends State<Description> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
+            Visibility(
+              visible: widget.locality != null && widget.locality.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Container(
+                  height: 15,
+                  width: 15,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
                       image: AssetImage("images/Location.png"),
-                      fit: BoxFit.contain),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  alignment: Alignment.center,
                 ),
-                alignment: Alignment.center,
               ),
             ),
             const SizedBox(width: 10),
@@ -874,7 +997,7 @@ class _DescriptionState extends State<Description> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 5, 5),
                 child: Text(
-                  (widget.location) + "${widget.locality}",
+                  "${widget.locality}",
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Color(0xff432B20),
@@ -891,17 +1014,21 @@ class _DescriptionState extends State<Description> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
+            Visibility(
+              visible: widget.location != null && widget.location.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Container(
+                  height: 15,
+                  width: 15,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
                       image: AssetImage("images/url_mp.png"),
-                      fit: BoxFit.contain),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  alignment: Alignment.center,
                 ),
-                alignment: Alignment.center,
               ),
             ),
             const SizedBox(width: 10),
@@ -909,7 +1036,7 @@ class _DescriptionState extends State<Description> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: Text(
-                  "Deals in ${widget.locality}",
+                  "${widget.location}",
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Color(0xff432B20),

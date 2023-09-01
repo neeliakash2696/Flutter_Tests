@@ -184,8 +184,9 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
                                         productName: nameArray[index],
-                                        categoriesList: fnameArray,
-                                        productIndex: index,
+                                        productIndex: 0,
+                                        biztype: "",
+                                        screen: "impcat",
                                       )));
                         else
                           Navigator.push(

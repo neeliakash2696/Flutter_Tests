@@ -6,11 +6,13 @@ class Filters extends StatefulWidget {
   @override
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
+  List<String> backList;
   bool isSellerType;
   int productIndex;
   Filters(
       {Key? key,
       required this.categoriesList,
+      required this.backList,
       required this.isSellerType,
       required this.productIndex})
       : super(key: key);
@@ -18,19 +20,12 @@ class Filters extends StatefulWidget {
 
 class FiltersState extends State<Filters> {
   int? _value = 0;
-  var sellerTypeItems = [
-    'All',
-    'Manufacturer',
-    'Wholesaler',
-    'Retailer',
-    'Exporter',
-  ];
 
 // View Did Load
   @override
   void initState() {
     super.initState();
-    if (!widget.isSellerType) {
+    if (widget.isSellerType) {
       setState(() {
         _value = widget.productIndex;
       });
@@ -54,63 +49,63 @@ class FiltersState extends State<Filters> {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Container(
-                    color: Colors.transparent,
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          color: Colors.white,
-                          child: Wrap(
-                            spacing: 15.0,
-                            children: List<Widget>.generate(
-                              widget.isSellerType
-                                  ? sellerTypeItems.length
-                                  : widget.categoriesList.length,
-                              (int index) {
-                                return ChoiceChip(
-                                  selectedColor: Colors.teal,
-                                  label: Text(
-                                    widget.isSellerType
-                                        ? sellerTypeItems[index]
-                                        : widget.categoriesList[index],
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                      color: Colors.transparent,
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                            color: Colors.white,
+                            child: Wrap(
+                              spacing: 5.0,
+                              runSpacing: 5.0,
+                              children: List<Widget>.generate(
+                                    widget.categoriesList.length,
+                                (int index) {
+                                  return ChoiceChip(
+                                    selectedColor: (widget.isSellerType)?Colors.teal:Colors.grey[350],
+                                    label: Text(widget.categoriesList[index],
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                      ),
                                     ),
-                                  ),
-                                  selected: _value == index,
-                                  onSelected: (bool selected) {
-                                    setState(() {
-                                      if (_value == index) {
-                                        _value = index;
-                                        Navigator.pop(context);
-                                      } else {
-                                        var selectedChip = widget.isSellerType
-                                            ? sellerTypeItems[index]
-                                            : widget.categoriesList[index];
-                                        _value = index;
-                                        var selectedChipDetails = [
-                                          selectedChip,
-                                          index,
-                                        ];
-                                        print(
-                                            "selectedChipDetails $selectedChipDetails");
-                                        Navigator.pop(
-                                            context, selectedChipDetails);
-                                      }
-                                    });
-                                  },
-                                );
-                              },
-                            ).toList(),
-                          ),
-                        )
-                      ],
-                    )),
+                                    selected: _value == index,
+                                    onSelected: (bool selected) {
+                                      setState(() {
+                                        if (widget.isSellerType && _value == index) {
+                                          _value = index;
+                                          Navigator.pop(context);
+                                        } else {
+                                          var selectedChip = widget.categoriesList[index];
+                                          var selectedChip1= widget.backList[index];
+                                          if(widget.isSellerType)
+                                          _value = index;
+                                          var selectedChipDetails = [
+                                            selectedChip,
+                                            selectedChip1,
+                                            _value,
+                                          ];
+                                          print(
+                                              "selectedChipDetails $selectedChipDetails");
+                                          Navigator.pop(
+                                              context, selectedChipDetails);
+                                        }
+                                      });
+                                    },
+                                  );
+                                },
+                              ).toList(),
+                            ),
+                          )
+                        ],
+                      )),
+                ),
               ),
             )
           ],
