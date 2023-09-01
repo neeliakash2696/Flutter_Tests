@@ -54,7 +54,8 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
                   productIndex: 0,
-                  biztype: ""
+                  biztype: "",
+                    screen: "search"
                     )));
         break;
       case VoiceSearchFromScreen.impSuppliesList:
@@ -68,7 +69,8 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
                   productIndex: 0,
-                  biztype: ""
+                  biztype: "",
+                    screen: "search"
                     )));
       case VoiceSearchFromScreen.categoriesDetail:
         Navigator.pop(context);
@@ -78,7 +80,8 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
                   productIndex: 0,
-                  biztype: ""
+                  biztype: "",
+                    screen: "search"
                     )));
     }
   }

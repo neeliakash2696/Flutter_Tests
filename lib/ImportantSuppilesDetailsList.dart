@@ -30,11 +30,12 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   String productName;
   int productIndex;
   String biztype;
+  String screen;
   ImportantSuppilesDetailsList(
       {Key? key,
       required this.productName,
       required this.productIndex,
-      required this.biztype
+      required this.biztype, required this.screen
       })
       : super(key: key);
 }
@@ -53,6 +54,7 @@ class ImportantSuppilesDetailsListState
   List<dynamic> resultsArray = [];
   List<String> sellerTypeModelList = [];
   List<dynamic> sellerTypeArray = [];
+  List<dynamic> bizWiseArray = [];
   var currentLayout = ScreenLayout.details;
   final ScrollController _scrollController = ScrollController();
   bool _isAtEnd = false;
@@ -84,7 +86,7 @@ class ImportantSuppilesDetailsListState
     currentPage = 1;
     start = 0;
     end = 9;
-    getMoreDetails(encodedQueryParam, widget.biztype,0, 9, currentPage,true);
+    getMoreDetails(encodedQueryParam, widget.biztype,0, 9, currentPage,true,widget.screen);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -98,7 +100,7 @@ class ImportantSuppilesDetailsListState
           if (end > totalItemCount) end = totalItemCount;
           if (stop == false) {
             currentPage += 1;
-            getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false);
+            getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false,widget.screen);
           } // Mark that you've reached the end
         });
       } else {
@@ -138,7 +140,9 @@ class ImportantSuppilesDetailsListState
         widget.productIndex = selectedChip[1];
       }
       items.length = 0;
-      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false);
+      if(!isSellerType)
+        widget.screen="impcat";
+        getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false,widget.screen);
     }
   }
 
@@ -155,7 +159,8 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true);
+      widget.screen="search";
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
     }
   }
 
@@ -170,12 +175,14 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true);
+      widget.screen="search";
+      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
     }
   }
 
-  getMoreDetails(String category, String biztype,int start, int end, int currentPage, bool shouldUpdateSellerTypeList) async {
+  getMoreDetails(String category, String biztype,int start, int end, int currentPage, bool shouldUpdateSellerTypeList, String screen_name) async {
     EasyLoading.show(status: 'Loading...');
+    print("cateory=$category");
     print(
         "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
@@ -183,9 +190,15 @@ class ImportantSuppilesDetailsListState
       if(SellerTypeData.getValueFromName(biztype)!="")
         biztype_data=SellerTypeData.getValueFromName(biztype);
       print("biztype_data=$biztype_data");
-      String pathUrlForImpcat="https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&mcatid=44756&APP_SCREEN_NAME=IMPCat Listing&start=1&AK=${FlutterTests.AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=10&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
-      String pathUrl =
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      String pathUrl ="";
+      if(screen_name=="search")
+        pathUrl="https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      else {
+        category = category.toLowerCase().replaceAll("%20", '-');
+        pathUrl =
+        "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests
+            .AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
+      }
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -209,10 +222,22 @@ class ImportantSuppilesDetailsListState
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
-        resultsArray = json.decode(response.body)['results'];
-        sellerTypeArray= json.decode(response.body)['facet_fields']['biztype'];
+        if (screen_name == "search") {
+          resultsArray = json.decode(response.body)['results'];
+          sellerTypeArray =
+          json.decode(response.body)['facet_fields']['biztype'];
+        }
+        else {
+          resultsArray = json.decode(response.body)['data'];
+          bizWiseArray = json.decode(response.body)['biz_wise_count'];
+          sellerTypeArray.clear();
+          for (int i = 0; i < bizWiseArray.length; i++)
+            sellerTypeArray.add(
+                (bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
+          print("resultsArray=$resultsArray $sellerTypeArray");
+        }
         List<String> stringsOnly = [];
-        if(shouldUpdateSellerTypeList) {
+        if (shouldUpdateSellerTypeList) {
           sellerTypeModelList.clear();
           sellerTypeModelList.add("All");
           for (var item in sellerTypeArray) {
@@ -225,15 +250,29 @@ class ImportantSuppilesDetailsListState
           }
         }
         if (currentPage == 1) {
-          dynamic live_mcats =
-              json.decode(response.body)['guess']['guess']['live_mcats'];
-          pbrimage = live_mcats[0]['smallimg'];
-          related.clear();
-          for(var i=0;i<live_mcats.length;i++)
-            related.add(live_mcats[i]['name']);
-          print("pbrimage=$sellerTypeModelList");
-          totalItemCount =
-              json.decode(response.body)['total_results_without_repetition'];
+          if (screen_name == "search") {
+            dynamic live_mcats =
+            json.decode(response.body)['guess']['guess']['live_mcats'];
+            pbrimage = live_mcats[0]['smallimg'];
+            related.clear();
+            for (var i = 0; i < live_mcats.length; i++)
+              related.add(live_mcats[i]['name']);
+            totalItemCount =
+            json.decode(response.body)['total_results_without_repetition'];
+          }
+          else {
+            dynamic live_mcats =
+            json.decode(response.body)['mcatdata'];
+            pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
+            related.clear();
+            for (var i = 0; i < live_mcats.length; i++)
+              related.add(live_mcats[i]['GLCAT_MCAT_NAME']);
+            print("pbrimage=$sellerTypeModelList");
+            print("pbrimage=${json.decode(
+                response.body)['out_total_unq_count']}");
+            totalItemCount =
+            int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+          }
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -243,34 +282,64 @@ class ImportantSuppilesDetailsListState
           localityArray?.clear();
         }
         for (var i = 0; i < resultsArray.length; i++) {
-          var image = resultsArray[i]['fields']['large_image'];
-          imagesArray?.add(image);
+          if (screen_name == "search") {
+            var image = resultsArray[i]['fields']['large_image'];
+            imagesArray?.add(image);
 
-          var title = resultsArray[i]['fields']['title'];
-          titlesArray?.add(title ?? "NA");
+            var title = resultsArray[i]['fields']['title'];
+            titlesArray?.add(title ?? "NA");
 
-          var phoneNo = resultsArray[i]['fields']['pns'];
-          phoneArray?.add(phoneNo ?? "NA");
-          print("phoine=$phoneNo");
-          var itemPrices = resultsArray[i]['fields']['itemprice'];
-          var units = resultsArray[i]['fields']['moq_type'];
-          if (itemPrices == "" || itemPrices == null) {
-            itemPricesArray?.add("Prices on demand");
-          } else {
-            if (units == "" || units == null) {
-              units = "units";
+            var phoneNo = resultsArray[i]['fields']['pns'];
+            phoneArray?.add(phoneNo ?? "NA");
+            print("phoine=$phoneNo");
+            var itemPrices = resultsArray[i]['fields']['itemprice'];
+            var units = resultsArray[i]['fields']['moq_type'];
+            if (itemPrices == "" || itemPrices == null) {
+              itemPricesArray?.add("Prices on demand");
+            } else {
+              if (units == "" || units == null) {
+                units = "units";
+              }
+              itemPricesArray?.add((itemPrices) + "/ " + (units));
             }
-            itemPricesArray?.add((itemPrices) + "/ " + (units));
+            var company = resultsArray[i]['fields']['tscode'];
+            companyNameArray?.add(company ?? "NA");
+
+            var city = resultsArray[i]['fields']['city'] ?? "";
+            locationsArray?.add(city);
+
+            var locality = resultsArray[i]['fields']['locality'] ?? "NA";
+            localityArray?.add(locality);
+          } else if (screen_name == "impcat") {
+            var image = resultsArray[i]['photo_250'] ?? "NA";
+            imagesArray?.add(image);
+
+            var title = resultsArray[i]['prd_name'] ?? "NA";
+            titlesArray?.add(title);
+
+            var phoneNo = resultsArray[i]['comp_contct'] ?? "NA";
+            phoneArray?.add(phoneNo);
+
+            print("phone=$phoneNo");
+
+            var itemPrices = resultsArray[i]['prd_price'];
+            if (itemPrices == "" || itemPrices == null) {
+              itemPricesArray?.add("Prices on demand");
+            } else {
+              itemPricesArray?.add(itemPrices);
+            }
+
+            var company = resultsArray[i]['COMPANY'] ?? "NA";
+            companyNameArray?.add(company);
+
+            var city = resultsArray[i]['city'] ?? "NA";
+            locationsArray?.add(city);
+
+            var locality = resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
+            localityArray?.add(locality);
           }
-          var company = resultsArray[i]['fields']['tscode'];
-          companyNameArray?.add(company ?? "NA");
-
-          var city = resultsArray[i]['fields']['city'] ?? "";
-          locationsArray?.add(city);
-
-          var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-          localityArray?.add(locality);
         }
+      }
         setState(() {
           items.addAll(resultsArray);
           print(
@@ -311,8 +380,7 @@ class ImportantSuppilesDetailsListState
             ],
           ).show(context);
         }
-      }
-    } catch (e) {
+      } catch (e) {
       EasyLoading.dismiss();
       Flushbar(
         title: "Error",

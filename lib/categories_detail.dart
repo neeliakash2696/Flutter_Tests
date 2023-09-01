@@ -185,7 +185,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                       ImportantSuppilesDetailsList(
                                         productName: nameArray[index],
                                         productIndex: 0,
-                                        biztype: ""
+                                        biztype: "",
+                                        screen: "impcat",
                                       )));
                         else
                           Navigator.push(

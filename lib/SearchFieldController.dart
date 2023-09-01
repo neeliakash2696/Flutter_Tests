@@ -60,7 +60,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
                   productIndex: 0,
-                  biztype: ""
+                  biztype: "",
+                  screen: "search",
                     )));
         break;
       case SearchingFromScreen.impSuppliesList:
@@ -74,7 +75,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
                   productIndex: 0,
-                  biztype:""
+                  biztype:"",
+                  screen: "search"
                     )));
       case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
@@ -84,7 +86,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
                   productIndex: 0,
-                  biztype: ""
+                  biztype: "",
+                    screen: "search"
                     )));
     }
   }

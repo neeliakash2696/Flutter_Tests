@@ -139,7 +139,7 @@ class SectionWidget extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => ImportantSuppilesDetailsList(
                                   productName: section.items[index],productIndex: 0,
-                              biztype: ""
+                              biztype: "",screen:"search"
                                 )));
                   }),
             );
