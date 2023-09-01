@@ -424,7 +424,8 @@ class ImportantSuppilesDetailsListState
     if (items.length - 1 < 0) {
       itemCount = 0;
     } else {
-      itemCount = items.length - 1;
+      itemCount = items.length;
+      print("itemcounta=$itemCount");
     }
     return Scaffold(
       appBar: AppBar(
