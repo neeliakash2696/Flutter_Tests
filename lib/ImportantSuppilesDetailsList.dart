@@ -302,14 +302,17 @@ class ImportantSuppilesDetailsListState
               }
               itemPricesArray?.add((itemPrices) + "/ " + (units));
             }
-            var company = resultsArray[i]['fields']['tscode'];
+            var company = resultsArray[i]['fields']['companyname'];
             companyNameArray?.add(company ?? "NA");
 
-            var city = resultsArray[i]['fields']['city'] ?? "";
+            var city = resultsArray[i]['fields']['Deals_in_loc'] ?? "";
             locationsArray?.add(city);
 
             var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-            localityArray?.add(locality);
+            if(locality==""||locality=="NA")
+              localityArray?.add(city);
+            else if(city!="")
+              localityArray?.add(city+" - "+locality);
           } else if (screen_name == "impcat") {
             var image = resultsArray[i]['photo_250'] ?? "NA";
             imagesArray?.add(image);
@@ -332,11 +335,15 @@ class ImportantSuppilesDetailsListState
             var company = resultsArray[i]['COMPANY'] ?? "NA";
             companyNameArray?.add(company);
 
-            var city = resultsArray[i]['city'] ?? "NA";
-            locationsArray?.add(city);
+            var city = resultsArray[i]['city_orig'] ?? "NA";
+            var localityForAddress=resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
+            if(localityForAddress=="" || locationsArray=="NA")
+              localityArray?.add(city);
+            else if(city!="")
+              localityArray?.add(city+" - "+localityForAddress);
 
-            var locality = resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
-            localityArray?.add(locality);
+            var locality = resultsArray[i]['city'] ?? "";
+            locationsArray?.add("Deals in $locality");
           }
         }
       }
@@ -346,7 +353,8 @@ class ImportantSuppilesDetailsListState
               "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
 
-        if (resultsArray.length > 0) if (currentPage > 1) {
+        if (resultsArray.length > 0)
+          if (currentPage > 1 && totalItemCount>10) {
           if (!kIsWeb) addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
@@ -976,7 +984,7 @@ class _DescriptionState extends State<Description> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 5, 5),
                 child: Text(
-                  (widget.location) + "${widget.locality}",
+                  "${widget.locality}",
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Color(0xff432B20),
@@ -1011,7 +1019,7 @@ class _DescriptionState extends State<Description> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: Text(
-                  "Deals in ${widget.locality}",
+                  "${widget.location}",
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Color(0xff432B20),
