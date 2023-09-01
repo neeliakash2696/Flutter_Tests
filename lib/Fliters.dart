@@ -81,10 +81,11 @@ class FiltersState extends State<Filters> {
                                           Navigator.pop(context);
                                         } else {
                                           var selectedChip = widget.categoriesList[index];
+                                          if(widget.isSellerType)
                                           _value = index;
                                           var selectedChipDetails = [
                                             selectedChip,
-                                            index,
+                                            _value,
                                           ];
                                           print(
                                               "selectedChipDetails $selectedChipDetails");

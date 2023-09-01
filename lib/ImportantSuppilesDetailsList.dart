@@ -133,9 +133,10 @@ class ImportantSuppilesDetailsListState
       if(!isSellerType) {
         encodedQueryParam = encodeString(selectedChip[0]);
         widget.productName = selectedChip[0];
-      } else
-        widget.biztype=selectedChip[0];
-      widget.productIndex = selectedChip[1];
+      } else {
+        widget.biztype = selectedChip[0];
+        widget.productIndex = selectedChip[1];
+      }
       items.length = 0;
       getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false);
     }
@@ -182,6 +183,7 @@ class ImportantSuppilesDetailsListState
       if(SellerTypeData.getValueFromName(biztype)!="")
         biztype_data=SellerTypeData.getValueFromName(biztype);
       print("biztype_data=$biztype_data");
+      String pathUrlForImpcat="https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&mcatid=44756&APP_SCREEN_NAME=IMPCat Listing&start=1&AK=${FlutterTests.AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=10&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       String pathUrl =
           "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       print("api=$pathUrl");
@@ -227,7 +229,7 @@ class ImportantSuppilesDetailsListState
               json.decode(response.body)['guess']['guess']['live_mcats'];
           pbrimage = live_mcats[0]['smallimg'];
           related.clear();
-          for(var i=1;i<live_mcats.length;i++)
+          for(var i=0;i<live_mcats.length;i++)
             related.add(live_mcats[i]['name']);
           print("pbrimage=$sellerTypeModelList");
           totalItemCount =
