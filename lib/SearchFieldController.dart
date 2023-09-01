@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
     as FlutterTests;
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum SearchingFromScreen {
   def,
@@ -27,14 +28,16 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   TextEditingController searchBar = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   FocusNode focus = FocusNode();
-  List<dynamic> dataArray = [];
+  List<String> dataArray = [];
   String searchQuery = "";
+  int maxCount = 5;
 
   // View Did Load
   @override
   void initState() {
     super.initState();
     focus.requestFocus();
+    showInitialRecommendations();
   }
 
   @override
@@ -51,6 +54,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   }
 
   proceedForSearch() {
+    saveSearchQueryLocally(searchQuery);
     switch (widget.fromScreen) {
       case SearchingFromScreen.def:
         Navigator.pop(context);
@@ -90,6 +94,26 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                     screen: "search"
                     )));
     }
+  }
+
+  showInitialRecommendations() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var x = prefs.getStringList("localSearchArray");
+    dataArray = x ?? [];
+    print("init $dataArray");
+    setState(() {});
+  }
+
+  saveSearchQueryLocally(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    FlutterTests.localSearchArray.add(query);
+    prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
+
+    if (FlutterTests.localSearchArray.length > maxCount) {
+      FlutterTests.localSearchArray.removeAt(0);
+      prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
+    }
+    print("saved this ${FlutterTests.localSearchArray}");
   }
 
   getRecents(String query) async {
