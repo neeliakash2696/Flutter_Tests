@@ -76,6 +76,7 @@ class ImportantSuppilesDetailsListState
   int currentPage = 0;
 
   List<String> related=[];
+  List<String> relatedfname=[];
 
   // View Did Load
   @override
@@ -117,12 +118,13 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool isSellerType,List<String> list) async {
+  openFilters(bool isSellerType,List<String> list,List<String> list1) async {
     var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: list,
+                  backList:list1,
                   isSellerType: isSellerType,
                   productIndex: widget.productIndex,
                 ),
@@ -133,11 +135,11 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam =encodeString(widget.productName);
       print("issellertype=$isSellerType biztype=${selectedChip[0]}");
       if(!isSellerType) {
-        encodedQueryParam = encodeString(selectedChip[0]);
+        encodedQueryParam = encodeString(selectedChip[1]);
         widget.productName = selectedChip[0];
       } else {
         widget.biztype = selectedChip[0];
-        widget.productIndex = selectedChip[1];
+        widget.productIndex = selectedChip[2];
       }
       items.length = 0;
       if(!isSellerType)
@@ -255,8 +257,11 @@ class ImportantSuppilesDetailsListState
             json.decode(response.body)['guess']['guess']['live_mcats'];
             pbrimage = live_mcats[0]['smallimg'];
             related.clear();
-            for (var i = 0; i < live_mcats.length; i++)
+            relatedfname.clear();
+            for (var i = 0; i < live_mcats.length; i++) {
               related.add(live_mcats[i]['name']);
+              relatedfname.add(live_mcats[i]['filename']);
+            }
             totalItemCount =
             json.decode(response.body)['total_results_without_repetition'];
           }
@@ -265,8 +270,11 @@ class ImportantSuppilesDetailsListState
             json.decode(response.body)['mcatdata'];
             pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
             related.clear();
-            for (var i = 0; i < live_mcats.length; i++)
+            relatedfname.clear();
+            for (var i = 0; i < live_mcats.length; i++) {
               related.add(live_mcats[i]['GLCAT_MCAT_NAME']);
+              relatedfname.add(live_mcats[i]['GLCAT_MCAT_FLNAME']);
+            }
             print("pbrimage=$sellerTypeModelList");
             print("pbrimage=${json.decode(
                 response.body)['out_total_unq_count']}");
@@ -305,8 +313,8 @@ class ImportantSuppilesDetailsListState
             var company = resultsArray[i]['fields']['companyname'];
             companyNameArray?.add(company ?? "NA");
 
-            var city = resultsArray[i]['fields']['Deals_in_loc'] ?? "";
-            locationsArray?.add(city);
+            var city = resultsArray[i]['fields']['city'] ?? "";
+            locationsArray?.add("Deals in $city");
 
             var locality = resultsArray[i]['fields']['locality'] ?? "NA";
             if(locality==""||locality=="NA")
@@ -355,12 +363,13 @@ class ImportantSuppilesDetailsListState
 
         if (resultsArray.length > 0)
           if (currentPage > 1 && totalItemCount>10) {
-          if (!kIsWeb) addBannerOrAd(end, "ADEMPTY");
+          if (!kIsWeb)
+            // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
         } else if (currentPage == 1) {
           if (!kIsWeb) {
-            addBannerOrAd(2, "ADEMPTY");
-            addBannerOrAd(7, "ADEMPTY");
+            // addBannerOrAd(2, "ADEMPTY");
+            // addBannerOrAd(7, "ADEMPTY");
           }
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
@@ -492,7 +501,7 @@ class ImportantSuppilesDetailsListState
               children: [
                 TextButton(
                   onPressed: () {
-                    openFilters(true,sellerTypeModelList);
+                    openFilters(true,sellerTypeModelList,sellerTypeModelList);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -514,7 +523,7 @@ class ImportantSuppilesDetailsListState
                 const Divider(),
                 TextButton(
                   onPressed: () {
-                    openFilters(false,related);
+                    openFilters(false,related,relatedfname);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -966,17 +975,21 @@ class _DescriptionState extends State<Description> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
+            Visibility(
+              visible: widget.locality != null && widget.locality.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Container(
+                  height: 15,
+                  width: 15,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
                       image: AssetImage("images/Location.png"),
-                      fit: BoxFit.contain),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  alignment: Alignment.center,
                 ),
-                alignment: Alignment.center,
               ),
             ),
             const SizedBox(width: 10),
@@ -1001,17 +1014,21 @@ class _DescriptionState extends State<Description> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
+            Visibility(
+              visible: widget.location != null && widget.location.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Container(
+                  height: 15,
+                  width: 15,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
                       image: AssetImage("images/url_mp.png"),
-                      fit: BoxFit.contain),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  alignment: Alignment.center,
                 ),
-                alignment: Alignment.center,
               ),
             ),
             const SizedBox(width: 10),

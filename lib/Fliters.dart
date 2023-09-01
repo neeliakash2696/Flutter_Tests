@@ -6,11 +6,13 @@ class Filters extends StatefulWidget {
   @override
   FiltersState createState() => FiltersState();
   List<String> categoriesList;
+  List<String> backList;
   bool isSellerType;
   int productIndex;
   Filters(
       {Key? key,
       required this.categoriesList,
+      required this.backList,
       required this.isSellerType,
       required this.productIndex})
       : super(key: key);
@@ -47,22 +49,22 @@ class FiltersState extends State<Filters> {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Container(
-                    color: Colors.transparent,
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          color: Colors.white,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                      color: Colors.transparent,
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                            color: Colors.white,
                             child: Wrap(
-                              spacing: 15.0,
-                              runSpacing: 10.0,
+                              spacing: 5.0,
+                              runSpacing: 5.0,
                               children: List<Widget>.generate(
                                     widget.categoriesList.length,
                                 (int index) {
@@ -70,7 +72,7 @@ class FiltersState extends State<Filters> {
                                     selectedColor: (widget.isSellerType)?Colors.teal:Colors.grey[350],
                                     label: Text(widget.categoriesList[index],
                                       style: const TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 13,
                                       ),
                                     ),
                                     selected: _value == index,
@@ -81,10 +83,12 @@ class FiltersState extends State<Filters> {
                                           Navigator.pop(context);
                                         } else {
                                           var selectedChip = widget.categoriesList[index];
+                                          var selectedChip1= widget.backList[index];
                                           if(widget.isSellerType)
                                           _value = index;
                                           var selectedChipDetails = [
                                             selectedChip,
+                                            selectedChip1,
                                             _value,
                                           ];
                                           print(
@@ -98,10 +102,10 @@ class FiltersState extends State<Filters> {
                                 },
                               ).toList(),
                             ),
-                          ),
-                        )
-                      ],
-                    )),
+                          )
+                        ],
+                      )),
+                ),
               ),
             )
           ],
