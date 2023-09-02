@@ -22,7 +22,8 @@ class SearchFieldController extends StatefulWidget {
   @override
   SearchFieldControllerState createState() => SearchFieldControllerState();
   SearchingFromScreen fromScreen;
-  SearchFieldController({Key? key, required this.fromScreen}) : super(key: key);
+  String word;
+  SearchFieldController({Key? key, required this.fromScreen, required this.word}) : super(key: key);
 }
 
 class SearchFieldControllerState extends State<SearchFieldController> {
@@ -41,6 +42,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     focus.requestFocus();
     getRecents("");
     formattedEndDate();
+    if(widget.word!=null)
+    searchBar.text=widget.word;
   }
 
   @override
@@ -66,6 +69,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype: "",
                   screen: "search",
@@ -81,6 +85,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype:"",
                   screen: "search"
@@ -92,6 +97,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype: "",
                     screen: "search"

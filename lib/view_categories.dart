@@ -84,6 +84,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                           SearchFieldController(
                                             fromScreen: SearchingFromScreen
                                                 .viewCategories,
+                                            word: "",
                                           )));
                             },
                             decoration: const InputDecoration(

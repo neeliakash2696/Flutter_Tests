@@ -28,12 +28,14 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   ImportantSuppilesDetailsListState createState() =>
       ImportantSuppilesDetailsListState();
   String productName;
+  String productFname;
   int productIndex;
   String biztype;
   String screen;
   ImportantSuppilesDetailsList(
       {Key? key,
       required this.productName,
+      required this.productFname,
       required this.productIndex,
       required this.biztype, required this.screen
       })
@@ -82,7 +84,7 @@ class ImportantSuppilesDetailsListState
   @override
   void initState() {
     super.initState();
-    encodedQueryParam = encodeString(widget.productName);
+    encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
     currentPage = 1;
     start = 0;
@@ -98,8 +100,11 @@ class ImportantSuppilesDetailsListState
           scrolled = 0;
           start = end + 1;
           end = start + 10;
-          if (end > totalItemCount) end = totalItemCount;
-          if (stop == false) {
+          if (end > totalItemCount) {
+            start = end - 10;
+            end = totalItemCount;
+          }
+          if (stop == false && start<=end) {
             currentPage += 1;
             getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false,widget.screen);
           } // Mark that you've reached the end
@@ -132,7 +137,7 @@ class ImportantSuppilesDetailsListState
             fullscreenDialog: true));
 
     if (selectedChip != null) {
-      encodedQueryParam =encodeString(widget.productName);
+      encodedQueryParam =encodeString(widget.productFname);
       print("issellertype=$isSellerType biztype=${selectedChip[0]}");
       if(!isSellerType) {
         encodedQueryParam = encodeString(selectedChip[1]);
@@ -147,7 +152,19 @@ class ImportantSuppilesDetailsListState
         getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false,widget.screen);
     }
   }
-
+  void resetUI() {
+    setState(() {
+      imagesArray?.clear();
+      phoneArray?.clear();
+      titlesArray?.clear();
+      itemPricesArray?.clear();
+      companyNameArray?.clear();
+      locationsArray?.clear();
+      localityArray?.clear();
+      widget.productName="";
+      // Add more variables to reset if needed.
+    });
+  }
   openVoiceToTextConverter() async {
     var outputText = await Navigator.push(
         context,
@@ -158,6 +175,7 @@ class ImportantSuppilesDetailsListState
             opaque: false,
             fullscreenDialog: true));
     if (outputText != null && outputText != "") {
+      resetUI();
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
@@ -172,8 +190,10 @@ class ImportantSuppilesDetailsListState
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
+              word: widget.productName,
                 )));
     if (outputText != null && outputText != "") {
+      resetUI();
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
@@ -196,7 +216,6 @@ class ImportantSuppilesDetailsListState
       if(screen_name=="search")
         pathUrl="https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       else {
-        category = category.toLowerCase().replaceAll("%20", '-');
         pathUrl =
         "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests
             .AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";

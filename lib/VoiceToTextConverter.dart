@@ -53,6 +53,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
                   productIndex: 0,
                   biztype: "",
                     screen: "search"
@@ -68,6 +69,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
                   productIndex: 0,
                   biztype: "",
                     screen: "search"
@@ -79,6 +81,7 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
                   productIndex: 0,
                   biztype: "",
                     screen: "search"
