@@ -40,10 +40,17 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   void initState() {
     super.initState();
     focus.requestFocus();
-    getRecents("");
+
     formattedEndDate();
-    if(widget.word!=null)
-    searchBar.text=widget.word;
+    if(widget.word!=null && widget.word!="") {
+      hasText = true;
+      getRecents(widget.word);
+      searchBar.text = widget.word;
+    }
+    else{
+      hasText=false;
+      getRecents("");
+    }
   }
 
   @override
@@ -239,7 +246,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                               setState(() {
                                 hasText = false;
                                 print("searchingText1=$searchingText");
-                                getRecents(searchingText);
+                                searchQuery="";
+                                getRecents(searchQuery);
                               });
                             }
                           },
@@ -389,6 +397,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
           text: text.substring(endIndex),
         ),
       ],
+      style: TextStyle(color: Colors.black,fontSize: 18)
     );
 
     return span;
