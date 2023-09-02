@@ -40,16 +40,17 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   void initState() {
     super.initState();
     focus.requestFocus();
-
+    getRecents(widget.word);
     formattedEndDate();
     if(widget.word!=null && widget.word!="") {
       hasText = true;
-      getRecents(widget.word);
+      // getRecents(widget.word);
       searchBar.text = widget.word;
+      searchQuery=widget.word;
     }
     else{
       hasText=false;
-      getRecents("");
+      // getRecents("");
     }
   }
 
@@ -379,7 +380,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   TextSpan _buildTextSpan(String text, String searchText) {
     final startIndex = text.indexOf(searchText);
     if (startIndex == -1) {
-      return TextSpan(text: text);
+      return TextSpan(text: text,style: TextStyle(color: Colors.black,fontSize: 18));
     }
 
     final endIndex = startIndex + searchText.length;
