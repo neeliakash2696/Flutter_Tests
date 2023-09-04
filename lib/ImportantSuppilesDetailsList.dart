@@ -140,9 +140,13 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam =encodeString(widget.productFname);
       print("issellertype=$isSellerType biztype=${selectedChip[0]}");
       if(!isSellerType) {
+        resetUI();
         encodedQueryParam = encodeString(selectedChip[1]);
         widget.productName = selectedChip[0];
       } else {
+        var productName=widget.productName;
+        resetUI();
+        widget.productName=productName;
         widget.biztype = selectedChip[0];
         widget.productIndex = selectedChip[2];
       }
