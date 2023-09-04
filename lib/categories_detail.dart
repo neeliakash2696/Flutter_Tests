@@ -107,6 +107,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                           SearchFieldController(
                                             fromScreen: SearchingFromScreen
                                                 .categoriesDetail,
+                                            word: "",
                                           )));
                             },
                             decoration: const InputDecoration(
@@ -184,6 +185,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
                                         productName: nameArray[index],
+                                        productFname:fnameArray[index],
                                         productIndex: 0,
                                         biztype: "",
                                         screen: "impcat",

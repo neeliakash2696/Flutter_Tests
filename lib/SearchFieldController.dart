@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
     as FlutterTests;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 enum SearchingFromScreen {
   def,
@@ -21,10 +22,12 @@ class SearchFieldController extends StatefulWidget {
   @override
   SearchFieldControllerState createState() => SearchFieldControllerState();
   SearchingFromScreen fromScreen;
-  SearchFieldController({Key? key, required this.fromScreen}) : super(key: key);
+  String word;
+  SearchFieldController({Key? key, required this.fromScreen, required this.word}) : super(key: key);
 }
 
 class SearchFieldControllerState extends State<SearchFieldController> {
+  bool hasText = false;
   TextEditingController searchBar = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   FocusNode focus = FocusNode();
@@ -37,7 +40,18 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   void initState() {
     super.initState();
     focus.requestFocus();
-    showInitialRecommendations();
+    getRecents(widget.word);
+    formattedEndDate();
+    if(widget.word!=null && widget.word!="") {
+      hasText = true;
+      // getRecents(widget.word);
+      searchBar.text = widget.word;
+      searchQuery=widget.word;
+    }
+    else{
+      hasText=false;
+      // getRecents("");
+    }
   }
 
   @override
@@ -63,6 +77,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype: "",
                   screen: "search",
@@ -78,6 +93,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype:"",
                   screen: "search"
@@ -89,6 +105,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
+                      productFname: searchQuery,
                   productIndex: 0,
                   biztype: "",
                     screen: "search"
@@ -119,8 +136,14 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   getRecents(String query) async {
     EasyLoading.show(status: 'Loading...');
     try {
-      String pathUrl =
-          "https://mapi.indiamart.com//wservce/im/search/?biztype_data=&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-rcnt:pos=6:cat=-2:mcat=-2&options_start=0&options_end=9&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=Chennai&APP_MODID=ANDROID&q=$query&modeId=android.search&APP_ACCURACY=0.0&prdsrc=1&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      String pathUrl ="";
+      if(query.isEmpty) {
+        var logtime = formattedEndDate();
+        pathUrl =
+            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&count=15&AK=${FlutterTests.AK}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
+      } else
+        pathUrl="https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.AK}&VALIDATION_GLID=136484661&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=7983071546&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
+      print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
       if (code == "402" || code == "401") {
@@ -143,16 +166,24 @@ class SearchFieldControllerState extends State<SearchFieldController> {
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
-        var resultsArray = json.decode(response.body)['results'];
-        dataArray.clear();
-        for (var i = 0; i < resultsArray.length; i++) {
-          var moreResultsFirstEntry = resultsArray[i]["more_results"][0];
-          var company = moreResultsFirstEntry["companyname"];
-          print(company);
-          if (company != null) {
-            dataArray.add(company.toString());
-          } else {
-            dataArray.add("NA");
+        if(query.isEmpty) {
+          var resultsArray = json.decode(response.body)['details']['searches'];
+          dataArray.clear();
+          for (var i = 0; i < resultsArray.length; i++) {
+            var label = resultsArray[i]["search"];
+            print(label);
+            if (label != null) {
+              dataArray.add(label.toString());
+            }
+          }
+        } else{
+          var resultsArray = json.decode(response.body)['product'];
+          dataArray.clear();
+          for (var i = 0; i < resultsArray.length; i++) {
+            var label = resultsArray[i]["label"];
+            if (label != null) {
+              dataArray.add(label);
+            }
           }
         }
         setState(() {});
@@ -204,9 +235,22 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           autocorrect: false,
                           autofocus: true,
                           onChanged: (searchingText) {
-                            print(searchingText);
-                            searchQuery = searchingText;
-                            getRecents(searchQuery);
+                            if (searchingText.isNotEmpty) {
+                              searchQuery = searchingText;
+                              print("searchingText=$searchingText");
+                              setState(() {
+                                hasText = true;
+                              });
+                              getRecents(searchQuery);
+                            }
+                            else {
+                              setState(() {
+                                hasText = false;
+                                print("searchingText1=$searchingText");
+                                searchQuery="";
+                                getRecents(searchQuery);
+                              });
+                            }
                           },
                           onEditingComplete: () {
                             print("Search Clicked");
@@ -216,7 +260,10 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           onTapOutside: (event) {
                             closeKeyboard(context);
                           },
-                          onTap: () {},
+                          onTap: () {
+                            if(searchQuery.isEmpty)
+                              getRecents("");
+                          },
                           controller: searchBar,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -253,22 +300,25 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-            child: Text(
-              "Past Searches",
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
-            ),
-          ),
-          const Divider(
-            color: Colors.grey,
-            thickness: 1,
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
+          //   child: Text(
+          //     "Past Searches",
+          //     style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+          //   ),
+          // ),
+          // const Divider(
+          //   color: Colors.grey,
+          //   thickness: 1,
+          // ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
               itemCount: dataArray.length,
               itemBuilder: (BuildContext context, int index) {
+                final searchText = searchQuery.toLowerCase();
+                final itemText = dataArray[index].toLowerCase();
+                final textSpan = _buildTextSpan(itemText, searchText);
                 var inkWell = InkWell(
                   onTap: () {
                     closeKeyboard(context);
@@ -283,9 +333,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Padding(
+                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Icon(
+                            child: hasText?Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                            ):
+                            Icon(
                               Icons.access_time_outlined,
                               color: Colors.grey,
                             ),
@@ -294,9 +348,11 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               width: MediaQuery.of(context).size.width - 90,
-                              child: Text(dataArray[index],
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontSize: 16)),
+                              child: RichText(
+                                text: textSpan,
+                                textAlign: TextAlign.left,
+                                // style: const TextStyle(fontSize: 16),
+                              ),
                             ),
                           ),
                         ],
@@ -320,5 +376,43 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         ],
       ),
     );
+  }
+  TextSpan _buildTextSpan(String text, String searchText) {
+    final startIndex = text.indexOf(searchText);
+    if (startIndex == -1) {
+      return TextSpan(text: text,style: TextStyle(color: Colors.black,fontSize: 18));
+    }
+
+    final endIndex = startIndex + searchText.length;
+
+    final span = TextSpan(
+      children: [
+        TextSpan(
+          text: text.substring(0, startIndex),
+        ),
+        TextSpan(
+          text: text.substring(startIndex, endIndex),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        TextSpan(
+          text: text.substring(endIndex),
+        ),
+      ],
+      style: TextStyle(color: Colors.black,fontSize: 18)
+    );
+
+    return span;
+  }
+  String formattedEndDate() {
+    try {
+      final DateFormat targetFormat = DateFormat("yyyyMMddHHmmss");
+      final DateTime endDate = DateTime.now();
+      final formattedEndDate = targetFormat.format(endDate);
+      print("SF: Formatted Date: $formattedEndDate");
+      return formattedEndDate;
+    } catch (e) {
+      // Handle any exceptions here.
+      return ""; // Or return a default value.
+    }
   }
 }
