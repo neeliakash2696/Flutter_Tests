@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_eval/widgets.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_eval/flutter_eval.dart';
 
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -450,7 +452,9 @@ class ImportantSuppilesDetailsListState
       itemCount = items.length;
       print("itemcounta=$itemCount");
     }
-    return Scaffold(
+    return HotSwap(id: '#impsupplies',
+        args: [$BuildContext.wrap(context)],
+        childBuilder: (context)=>Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
@@ -743,7 +747,7 @@ class ImportantSuppilesDetailsListState
           ],
         ),
       ),
-    );
+    ));
   }
 
   Future addBannerOrAd(int pos, String value) async {

@@ -42,11 +42,13 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   shared_preferences: ^2.0.7
   intl: ^0.17.0
+  flutter_eval: ^0.6.0
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  eval_annotation: ^0.6.0
 
 dev_dependencies:
   flutter_test:

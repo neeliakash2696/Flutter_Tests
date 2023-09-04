@@ -10,14 +10,17 @@ import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:flutter_tests/view_categories.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter_eval/flutter_eval.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   // runApp(MyApp());
-  runApp(MaterialApp(
-    home: ViewCategories(),
-  ));
+  runApp(HotSwapLoader(
+      uri: 'https://github.com/neeliakash2696/Flutter_Tests/blob/mansi/lib/ImportantSuppilesDetailsList.dart',
+      child: MaterialApp(
+        home: ViewCategories(),
+  )));
 }
 
 class MyApp extends StatelessWidget {
