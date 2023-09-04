@@ -23,7 +23,9 @@ class SearchFieldController extends StatefulWidget {
   SearchFieldControllerState createState() => SearchFieldControllerState();
   SearchingFromScreen fromScreen;
   String word;
-  SearchFieldController({Key? key, required this.fromScreen, required this.word}) : super(key: key);
+  SearchFieldController(
+      {Key? key, required this.fromScreen, required this.word})
+      : super(key: key);
 }
 
 class SearchFieldControllerState extends State<SearchFieldController> {
@@ -42,14 +44,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     focus.requestFocus();
     getRecents(widget.word);
     formattedEndDate();
-    if(widget.word!=null && widget.word!="") {
+    if (widget.word != null && widget.word != "") {
       hasText = true;
       // getRecents(widget.word);
       searchBar.text = widget.word;
-      searchQuery=widget.word;
-    }
-    else{
-      hasText=false;
+      searchQuery = widget.word;
+    } else {
+      hasText = false;
       // getRecents("");
     }
   }
@@ -68,7 +69,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   }
 
   proceedForSearch() {
-    saveSearchQueryLocally(searchQuery);
+    // saveSearchQueryLocally(searchQuery);
     switch (widget.fromScreen) {
       case SearchingFromScreen.def:
         Navigator.pop(context);
@@ -78,9 +79,9 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                 builder: (context) => ImportantSuppilesDetailsList(
                       productName: searchQuery,
                       productFname: searchQuery,
-                  productIndex: 0,
-                  biztype: "",
-                  screen: "search",
+                      productIndex: 0,
+                      biztype: "",
+                      screen: "search",
                     )));
         break;
       case SearchingFromScreen.impSuppliesList:
@@ -92,24 +93,22 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                      productName: searchQuery,
-                      productFname: searchQuery,
-                  productIndex: 0,
-                  biztype:"",
-                  screen: "search"
-                    )));
+                    productName: searchQuery,
+                    productFname: searchQuery,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
       case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                      productName: searchQuery,
-                      productFname: searchQuery,
-                  productIndex: 0,
-                  biztype: "",
-                    screen: "search"
-                    )));
+                    productName: searchQuery,
+                    productFname: searchQuery,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
     }
   }
 
@@ -121,28 +120,29 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     setState(() {});
   }
 
-  saveSearchQueryLocally(String query) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    FlutterTests.localSearchArray.add(query);
-    prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
+  // saveSearchQueryLocally(String query) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   FlutterTests.localSearchArray.add(query);
+  //   prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
 
-    if (FlutterTests.localSearchArray.length > maxCount) {
-      FlutterTests.localSearchArray.removeAt(0);
-      prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
-    }
-    print("saved this ${FlutterTests.localSearchArray}");
-  }
+  //   if (FlutterTests.localSearchArray.length > maxCount) {
+  //     FlutterTests.localSearchArray.removeAt(0);
+  //     prefs.setStringList("localSearchArray", FlutterTests.localSearchArray);
+  //   }
+  //   print("saved this ${FlutterTests.localSearchArray}");
+  // }
 
   getRecents(String query) async {
     EasyLoading.show(status: 'Loading...');
     try {
-      String pathUrl ="";
-      if(query.isEmpty) {
+      String pathUrl = "";
+      if (query.isEmpty) {
         var logtime = formattedEndDate();
         pathUrl =
             "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&count=15&AK=${FlutterTests.AK}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
       } else
-        pathUrl="https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.AK}&VALIDATION_GLID=136484661&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=7983071546&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
+        pathUrl =
+            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.AK}&VALIDATION_GLID=136484661&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=7983071546&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
       print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -166,7 +166,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
           ],
         ).show(context);
       } else if (response.statusCode == 200) {
-        if(query.isEmpty) {
+        if (query.isEmpty) {
           var resultsArray = json.decode(response.body)['details']['searches'];
           dataArray.clear();
           for (var i = 0; i < resultsArray.length; i++) {
@@ -176,7 +176,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
               dataArray.add(label.toString());
             }
           }
-        } else{
+        } else {
           var resultsArray = json.decode(response.body)['product'];
           dataArray.clear();
           for (var i = 0; i < resultsArray.length; i++) {
@@ -242,12 +242,11 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                                 hasText = true;
                               });
                               getRecents(searchQuery);
-                            }
-                            else {
+                            } else {
                               setState(() {
                                 hasText = false;
                                 print("searchingText1=$searchingText");
-                                searchQuery="";
+                                searchQuery = "";
                                 getRecents(searchQuery);
                               });
                             }
@@ -261,8 +260,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                             closeKeyboard(context);
                           },
                           onTap: () {
-                            if(searchQuery.isEmpty)
-                              getRecents("");
+                            if (searchQuery.isEmpty) getRecents("");
                           },
                           controller: searchBar,
                           decoration: const InputDecoration(
@@ -333,16 +331,17 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                           Padding(
+                          Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: hasText?Icon(
-                              Icons.search,
-                              color: Colors.grey,
-                            ):
-                            Icon(
-                              Icons.access_time_outlined,
-                              color: Colors.grey,
-                            ),
+                            child: hasText
+                                ? Icon(
+                                    Icons.search,
+                                    color: Colors.grey,
+                                  )
+                                : Icon(
+                                    Icons.access_time_outlined,
+                                    color: Colors.grey,
+                                  ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -377,32 +376,32 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       ),
     );
   }
+
   TextSpan _buildTextSpan(String text, String searchText) {
     final startIndex = text.indexOf(searchText);
     if (startIndex == -1) {
-      return TextSpan(text: text,style: TextStyle(color: Colors.black,fontSize: 18));
+      return TextSpan(
+          text: text, style: TextStyle(color: Colors.black, fontSize: 18));
     }
 
     final endIndex = startIndex + searchText.length;
 
-    final span = TextSpan(
-      children: [
-        TextSpan(
-          text: text.substring(0, startIndex),
-        ),
-        TextSpan(
-          text: text.substring(startIndex, endIndex),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        TextSpan(
-          text: text.substring(endIndex),
-        ),
-      ],
-      style: TextStyle(color: Colors.black,fontSize: 18)
-    );
+    final span = TextSpan(children: [
+      TextSpan(
+        text: text.substring(0, startIndex),
+      ),
+      TextSpan(
+        text: text.substring(startIndex, endIndex),
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      TextSpan(
+        text: text.substring(endIndex),
+      ),
+    ], style: TextStyle(color: Colors.black, fontSize: 18));
 
     return span;
   }
+
   String formattedEndDate() {
     try {
       final DateFormat targetFormat = DateFormat("yyyyMMddHHmmss");
