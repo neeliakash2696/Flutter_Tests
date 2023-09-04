@@ -487,6 +487,7 @@ class ImportantSuppilesDetailsListState
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(8),
                           ),
+                          readOnly: true,
                         ),
                       ),
                       GestureDetector(
