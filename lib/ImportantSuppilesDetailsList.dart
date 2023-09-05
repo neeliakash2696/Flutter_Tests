@@ -225,7 +225,6 @@ class ImportantSuppilesDetailsListState
     cityIdArrayLocal.removeAt(clickedIndex);
     cityIdArrayLocal.insert(0, clickedCityId);
     currentCityId = cityIdArrayLocal[0];
-    print(currentCityId);
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         widget.screen, currentCityId);
   }
