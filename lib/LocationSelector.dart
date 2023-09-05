@@ -48,13 +48,29 @@ class _LocationSelectorState extends State<LocationSelector> {
     return true;
   }
 
-  Future<void> _getCurrentPosition() async {
+  Future getCurrentPosition() async {
+    EasyLoading.show(status: "Fetching...");
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        print(place.locality);
+        _currentAddress = '${place.locality}';
+        EasyLoading.dismiss();
+      });
     }).catchError((e) {
       debugPrint(e);
     });
@@ -67,24 +83,10 @@ class _LocationSelectorState extends State<LocationSelector> {
     }
   }
 
-  Future<void> _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(
-            _currentPosition!.latitude, _currentPosition!.longitude)
-        .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
-      setState(() {
-        print(place.locality);
-        _currentAddress = '${place.locality}';
-      });
-    }).catchError((e) {
-      debugPrint(e);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _getCurrentPosition();
+    getCurrentPosition();
   }
 
   @override
@@ -122,9 +124,8 @@ class _LocationSelectorState extends State<LocationSelector> {
                             fontWeight: FontWeight.w500),
                       ),
                       GestureDetector(
-                        onTap: () async {
-                          _getCurrentPosition;
-                          print("haha");
+                        onTap: () {
+                          getCurrentPosition();
                         },
                         child: const Icon(
                           Icons.refresh,
