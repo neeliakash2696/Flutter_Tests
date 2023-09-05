@@ -12,7 +12,6 @@ import 'dart:ui' show Image;
 import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
-import 'VoiceToTextConverter.dart';
 
 class WaveWidget extends StatefulWidget {
   final Function(TapDownDetails) onTap;
@@ -78,9 +77,8 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
         _waveControl.forward();
       }
     });
-    // if (widget.imageProvider == null) {
       _waveControl.forward();
-    // }
+    _initSpeech().then((value) => _startListening('en_US'));
   }
 
   @override
@@ -90,7 +88,6 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
         _listenToStream();
       else
         _stopListeningToStream();
-    // }
 
     super.didChangeDependencies();
   }
@@ -98,13 +95,10 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(WaveWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // if (widget.imageProvider != oldWidget.imageProvider) _resolveImage();
   }
 
   @override
   void reassemble() {
-    // if (widget.imageProvider != null)
-    //   _resolveImage(); // in case the image cache was flushed
     super.reassemble();
   }
 
@@ -116,12 +110,15 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       onTapDown: (TapDownDetails details1){
         details=details1;
       },
-        onTap: () {
-          _initSpeech().then((value) => _startListening());
-          print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
-    },
+    //     onTap: () {
+    //       _initSpeech().then((value) => _startListening('en_US'));
+    //       print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
+    // },
       child:CustomPaint(
       painter: _MyWavePaint(
+          onChipClicked:(locale) {
+            _startListening(locale); // Call startListening with the desired locale
+          },
         details: details,
           image: image,
           bgColor: widget.bgColor,
@@ -142,7 +139,8 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     // setState(() {});
   }
 
-  void _startListening() async {
+  void _startListening(String locale) async {
+    print("locale=$locale");
     startTimer();
     voiceConvertedText = "Listening...";
     await speechToText.listen(onResult: _onSpeechResult);
@@ -226,17 +224,17 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     // }
   }
   _stopListening() async {
-    await speechToText.stop();
+      await speechToText.stop();
     print("stopped Listening");
     info = "Tap on the Mic to speak again";
-    recording = false;
-    speechEnabled = false;
-  }
+      recording = false;
+      speechEnabled = false;
+    }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     // setState(() {
     voiceConvertedText = result.recognizedWords;
-    print(voiceConvertedText);
+    print("voiceConvertedText=$voiceConvertedText");
     // });
   }
   void _updateSourceStream(ImageStream newStream) {
@@ -279,9 +277,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   //     _updateSourceStream(newStream);
   //   } catch (e) {
   //     print(e);
-  //   }
   // }
-
   void _handleImageChanged(ImageInfo imageInfo, bool synchronousCall) {
     if (imageInfo == null) {
       return;
@@ -312,6 +308,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
 class _MyWavePaint extends CustomPainter {
   _MyWavePaint({
+      required this.onChipClicked,
       required this.details,
       required this.image,
       required this.imageSize,
@@ -326,31 +323,13 @@ class _MyWavePaint extends CustomPainter {
         this.roundImg = true,})
       : super(repaint: repaint);
 
+  final Function(String) onChipClicked;
   TapDownDetails? details;
   String textForListening;
-  /**
-   * 振幅
-   */
   double waveAmplitude;
-
-  /**
-   * 角度
-   */
   Animation<double> wavePhaseValue;
-
-  /**
-   * 频率
-   */
   double waveFrequency;
-
-  /**
-   * x轴位置百分比
-   */
   double heightPercentange;
-
-  /**
-   * 图标偏移
-   */
   Offset imgOffset;
   bool roundImg;
   Image? image;
@@ -365,7 +344,7 @@ class _MyWavePaint extends CustomPainter {
   Paint mPaint = Paint();
   Paint mPaint1 = Paint();
   Rect? rect;
-  IconData micIcon = Icons.mic; // Add your mic icon
+  IconData micIcon = Icons.mic;
   double micIconSize = 48.0; // Customize the mic icon size
   double micIconX = 0.0; // X-coordinate for the mic icon
   double micIconY = 20.0; // Y-coordinate for the mic icon (adjust as needed)
@@ -381,56 +360,8 @@ class _MyWavePaint extends CustomPainter {
     fontSize: 20.0, // You can adjust the font size
   );
 
-    // Draw the text above the microphone icon
-
   @override
   void paint(Canvas canvas, Size size) {
-    // final textPainter = TextPainter(
-    //   text: TextSpan(
-    //     text: labelText,
-    //     style: TextStyle(
-    //       color: Colors.black, // Customize the text color
-    //       fontSize: 16.0, // Customize the text size
-    //     ),
-    //   ),
-    //   textDirection: TextDirection.ltr,
-    // );
-    //
-    // textPainter.layout(
-    //   minWidth: 0,
-    //   maxWidth: size.width,
-    // );
-    //
-    // textPainter.paint(
-    //   canvas,
-    //   Offset(
-    //     (size.width - textPainter.width) / 2, // Center the text horizontally
-    //     size.height - textPainter.height - 16.0, // Adjust the vertical position
-    //   ),
-    // );
-    // final textListening = TextPainter(
-    //   text: TextSpan(
-    //     text: ,
-    //     style: TextStyle(
-    //       color: Colors.black, // Customize the text color
-    //       fontSize: 16.0, // Customize the text size
-    //     ),
-    //   ),
-    //   textDirection: TextDirection.ltr,
-    // );
-    //
-    // textListening.layout(
-    //   minWidth: 0,
-    //   maxWidth: size.width,
-    // );
-    //
-    // textListening.paint(
-    //   canvas,
-    //   Offset(
-    //     (size.width - textListening.width) / 2, // Center the text horizontally
-    //     size.height - textListening.height - 16.0, // Adjust the vertical position
-    //   ),
-    // );
     var viewCenterY = size.height * heightPercentange;
     viewWidth = size.width;
     if (bgColor != null) {
@@ -440,8 +371,6 @@ class _MyWavePaint extends CustomPainter {
       }
       canvas.drawRect(rect!, mPaint);
       if (labelText != null) {
-        final textPadding = EdgeInsets.all(8.0); // Adjust the padding value as needed
-
         final textPainter = TextPainter(
           textAlign: TextAlign.center,
           text: TextSpan(
@@ -453,7 +382,7 @@ class _MyWavePaint extends CustomPainter {
         textPainter.layout(maxWidth: size.width);
 
         double textX = (size.width - textPainter.width) / 2;
-        double textY = micIconY ; // Adjust the vertical position with top padding
+        double textY = micIconY ;
         textPainter.paint(canvas, Offset(textX, textY));
       }
     }
@@ -466,11 +395,8 @@ class _MyWavePaint extends CustomPainter {
     canvas.drawPath(path2, mPaint);
     _drawMicIcon(canvas, size);
 
-    // _drawImg(viewCenterY, canvas);
-
     mPaint.color = Color(0x80ffffff);
     canvas.drawPath(path3, mPaint);
-    // double chipSpacing = 20.0;
     if (textForListening != null) {
       final textPadding = EdgeInsets.all(8.0); // Adjust the padding value as needed
 
@@ -513,28 +439,28 @@ class _MyWavePaint extends CustomPainter {
         // Draw text inside the chip
         final textPainter = TextPainter(
           text: TextSpan(
-            text: chipTexts[i], // Get the corresponding text for this chip
+            text: chipTexts[i],
             style: TextStyle(
-              color: Colors.teal[300], // Customize the text color
-              fontSize: 16.0, // Customize the text size
+              color: Colors.teal[300],
+              fontSize: 16.0,
             ),
           ),
           textDirection: TextDirection.ltr,
         );
         textPainter.layout(
           minWidth: 0,
-          maxWidth: chipWidth - 16.0, // Make sure text fits within the chip with some padding
+          maxWidth: chipWidth - 16.0,
         );
         final textX = position - chipWidth / 2 + 8.0;
         final textY = chipY - textPainter.height / 2;
         textPainter.paint(canvas, Offset(textX, textY));
         if (details != null && chipRect.contains(details!.localPosition)) {
-          // The user has clicked on the chip at index 'i'
           print('Chip clicked: ${chipTexts[i]}');
-          // You can perform any desired action here
+          if(chipTexts[i]=="English"){
+            onChipClicked('hi_IN');
+          }
         }
       }
-
     }
   }
   void _drawMicIcon(Canvas canvas, Size size) {
@@ -626,52 +552,6 @@ class _MyWavePaint extends CustomPainter {
     path3.close();
   }
 
-  void _drawImg(double viewCenterY, Canvas canvas) {
-    if (image != null) {
-      mPaint.color = Color(0xffffffff);
-      var offset = Offset(
-          viewWidth / 2 - imageSize!.width / 2,
-          viewCenterY -
-              1.3 *
-                  waveAmplitude *
-                  _getSinY(wavePhaseValue.value + 90, waveFrequency * 0.8,
-                      (viewWidth / 2 + 1).toInt()) -
-              imageSize!.height);
-      var destRect = Rect.fromLTRB(
-          offset.dx + imgOffset.dx,
-          offset.dy + imgOffset.dy,
-          offset.dx + imgOffset.dx + imageSize!.width,
-          offset.dy + imageSize!.height + imgOffset.dy);
-      if (roundImg) {
-        var clipOvalRect = destRect;
-        canvas.save();
-        /**
-         * 计算圆形裁剪区域
-         */
-        if (destRect.width != destRect.height) {
-          var djust = (destRect.width - destRect.height).abs() / 2;
-          if (destRect.width > destRect.height) {
-            clipOvalRect = Rect.fromLTRB(destRect.left + djust, destRect.top,
-                destRect.right - djust, destRect.bottom);
-          } else {
-            clipOvalRect = Rect.fromLTRB(destRect.left, destRect.top + djust,
-                destRect.right, destRect.bottom - djust);
-          }
-        }
-        canvas.clipPath(Path()..addOval(clipOvalRect));
-      }
-      canvas.drawImageRect(
-          image!,
-          Rect.fromLTRB(
-              0.0, 0.0, image!.width.toDouble(), image!.height.toDouble()),
-          destRect,
-          mPaint);
-      if (roundImg) {
-        canvas.restore();
-      }
-    }
-  }
-
   @override
   bool shouldRepaint(_MyWavePaint oldDelegate) {
     return false;
@@ -679,7 +559,6 @@ class _MyWavePaint extends CustomPainter {
 
   double _getSinY(
       double startradius, double waveFrequency, int currentposition) {
-    //避免重复计算，提取公用值
     if (_tempa == 0) _tempa = pi / viewWidth;
     if (_tempb == 0) {
       _tempb = 2 * pi / 360.0;
