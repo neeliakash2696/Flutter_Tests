@@ -17,6 +17,7 @@ void main() {
   // runApp(MyApp());
   runApp(MaterialApp(
     home: ViewCategories(),
+    builder: EasyLoading.init(),
   ));
 }
 
@@ -94,7 +95,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      builder: EasyLoading.init(),
+      // builder: EasyLoading.init(),
     );
   }
 }
@@ -138,11 +139,11 @@ class SectionWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ImportantSuppilesDetailsList(
-                                  productName: section.items[index],
-                                  productFname: section.items[index],
+                                productName: section.items[index],
+                                productFname: section.items[index],
                                 productIndex: 0,
-                              biztype: "",screen:"search"
-                                )));
+                                biztype: "",
+                                screen: "search")));
                   }),
             );
           },

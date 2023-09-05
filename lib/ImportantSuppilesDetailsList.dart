@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:flutter_tests/LocationSelector.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
@@ -37,8 +38,8 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
       required this.productName,
       required this.productFname,
       required this.productIndex,
-      required this.biztype, required this.screen
-      })
+      required this.biztype,
+      required this.screen})
       : super(key: key);
 }
 
@@ -62,6 +63,9 @@ class ImportantSuppilesDetailsListState
   bool _isAtEnd = false;
 
   List<dynamic> items = [];
+  List<String> citiesArrayLocal = [];
+  List<String> cityIdArrayLocal = [];
+  String currentCityId = "";
 
   var totalItemCount = 0;
   var itemCount = 0;
@@ -77,19 +81,22 @@ class ImportantSuppilesDetailsListState
 
   int currentPage = 0;
 
-  List<String> related=[];
-  List<String> relatedfname=[];
+  List<String> related = [];
+  List<String> relatedfname = [];
 
   // View Did Load
   @override
   void initState() {
     super.initState();
+    citiesArrayLocal = FlutterTests.citiesArray;
+    cityIdArrayLocal = FlutterTests.cityIdArray;
     encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
     currentPage = 1;
     start = 0;
     end = 9;
-    getMoreDetails(encodedQueryParam, widget.biztype,0, 9, currentPage,true,widget.screen);
+    getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
+        widget.screen, currentCityId);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -104,9 +111,10 @@ class ImportantSuppilesDetailsListState
             start = end - 10;
             end = totalItemCount;
           }
-          if (stop == false && start<=end) {
+          if (stop == false && start <= end) {
             currentPage += 1;
-            getMoreDetails(encodedQueryParam,widget.biztype, start, end, currentPage,false,widget.screen);
+            getMoreDetails(encodedQueryParam, widget.biztype, start, end,
+                currentPage, false, widget.screen, currentCityId);
           } // Mark that you've reached the end
         });
       } else {
@@ -123,13 +131,13 @@ class ImportantSuppilesDetailsListState
     return encoded;
   }
 
-  openFilters(bool isSellerType,List<String> list,List<String> list1) async {
+  openFilters(bool isSellerType, List<String> list, List<String> list1) async {
     var selectedChip = await Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
                   categoriesList: list,
-                  backList:list1,
+                  backList: list1,
                   isSellerType: isSellerType,
                   productIndex: widget.productIndex,
                 ),
@@ -137,25 +145,26 @@ class ImportantSuppilesDetailsListState
             fullscreenDialog: true));
 
     if (selectedChip != null) {
-      encodedQueryParam =encodeString(widget.productFname);
+      encodedQueryParam = encodeString(widget.productFname);
       print("issellertype=$isSellerType biztype=${selectedChip[0]}");
-      if(!isSellerType) {
+      if (!isSellerType) {
         resetUI();
         encodedQueryParam = encodeString(selectedChip[1]);
         widget.productName = selectedChip[0];
       } else {
-        var productName=widget.productName;
+        var productName = widget.productName;
         resetUI();
-        widget.productName=productName;
+        widget.productName = productName;
         widget.biztype = selectedChip[0];
         widget.productIndex = selectedChip[2];
       }
       items.length = 0;
-      if(!isSellerType)
-        widget.screen="impcat";
-        getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,false,widget.screen);
+      if (!isSellerType) widget.screen = "impcat";
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
+          widget.screen, currentCityId);
     }
   }
+
   void resetUI() {
     setState(() {
       imagesArray?.clear();
@@ -165,10 +174,11 @@ class ImportantSuppilesDetailsListState
       companyNameArray?.clear();
       locationsArray?.clear();
       localityArray?.clear();
-      widget.productName="";
+      widget.productName = "";
       // Add more variables to reset if needed.
     });
   }
+
   openVoiceToTextConverter() async {
     var outputText = await Navigator.push(
         context,
@@ -183,8 +193,9 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      widget.screen="search";
-      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
+      widget.screen = "search";
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+          widget.screen, currentCityId);
     }
   }
 
@@ -194,35 +205,57 @@ class ImportantSuppilesDetailsListState
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
-              word: widget.productName,
+                  word: widget.productName,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       items.length = 0;
-      widget.screen="search";
-      getMoreDetails(encodedQueryParam,widget.biztype, 0, 9, 1,true,widget.screen);
+      widget.screen = "search";
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+          widget.screen, currentCityId);
     }
   }
 
-  getMoreDetails(String category, String biztype,int start, int end, int currentPage, bool shouldUpdateSellerTypeList, String screen_name) async {
+  reArrangeLocalArraysAndRefreshScreen(
+      int clickedIndex, String clickedCity, String clickedCityId) {
+    citiesArrayLocal.removeAt(clickedIndex);
+    citiesArrayLocal.insert(0, clickedCity);
+    cityIdArrayLocal.removeAt(clickedIndex);
+    cityIdArrayLocal.insert(0, clickedCityId);
+    currentCityId = cityIdArrayLocal[0];
+    print(currentCityId);
+    getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+        widget.screen, currentCityId);
+  }
+
+  getMoreDetails(
+    String category,
+    String biztype,
+    int start,
+    int end,
+    int currentPage,
+    bool shouldUpdateSellerTypeList,
+    String screen_name,
+    String cityId,
+  ) async {
     EasyLoading.show(status: 'Loading...');
-    print("cateory=$category");
-    print(
-        "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
+    // print("cateory=$category");
+    // print(
+    // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
-      String biztype_data="";
-      if(SellerTypeData.getValueFromName(biztype)!="")
-        biztype_data=SellerTypeData.getValueFromName(biztype);
-      print("biztype_data=$biztype_data");
-      String pathUrl ="";
-      if(screen_name=="search")
-        pathUrl="https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+      String biztype_data = "";
+      if (SellerTypeData.getValueFromName(biztype) != "")
+        biztype_data = SellerTypeData.getValueFromName(biztype);
+      // print("biztype_data=$biztype_data");
+      String pathUrl = "";
+      if (screen_name == "search")
+        pathUrl =
+            "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       else {
         pathUrl =
-        "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests
-            .AK}&cityid=70699&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
+            "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       }
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
@@ -250,16 +283,15 @@ class ImportantSuppilesDetailsListState
         if (screen_name == "search") {
           resultsArray = json.decode(response.body)['results'];
           sellerTypeArray =
-          json.decode(response.body)['facet_fields']['biztype'];
-        }
-        else {
+              json.decode(response.body)['facet_fields']['biztype'];
+        } else {
           resultsArray = json.decode(response.body)['data'];
           bizWiseArray = json.decode(response.body)['biz_wise_count'];
           sellerTypeArray.clear();
           for (int i = 0; i < bizWiseArray.length; i++)
-            sellerTypeArray.add(
-                (bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
-          print("resultsArray=$resultsArray $sellerTypeArray");
+            sellerTypeArray
+                .add((bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
+          // print("resultsArray=$resultsArray $sellerTypeArray");
         }
         List<String> stringsOnly = [];
         if (shouldUpdateSellerTypeList) {
@@ -269,15 +301,15 @@ class ImportantSuppilesDetailsListState
             if (item is String) {
               stringsOnly.add(item);
               if (SellerTypeData.getNameOfSellerType(item) != "")
-                sellerTypeModelList.add(
-                    SellerTypeData.getNameOfSellerType(item));
+                sellerTypeModelList
+                    .add(SellerTypeData.getNameOfSellerType(item));
             }
           }
         }
         if (currentPage == 1) {
           if (screen_name == "search") {
             dynamic live_mcats =
-            json.decode(response.body)['guess']['guess']['live_mcats'];
+                json.decode(response.body)['guess']['guess']['live_mcats'];
             pbrimage = live_mcats[0]['smallimg'];
             related.clear();
             relatedfname.clear();
@@ -286,11 +318,9 @@ class ImportantSuppilesDetailsListState
               relatedfname.add(live_mcats[i]['filename']);
             }
             totalItemCount =
-            json.decode(response.body)['total_results_without_repetition'];
-          }
-          else {
-            dynamic live_mcats =
-            json.decode(response.body)['mcatdata'];
+                json.decode(response.body)['total_results_without_repetition'];
+          } else {
+            dynamic live_mcats = json.decode(response.body)['mcatdata'];
             pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
             related.clear();
             relatedfname.clear();
@@ -299,10 +329,10 @@ class ImportantSuppilesDetailsListState
               relatedfname.add(live_mcats[i]['GLCAT_MCAT_FLNAME']);
             }
             print("pbrimage=$sellerTypeModelList");
-            print("pbrimage=${json.decode(
-                response.body)['out_total_unq_count']}");
-            totalItemCount =
-            int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+            print(
+                "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
+            totalItemCount = int.tryParse(
+                json.decode(response.body)['out_total_unq_count'])!;
           }
           imagesArray?.clear();
           phoneArray?.clear();
@@ -322,7 +352,7 @@ class ImportantSuppilesDetailsListState
 
             var phoneNo = resultsArray[i]['fields']['pns'];
             phoneArray?.add(phoneNo ?? "NA");
-            print("phoine=$phoneNo");
+            // print("phoine=$phoneNo");
             var itemPrices = resultsArray[i]['fields']['itemprice'];
             var units = resultsArray[i]['fields']['moq_type'];
             if (itemPrices == "" || itemPrices == null) {
@@ -340,10 +370,9 @@ class ImportantSuppilesDetailsListState
             locationsArray?.add("Deals in $city");
 
             var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-            if(locality==""||locality=="NA")
+            if (locality == "" || locality == "NA")
               localityArray?.add(city);
-            else if(city!="")
-              localityArray?.add(city+" - "+locality);
+            else if (city != "") localityArray?.add(city + " - " + locality);
           } else if (screen_name == "impcat") {
             var image = resultsArray[i]['photo_250'] ?? "NA";
             imagesArray?.add(image);
@@ -354,7 +383,7 @@ class ImportantSuppilesDetailsListState
             var phoneNo = resultsArray[i]['comp_contct'] ?? "NA";
             phoneArray?.add(phoneNo);
 
-            print("phone=$phoneNo");
+            // print("phone=$phoneNo");
 
             var itemPrices = resultsArray[i]['prd_price'];
             if (itemPrices == "" || itemPrices == null) {
@@ -367,60 +396,60 @@ class ImportantSuppilesDetailsListState
             companyNameArray?.add(company);
 
             var city = resultsArray[i]['city_orig'] ?? "NA";
-            var localityForAddress=resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
-            if(localityForAddress=="" || locationsArray=="NA")
+            var localityForAddress =
+                resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
+            if (localityForAddress == "" || locationsArray == "NA")
               localityArray?.add(city);
-            else if(city!="")
-              localityArray?.add(city+" - "+localityForAddress);
+            else if (city != "")
+              localityArray?.add(city + " - " + localityForAddress);
 
             var locality = resultsArray[i]['city'] ?? "";
             locationsArray?.add("Deals in $locality");
           }
         }
       }
-        setState(() {
-          items.addAll(resultsArray);
-          print(
-              "items length=${items.length} $totalItemCount ${localityArray?.length}");
-        });
+      setState(() {
+        items.addAll(resultsArray);
+        // print(
+        //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
+      });
 
-        if (resultsArray.length > 0)
-          if (currentPage > 1 && totalItemCount>10) {
-          if (!kIsWeb)
-            // addBannerOrAd(end, "ADEMPTY");
+      if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
+        if (!kIsWeb)
+          // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
-        } else if (currentPage == 1) {
-          if (!kIsWeb) {
-            // addBannerOrAd(2, "ADEMPTY");
-            // addBannerOrAd(7, "ADEMPTY");
-          }
-          addBannerOrAd(5, "isq_banner");
-          addBannerOrAd(10, "PBRBANNER");
-        } else
-          stop = true;
-
-        print("resultsArray=${items.length} ${resultsArray?.length},");
-        EasyLoading.dismiss();
-        scrolled = 1;
-        if (resultsArray.length > 0) {
-          Flushbar(
-            title: "DONE",
-            message: "API HITTING DONE",
-            flushbarStyle: FlushbarStyle.FLOATING,
-            isDismissible: true,
-            duration: const Duration(seconds: 1),
-            backgroundColor: Colors.green,
-            margin: const EdgeInsets.all(8),
-            borderRadius: BorderRadius.circular(8),
-            boxShadows: const [
-              BoxShadow(
-                offset: Offset(0.0, 2.0),
-                blurRadius: 3.0,
-              )
-            ],
-          ).show(context);
+      } else if (currentPage == 1) {
+        if (!kIsWeb) {
+          // addBannerOrAd(2, "ADEMPTY");
+          // addBannerOrAd(7, "ADEMPTY");
         }
-      } catch (e) {
+        addBannerOrAd(5, "isq_banner");
+        addBannerOrAd(10, "PBRBANNER");
+      } else
+        stop = true;
+
+      // print("resultsArray=${items.length} ${resultsArray?.length},");
+      EasyLoading.dismiss();
+      scrolled = 1;
+      if (resultsArray.length > 0) {
+        Flushbar(
+          title: "DONE",
+          message: "API HITTING DONE",
+          flushbarStyle: FlushbarStyle.FLOATING,
+          isDismissible: true,
+          duration: const Duration(seconds: 1),
+          backgroundColor: Colors.green,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          boxShadows: const [
+            BoxShadow(
+              offset: Offset(0.0, 2.0),
+              blurRadius: 3.0,
+            )
+          ],
+        ).show(context);
+      }
+    } catch (e) {
       EasyLoading.dismiss();
       Flushbar(
         title: "Error",
@@ -526,7 +555,7 @@ class ImportantSuppilesDetailsListState
               children: [
                 TextButton(
                   onPressed: () {
-                    openFilters(true,sellerTypeModelList,sellerTypeModelList);
+                    openFilters(true, sellerTypeModelList, sellerTypeModelList);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -548,7 +577,7 @@ class ImportantSuppilesDetailsListState
                 const Divider(),
                 TextButton(
                   onPressed: () {
-                    openFilters(false,related,relatedfname);
+                    openFilters(false, related, relatedfname);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -599,6 +628,54 @@ class ImportantSuppilesDetailsListState
                   ),
                 ),
               ],
+            ),
+            Divider(
+              height: 4,
+              color: Colors.black,
+            ),
+            Container(
+              height: 40,
+              child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: citiesArrayLocal.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var inkWell = InkWell(
+                      onTap: () {
+                        if (index == 0) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LocationSelector()));
+                        } else {
+                          reArrangeLocalArraysAndRefreshScreen(index,
+                              citiesArrayLocal[index], cityIdArrayLocal[index]);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(citiesArrayLocal[index]),
+                      ));
+                  return Card(
+                    color: Colors.grey.shade300,
+                    clipBehavior: Clip.hardEdge,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: inkWell,
+                  );
+                },
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Divider(
+              height: 8,
+              color: Colors.grey,
+            ),
+            SizedBox(
+              height: 5,
             ),
             Expanded(
               child: ListView.builder(
