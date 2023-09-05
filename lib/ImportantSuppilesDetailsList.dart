@@ -230,6 +230,16 @@ class ImportantSuppilesDetailsListState
         widget.screen, currentCityId);
   }
 
+  showLocationSelector() async {
+    var selectedCity = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LocationSelector()));
+    if (selectedCity != null) {
+      var index = citiesArrayLocal.indexOf(selectedCity);
+      reArrangeLocalArraysAndRefreshScreen(
+          index, selectedCity, cityIdArrayLocal[index]);
+    }
+  }
+
   getMoreDetails(
     String category,
     String biztype,
@@ -643,11 +653,7 @@ class ImportantSuppilesDetailsListState
                   var inkWell = InkWell(
                       onTap: () {
                         if (index == 0) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const LocationSelector()));
+                          showLocationSelector();
                         } else {
                           reArrangeLocalArraysAndRefreshScreen(index,
                               citiesArrayLocal[index], cityIdArrayLocal[index]);

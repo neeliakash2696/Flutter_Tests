@@ -211,7 +211,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                     onTap: () {
                       // Action
                       _currentAddress = FlutterTests.citiesArray[index];
-                      setState(() {});
+                      Navigator.pop(context, _currentAddress);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
