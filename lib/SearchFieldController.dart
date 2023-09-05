@@ -68,7 +68,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   }
 
   proceedForSearch() {
-    saveSearchQueryLocally(searchQuery);
+    // saveSearchQueryLocally(searchQuery);
     switch (widget.fromScreen) {
       case SearchingFromScreen.def:
         Navigator.pop(context);
