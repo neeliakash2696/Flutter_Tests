@@ -477,7 +477,7 @@ class ImportantSuppilesDetailsListState
       itemCount = 0;
     } else {
       itemCount = items.length;
-      print("itemcounta=$itemCount");
+      // print("itemcounta=$itemCount");
     }
     return Scaffold(
       appBar: AppBar(
@@ -629,7 +629,7 @@ class ImportantSuppilesDetailsListState
                 ),
               ],
             ),
-            Divider(
+            const Divider(
               height: 4,
               color: Colors.black,
             ),
@@ -646,7 +646,8 @@ class ImportantSuppilesDetailsListState
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LocationSelector()));
+                                  builder: (context) =>
+                                      const LocationSelector()));
                         } else {
                           reArrangeLocalArraysAndRefreshScreen(index,
                               citiesArrayLocal[index], cityIdArrayLocal[index]);
@@ -654,10 +655,26 @@ class ImportantSuppilesDetailsListState
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(citiesArrayLocal[index]),
+                        child: Row(
+                          children: [
+                            if (index == 0) ...[
+                              const Icon(
+                                Icons.gps_fixed,
+                                color: Colors.black54,
+                                size: 15,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                            Text(citiesArrayLocal[index]),
+                          ],
+                        ),
                       ));
                   return Card(
-                    color: Colors.grey.shade300,
+                    color: index == 0
+                        ? Colors.teal.shade200
+                        : Colors.grey.shade300,
                     clipBehavior: Clip.hardEdge,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
@@ -667,14 +684,14 @@ class ImportantSuppilesDetailsListState
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Divider(
+            const Divider(
               height: 8,
               color: Colors.grey,
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Expanded(
