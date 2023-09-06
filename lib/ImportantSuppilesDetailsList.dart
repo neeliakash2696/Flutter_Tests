@@ -908,7 +908,7 @@ class CustomButton extends StatelessWidget {
         child: InkWell(
           onTap: () {
             print("Call Now pressed}");
-            makePhoneCall('$phoneNo');
+            _makePhoneCall('$phoneNo');
           },
           child: Container(
             width: MediaQuery.of(context).size.width / 2 - 25,

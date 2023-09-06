@@ -7,7 +7,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart' hide Image;
 import 'package:speech_to_text/speech_recognition_result.dart';
-import 'dart:ui' show Image;
+import 'dart:ui' show Image, ParagraphStyle;
 
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -412,20 +412,20 @@ class _MyWavePaint extends CustomPainter {
 
       double textX = (size.width - textPainter.width) / 2;
       double textY = heightPercentange+250 ; // Adjust the vertical position with top padding
-      textPainter.paint(canvas, Offset(textX, heightPercentange+250));
+      textPainter.paint(canvas, Offset(textX, size.height-120));
       mPaint1.color = Colors.teal[300]!;
       mPaint1.style = PaintingStyle.stroke;
       final List<String> chipTexts = ["English", "Hindi"];
-      List<double> chipPositions = [ 100.0, 180.0]; // Add X coordinates for each chip
+      List<double> chipPositions = [ size.width/2-60, size.width/2+60]; // Add X coordinates for each chip
       for (int i = 0; i < chipPositions.length; i++) {
         final position = chipPositions[i];
-        final chipY = heightPercentange+250 + 50.0; // Adjust the vertical position of the chips
-        final chipWidth = 70.0; // Adjust the chip width as needed
+        final chipY = size.height-40; // Adjust the vertical position of the chips
+        final chipWidth = 100.0; // Adjust the chip width as needed
         final chipHeight = 30.0; // Adjust the chip height as needed
         final chipRadius = Radius.circular(20.0); //  Adjust the chip size as needed
         final chipRect = RRect.fromRectAndRadius(
           Rect.fromCenter(
-            center: Offset(position, chipY),
+            center: Offset(position,chipY),
             width: chipWidth,
             height: chipHeight,
           ),
@@ -435,24 +435,29 @@ class _MyWavePaint extends CustomPainter {
         final borderPath = Path();
         borderPath.addRRect(chipRect);
         canvas.drawPath(borderPath, mPaint1);
-
+        final paragraphStyle = ParagraphStyle(
+            textAlign: TextAlign.center,
+            fontSize: 16.0
+        );
         // Draw text inside the chip
         final textPainter = TextPainter(
           text: TextSpan(
             text: chipTexts[i],
             style: TextStyle(
               color: Colors.teal[300],
-              fontSize: 16.0,
+              fontSize: 16.0
             ),
           ),
           textDirection: TextDirection.ltr,
         );
+
+
         textPainter.layout(
           minWidth: 0,
           maxWidth: chipWidth - 16.0,
         );
-        final textX = position - chipWidth / 2 + 8.0;
-        final textY = chipY - textPainter.height / 2;
+        final textX = chipRect.center.dx - textPainter.width / 2;
+        final textY = chipRect.center.dy - textPainter.height / 2;
         textPainter.paint(canvas, Offset(textX, textY));
         if (details != null && chipRect.contains(details!.localPosition)) {
           print('Chip clicked: ${chipTexts[i]}');
