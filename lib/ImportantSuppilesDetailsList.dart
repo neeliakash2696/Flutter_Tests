@@ -241,7 +241,6 @@ class ImportantSuppilesDetailsListState
     }
   }
 
-
   getMoreDetails(
     String category,
     String biztype,
@@ -267,7 +266,7 @@ class ImportantSuppilesDetailsListState
             "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       else {
         pathUrl =
-
+            "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       }
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
@@ -430,40 +429,37 @@ class ImportantSuppilesDetailsListState
         if (!kIsWeb)
           // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
+      } else if (currentPage == 1) {
+        if (!kIsWeb) {
+          // addBannerOrAd(2, "ADEMPTY");
+          // addBannerOrAd(7, "ADEMPTY");
+        }
+        addBannerOrAd(5, "isq_banner");
+        addBannerOrAd(10, "PBRBANNER");
+        addBannerOrAd(11, "RECENTPBRBANNER");
+      } else
+        stop = true;
 
-        } else if (currentPage == 1) {
-          if (!kIsWeb) {
-            // addBannerOrAd(2, "ADEMPTY");
-            // addBannerOrAd(7, "ADEMPTY");
-          }
-          addBannerOrAd(5, "isq_banner");
-          addBannerOrAd(10, "PBRBANNER");
-          addBannerOrAd(11, "RECENTPBRBANNER");
-        } else
-          stop = true;
-
-        print("resultsArray=${items.length} ${resultsArray?.length},");
-        EasyLoading.dismiss();
-        scrolled = 1;
-        if (resultsArray.length > 0) {
-          Flushbar(
-            title: "DONE",
-            message: "API HITTING DONE",
-            flushbarStyle: FlushbarStyle.FLOATING,
-            isDismissible: true,
-            duration: const Duration(seconds: 1),
-            backgroundColor: Colors.green,
-            margin: const EdgeInsets.all(8),
-            borderRadius: BorderRadius.circular(8),
-            boxShadows: const [
-              BoxShadow(
-                offset: Offset(0.0, 2.0),
-                blurRadius: 3.0,
-              )
-            ],
-          ).show(context);
-
-      
+      print("resultsArray=${items.length} ${resultsArray?.length},");
+      EasyLoading.dismiss();
+      scrolled = 1;
+      if (resultsArray.length > 0) {
+        Flushbar(
+          title: "DONE",
+          message: "API HITTING DONE",
+          flushbarStyle: FlushbarStyle.FLOATING,
+          isDismissible: true,
+          duration: const Duration(seconds: 1),
+          backgroundColor: Colors.green,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          boxShadows: const [
+            BoxShadow(
+              offset: Offset(0.0, 2.0),
+              blurRadius: 3.0,
+            )
+          ],
+        ).show(context);
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -830,7 +826,7 @@ class ImportantSuppilesDetailsListState
                   } else if (titlesArray?[index] == "isq_banner") {
                     return MainPBRBanner(
                         productName: widget.productName, img: pbrimage);
-                  }else if (titlesArray?[index] == "RECENTPBRBANNER") {
+                  } else if (titlesArray?[index] == "RECENTPBRBANNER") {
                     return LimitedChipsList();
                   }
                   // else if (titlesArray?[index] == "ADEMPTY") {
@@ -853,26 +849,30 @@ class ImportantSuppilesDetailsListState
       ),
     );
   }
+
   void _showBottomSheet(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Center(
-          child: GestureDetector(
-            onTap: (){
-              print('Mic clicked');
+            child: GestureDetector(
+          onTap: () {
+            print('Mic clicked');
+          },
+          child: WaveWidget(
+            onTap: (details) {
+              // You can access touch position here as details.localPosition
+              print('Tap position: ${details.localPosition}');
             },
-            child:WaveWidget(
-              onTap: (details) {
-                // You can access touch position here as details.localPosition
-                print('Tap position: ${details.localPosition}');
-              },
             bgColor: Colors.teal,
 //       imgSize: Size(50.0, 0.0),
             size: Size(
-              MediaQuery.of(context).size.width-60, // Adjust the width if needed
-              MediaQuery.of(context).size.height-400, // Adjust the height as a fraction of the screen height
-            ), textForListening: 'hello',
+              MediaQuery.of(context).size.width -
+                  60, // Adjust the width if needed
+              MediaQuery.of(context).size.height -
+                  400, // Adjust the height as a fraction of the screen height
+            ),
+            textForListening: 'hello',
           ), // Replace WaveWidget with your custom widget
         ));
       },
