@@ -78,7 +78,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       }
     });
       _waveControl.forward();
-    _initSpeech().then((value) => _startListening('en_US'));
+    _initSpeech().then((value) => _startListening('hi_IN'));
   }
 
   @override
@@ -143,7 +143,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     print("locale=$locale");
     startTimer();
     voiceConvertedText = "Listening...";
-    await speechToText.listen(onResult: _onSpeechResult);
+    await speechToText.listen(onResult: _onSpeechResult,localeId: locale);
     // voiceConvertedText = "";
     print("Started Lsitening");
     info = "Listening...";
@@ -160,7 +160,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
           (Timer timer) {
         if (start == 0) {
           timer.cancel();
-          if (voiceConvertedText == "") {
+          if (voiceConvertedText == "Listening") {
             _stopListening();
             voiceConvertedText="Tap on mic to speak again";
             setState(() {});
