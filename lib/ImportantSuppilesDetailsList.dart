@@ -607,11 +607,7 @@ class ImportantSuppilesDetailsListState
                     ],
                   ),
                 ),
-                const VerticalDivider(
-                  color: Colors.blue, // Partition color
-                  thickness: 1, // Partition thickness
-                  width: 1, // Width of the partition
-                ),
+                const Divider(),
                 TextButton(
                   onPressed: () {
                     openFilters(false, related, relatedfname);
@@ -633,11 +629,7 @@ class ImportantSuppilesDetailsListState
                     ],
                   ),
                 ),
-                const VerticalDivider(
-                  color: Colors.blue, // Partition color
-                  thickness: 1, // Partition thickness
-                  width: 1, // Width of the partition
-                ),
+                const Divider(),
                 TextButton(
                   onPressed: () {
                     if (currentLayout == ScreenLayout.details) {
@@ -679,7 +671,9 @@ class ImportantSuppilesDetailsListState
                 const SizedBox(
                   height: 5,
                 ),
-                 Padding(
+                 Visibility(
+                   visible: widget.screen=="impcat",
+                     child: Padding(
                      padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
                   child:GestureDetector(
                     onTap: (){
@@ -690,13 +684,12 @@ class ImportantSuppilesDetailsListState
                         color: Colors.black54,
                       )
                   )
-                 ),
+                 )),
               ],
             ),
-            const VerticalDivider(
-              color: Colors.blue, // Partition color
-              thickness: 1, // Partition thickness
-              width: 1, // Width of the partition
+            const Divider(
+              height: 4,
+              color: Colors.black,
             ),
             Container(
               height: 40,
@@ -749,8 +742,8 @@ class ImportantSuppilesDetailsListState
               height: 5,
             ),
             const Divider(
-              color: Colors.blue, // Partition color
-              thickness: 1,  // Width of the partition
+              height: 8,
+              color: Colors.grey,
             ),
             const SizedBox(
               height: 5,
