@@ -3,7 +3,11 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter/services.dart';
+
 import 'package:flutter_tests/LocationSelector.dart';
+
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/categories_detail.dart';
@@ -176,10 +180,13 @@ class _ViewCategoriesState extends State<ViewCategories> {
                             child: Padding(
                               padding: const EdgeInsets.all(0.0),
                               child: Container(
-                                child: Image(
-                                  image: CachedNetworkImageProvider(imagesArray?[
-                                          index] ??
-                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                child: imagesArray[index].startsWith("http")
+                                    ? CachedNetworkImage(
+                                      imageUrl: imagesArray[index],
+                                      fit: BoxFit.fill
+                                )
+                                    : Image.asset(
+                                  imagesArray[index],
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -206,7 +213,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
   Future<void> getCategories() async {
     String path =
         "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&AK=${FlutterTests.AK}&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-    print(path);
+    print("api=$path");
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
     if (code == "402") {
@@ -220,10 +227,32 @@ class _ViewCategoriesState extends State<ViewCategories> {
       idsArray.clear();
       for (var i = 0; i < resultsArray.length; i++) {
         nameArray.add(resultsArray[i]['name']);
-        imagesArray.add(resultsArray[i]['img_v2']);
+        String imageUrl = resultsArray[i]['img_v2'];
+        List<String> parts = imageUrl.split('/');
+        print("path of image=assets/img_v2/${parts.last}");
+
+        // bool doesAsset = await doesAssetExist("assets/img_v2/${parts.last}");
+        // print("doesexist=${parts.last}");
+        // if (doesAsset) {
+          imagesArray.add("assets/img_v2/${parts.last}");
+        // } else {
+        //   imagesArray.add(imageUrl);
+        // }
         fnameArray.add(resultsArray[i]['fname']);
         idsArray.add(resultsArray[i]['id']);
+        print("name=${nameArray[i]} image=${imageUrl} ${imagesArray[i]}");
       }
     }
   }
+
+  // Future<bool> doesAssetExist(String assetPath) async {
+  //   try {
+  //     print("assetpath1=$assetPath");
+  //     await rootBundle.load(assetPath);
+  //     print("assetpath=$assetPath");
+  //     return true; // Asset exists
+  //   } catch (e) {
+  //     return false; // Asset doesn't exist
+  //   }
+  // }
 }
