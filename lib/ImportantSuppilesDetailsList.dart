@@ -949,28 +949,37 @@ class CustomButton extends StatelessWidget {
 
   Future<void> _makePhoneCall(String phoneNumber) async {
     final call = "tel:+91 $phoneNumber";
+    final Uri convertedNumber = Uri.parse(call);
     if (!kIsWeb) {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
-        if (await canLaunch(call)) {
+        if (await launchUrl(convertedNumber)) {
           await FlutterPhoneDirectCaller.callNumber(phoneNumber);
         } else {
           throw 'Could not launch $call';
         }
       } else {
-        if (await canLaunch(call)) {
-          await launch(call);
+        if (await launchUrl(convertedNumber)) {
+          await makePhoneCall(call);
         } else {
           throw 'Could not launch $call';
         }
       }
     } else {
-      if (await canLaunch(call)) {
-        await launch(call);
+      if (await launchUrl(convertedNumber)) {
+        await makePhoneCall(call);
       } else {
         throw 'Could not launch $call';
       }
     }
+  }
+
+  Future makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
   }
 }
 
