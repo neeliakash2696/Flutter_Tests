@@ -176,7 +176,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            height: 70,
+                            height: 40,
                             child: Padding(
                               padding: const EdgeInsets.all(0.0),
                               child: Container(

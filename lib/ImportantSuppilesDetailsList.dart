@@ -235,6 +235,7 @@ class ImportantSuppilesDetailsListState
   showLocationSelector() async {
     var selectedCity = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => LocationSelector()));
+    print("selected city=$selectedCity");
     if (selectedCity != null) {
       var index = citiesArrayLocal.indexOf(selectedCity);
       reArrangeLocalArraysAndRefreshScreen(
@@ -533,8 +534,25 @@ class ImportantSuppilesDetailsListState
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          _showBottomSheet(context);
+                        onTap: () async {
+                          var x = await showBottomSheet(context);
+                          print("nameofproduct=$x");
+                          // var selectedChip = await Navigator.push(
+                          //     context,
+                          //     PageRouteBuilder(
+                          //         pageBuilder: (_, __, ___) => WaveWidget( onTap: (details) {
+                          //           print('Tap position: ${details.localPosition}');
+                          //         },
+                          //           bgColor: Colors.teal,
+                          //           size: Size(
+                          //             MediaQuery.of(context).size.width -
+                          //                 60,
+                          //             MediaQuery.of(context).size.height -
+                          //                 400,
+                          //           ),
+                          //           textForListening: 'hello',),
+                          //         opaque: false,
+                          //         fullscreenDialog: true));
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -851,8 +869,8 @@ class ImportantSuppilesDetailsListState
     );
   }
 
-  void _showBottomSheet(BuildContext context) {
-    showDialog(
+   Future showBottomSheet(BuildContext context) async {
+     String? enteredText =await showDialog(
       context: context,
       builder: (BuildContext context) {
         return Center(
@@ -860,7 +878,7 @@ class ImportantSuppilesDetailsListState
           onTap: () {
             print('Mic clicked');
           },
-          child: WaveWidget(
+              child: WaveWidget(
             onTap: (details) {
               // You can access touch position here as details.localPosition
               print('Tap position: ${details.localPosition}');
@@ -878,6 +896,7 @@ class ImportantSuppilesDetailsListState
         ));
       },
     );
+     print("enteredText=$enteredText");
   }
 
   Future addBannerOrAd(int pos, String value) async {

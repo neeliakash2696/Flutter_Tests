@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart' hide Image;
+import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'dart:ui' show Image, ParagraphStyle;
 
@@ -24,6 +25,7 @@ class WaveWidget extends StatefulWidget {
   double heightPercentange;
   bool roundImg;
   String textForListening;
+  static var localeid='en_US';
   // ImageProvider<dynamic> imageProvider;
   Color bgColor;
 
@@ -78,9 +80,23 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       }
     });
       _waveControl.forward();
-    _initSpeech().then((value) => _startListening('en_US'));
+    _initSpeech().then((value) => _startListening(WaveWidget.localeid));
   }
+  String previousLocaleId = WaveWidget.localeid; // Store the previous localeid
 
+  @override
+  void didUpdateWidget(WaveWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if localeid has changed
+    if (previousLocaleId != WaveWidget.localeid) {
+      print("localeidh=${WaveWidget.localeid}");
+      // Call _startListening with the new localeid
+      _stopListening();
+      _startListening(WaveWidget.localeid);
+      previousLocaleId = WaveWidget.localeid; // Update the previous localeid
+    }
+  }
   @override
   void didChangeDependencies() {
 
@@ -91,11 +107,11 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
     super.didChangeDependencies();
   }
-
-  @override
-  void didUpdateWidget(WaveWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
+  //
+  // @override
+  // void didUpdateWidget(WaveWidget oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   @override
   void reassemble() {
@@ -106,19 +122,22 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // late Timer timer;
     late int start;
+    String tappedIndex="-1";
     return GestureDetector(
       onTapDown: (TapDownDetails details1){
         details=details1;
       },
-    //     onTap: () {
-    //       _initSpeech().then((value) => _startListening('en_US'));
-    //       print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
-    // },
+        onTap: () {
+          _initSpeech().then((value) => _startListening(WaveWidget.localeid));
+          print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
+    },
       child:CustomPaint(
       painter: _MyWavePaint(
           onChipClicked:(locale) {
-            _startListening(locale); // Call startListening with the desired locale
-          },
+            // setState(() {
+              WaveWidget.localeid = locale;
+            // });
+            },
         details: details,
           image: image,
           bgColor: widget.bgColor,
@@ -138,10 +157,13 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     speechEnabled = await speechToText.initialize();
     // setState(() {});
   }
-
+  late Timer timer;
+  int start=0;
   void _startListening(String locale) async {
     print("locale=$locale");
-    startTimer();
+    if(start==0 ) {
+      startTimer();
+    }
     // voiceConvertedText = "Listening...";
     await speechToText.listen(onResult: _onSpeechResult,localeId: locale);
     // voiceConvertedText = "";
@@ -150,9 +172,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     recording = true;
     // setState(() {});
   }
-  void startTimer() {
-    late Timer timer;
-    late int start;
+  Future startTimer() async {
     start = 5;
     const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(
@@ -160,7 +180,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
           (Timer timer) {
         if (start == 0) {
           timer.cancel();
-          if (voiceConvertedText == "Listening") {
+          if (voiceConvertedText == "Listening...") {
             _stopListening();
             voiceConvertedText="Tap on mic to speak again";
             setState(() {});
@@ -179,20 +199,20 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       },
     );
   }
-  proceedForSearch() {
+  Future proceedForSearch() async{
     // switch (widget.fromScreen) {
     //   case VoiceSearchFromScreen.def:
-        Navigator.pop(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
-                    productName: voiceConvertedText,
-                    productFname: voiceConvertedText,
-                    productIndex: 0,
-                    biztype: "",
-                    screen: "search"
-                )));
+        Navigator.pop(context,voiceConvertedText);
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => ImportantSuppilesDetailsList(
+        //             productName: voiceConvertedText,
+        //             productFname: voiceConvertedText,
+        //             productIndex: 0,
+        //             biztype: "",
+        //             screen: "search"
+        //         )));
       //   break;
       // case VoiceSearchFromScreen.impSuppliesList:
       //   Navigator.pop(context, voiceConvertedText);
@@ -229,6 +249,9 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     info = "Tap on the Mic to speak again";
       recording = false;
       speechEnabled = false;
+      if (timer != null && timer.isActive) {
+        timer.cancel();
+      }
     }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
@@ -260,11 +283,10 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // if (widget.imageProvider != null) {
-    //   _stopListeningToStream();
-    //   widget.imageProvider.evict();
-    // }
+    // timer.cancel();
+    // _stopListening();
     _waveControl.dispose();
+    // chipclick=false;
     super.dispose();
   }
 
@@ -463,8 +485,10 @@ class _MyWavePaint extends CustomPainter {
           print('Chip clicked: ${chipTexts[i]}');
           if(chipTexts[i]=="English"){
             onChipClicked('en_US');
+            WaveWidget.localeid="en_US";
           }else if(chipTexts[i]=="Hindi"){
             onChipClicked('hi_IN');
+            WaveWidget.localeid="hi_IN";
           }
         }
       }
