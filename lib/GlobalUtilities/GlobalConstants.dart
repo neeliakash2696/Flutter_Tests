@@ -24,7 +24,8 @@ final List<String> citiesArray = [
   "Rajkot",
   "Surat",
   "Thane",
-  "Vadodara"
+  "Vadodara",
+  "Roorkee"
 ];
 final List<String> cityIdArray = [
   "",
@@ -47,5 +48,6 @@ final List<String> cityIdArray = [
   "70487",
   "70490",
   "70638",
-  "70491"
+  "70491",
+  "73819"
 ];
