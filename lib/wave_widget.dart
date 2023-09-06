@@ -63,7 +63,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   bool _isListeningToStream = false;
   ImageStream? _imageStream;
    Size? imgSize;
-
+  int start=0;
   @override
   void initState() {
     super.initState();
@@ -80,23 +80,23 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       }
     });
       _waveControl.forward();
-    _initSpeech().then((value) => _startListening(WaveWidget.localeid));
+    _initSpeech().then((value) => _startListening(widget.textForListening));
   }
-  String previousLocaleId = WaveWidget.localeid; // Store the previous localeid
+  // String previousLocaleId = WaveWidget.localeid; // Store the previous localeid
 
-  @override
-  void didUpdateWidget(WaveWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Check if localeid has changed
-    if (previousLocaleId != WaveWidget.localeid) {
-      print("localeidh=${WaveWidget.localeid}");
-      // Call _startListening with the new localeid
-      _stopListening();
-      _startListening(WaveWidget.localeid);
-      previousLocaleId = WaveWidget.localeid; // Update the previous localeid
-    }
-  }
+  // @override
+  // void didUpdateWidget(WaveWidget oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //
+  //   // Check if localeid has changed
+  //   if (previousLocaleId != WaveWidget.localeid) {
+  //     print("localeidh=${WaveWidget.localeid}");
+  //     // Call _startListening with the new localeid
+  //     // _stopListening();
+  //     // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
+  //     previousLocaleId = WaveWidget.localeid; // Update the previous localeid
+  //   }
+  // }
   @override
   void didChangeDependencies() {
 
@@ -128,15 +128,21 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
         details=details1;
       },
         onTap: () {
-          _initSpeech().then((value) => _startListening(WaveWidget.localeid));
+          _initSpeech().then((value) => _startListening(widget.textForListening));
           print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
     },
       child:CustomPaint(
       painter: _MyWavePaint(
           onChipClicked:(locale) {
             // setState(() {
-              WaveWidget.localeid = locale;
-            // });
+            if(WaveWidget.localeid!=locale) {
+                  WaveWidget.localeid = locale;
+                  // _stopListening();
+                  // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
+
+                }
+
+                // });
             },
         details: details,
           image: image,
@@ -158,21 +164,34 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     // setState(() {});
   }
   late Timer timer;
-  int start=0;
+
   void _startListening(String locale) async {
-    print("locale=$locale");
-    if(start==0 ) {
-      startTimer();
-    }
-    // voiceConvertedText = "Listening...";
-    await speechToText.listen(onResult: _onSpeechResult,localeId: locale);
+    startTimer();
+    voiceConvertedText = "Listening...";
+    await speechToText.listen(onResult: _onSpeechResult,localeId:locale);
     // voiceConvertedText = "";
-    print("Started Lsitening");
+    print("Started Lsitening=$locale");
     info = "Listening...";
     recording = true;
-    // setState(() {});
+    setState(() {});
   }
-  Future startTimer() async {
+  _stopListening() async {
+    await speechToText.stop();
+    print("stopped Listening");
+    info = "Tap on the Mic to speak again";
+    recording = false;
+    speechEnabled = false;
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      voiceConvertedText = result.recognizedWords;
+      print(voiceConvertedText);
+    });
+  }
+
+  void startTimer() {
+    // late int start;
     start = 5;
     const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(
@@ -181,8 +200,8 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
         if (start == 0) {
           timer.cancel();
           if (voiceConvertedText == "Listening...") {
+            voiceConvertedText="Tap on the Mic to speak again";
             _stopListening();
-            voiceConvertedText="Tap on mic to speak again";
             setState(() {});
           } else {
             timer.cancel();
@@ -243,23 +262,23 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       //           )));
     // }
   }
-  _stopListening() async {
-      await speechToText.stop();
-    print("stopped Listening");
-    info = "Tap on the Mic to speak again";
-      recording = false;
-      speechEnabled = false;
-      if (timer != null && timer.isActive) {
-        timer.cancel();
-      }
-    }
-
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-    voiceConvertedText = result.recognizedWords;
-    print("voiceConvertedText=$voiceConvertedText");
-    });
-  }
+  // _stopListening() async {
+  //     await speechToText.stop();
+  //   print("stopped Listening");
+  //   info = "Tap on the Mic to speak again";
+  //     recording = false;
+  //     speechEnabled = false;
+  //     if (timer != null && timer.isActive) {
+  //       timer.cancel();
+  //     }
+  //   }
+  //
+  // void _onSpeechResult(SpeechRecognitionResult result) {
+  //   setState(() {
+  //   voiceConvertedText = result.recognizedWords;
+  //   print("voiceConvertedText=$voiceConvertedText");
+  //   });
+  // }
   void _updateSourceStream(ImageStream newStream) {
     if (_imageStream?.key == newStream?.key) return;
 
@@ -283,7 +302,9 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // timer.cancel();
+    if (timer != null && timer.isActive) {
+      timer.cancel();
+    }
     // _stopListening();
     _waveControl.dispose();
     // chipclick=false;
@@ -439,59 +460,59 @@ class _MyWavePaint extends CustomPainter {
       mPaint1.style = PaintingStyle.stroke;
       final List<String> chipTexts = ["English", "Hindi"];
       List<double> chipPositions = [ size.width/2-60, size.width/2+60]; // Add X coordinates for each chip
-      for (int i = 0; i < chipPositions.length; i++) {
-        final position = chipPositions[i];
-        final chipY = size.height-40; // Adjust the vertical position of the chips
-        final chipWidth = 100.0; // Adjust the chip width as needed
-        final chipHeight = 30.0; // Adjust the chip height as needed
-        final chipRadius = Radius.circular(20.0); //  Adjust the chip size as needed
-        final chipRect = RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: Offset(position,chipY),
-            width: chipWidth,
-            height: chipHeight,
-          ),
-          chipRadius,
-        );
-        // Draw the chip
-        final borderPath = Path();
-        borderPath.addRRect(chipRect);
-        canvas.drawPath(borderPath, mPaint1);
-        final paragraphStyle = ParagraphStyle(
-            textAlign: TextAlign.center,
-            fontSize: 16.0
-        );
-        // Draw text inside the chip
-        final textPainter = TextPainter(
-          text: TextSpan(
-            text: chipTexts[i],
-            style: TextStyle(
-              color: Colors.teal[300],
-              fontSize: 16.0
-            ),
-          ),
-          textDirection: TextDirection.ltr,
-        );
-
-
-        textPainter.layout(
-          minWidth: 0,
-          maxWidth: chipWidth - 16.0,
-        );
-        final textX = chipRect.center.dx - textPainter.width / 2;
-        final textY = chipRect.center.dy - textPainter.height / 2;
-        textPainter.paint(canvas, Offset(textX, textY));
-        if (details != null && chipRect.contains(details!.localPosition)) {
-          print('Chip clicked: ${chipTexts[i]}');
-          if(chipTexts[i]=="English"){
-            onChipClicked('en_US');
-            WaveWidget.localeid="en_US";
-          }else if(chipTexts[i]=="Hindi"){
-            onChipClicked('hi_IN');
-            WaveWidget.localeid="hi_IN";
-          }
-        }
-      }
+      // for (int i = 0; i < chipPositions.length; i++) {
+      //   final position = chipPositions[i];
+      //   final chipY = size.height-40; // Adjust the vertical position of the chips
+      //   final chipWidth = 100.0; // Adjust the chip width as needed
+      //   final chipHeight = 30.0; // Adjust the chip height as needed
+      //   final chipRadius = Radius.circular(20.0); //  Adjust the chip size as needed
+      //   final chipRect = RRect.fromRectAndRadius(
+      //     Rect.fromCenter(
+      //       center: Offset(position,chipY),
+      //       width: chipWidth,
+      //       height: chipHeight,
+      //     ),
+      //     chipRadius,
+      //   );
+      //   // Draw the chip
+      //   final borderPath = Path();
+      //   borderPath.addRRect(chipRect);
+      //   canvas.drawPath(borderPath, mPaint1);
+      //   final paragraphStyle = ParagraphStyle(
+      //       textAlign: TextAlign.center,
+      //       fontSize: 16.0
+      //   );
+      //   // Draw text inside the chip
+      //   final textPainter = TextPainter(
+      //     text: TextSpan(
+      //       text: chipTexts[i],
+      //       style: TextStyle(
+      //         color: Colors.teal[300],
+      //         fontSize: 16.0
+      //       ),
+      //     ),
+      //     textDirection: TextDirection.ltr,
+      //   );
+      //
+      //
+      //   textPainter.layout(
+      //     minWidth: 0,
+      //     maxWidth: chipWidth - 16.0,
+      //   );
+      //   final textX = chipRect.center.dx - textPainter.width / 2;
+      //   final textY = chipRect.center.dy - textPainter.height / 2;
+      //   textPainter.paint(canvas, Offset(textX, textY));
+      //   if (details != null && chipRect.contains(details!.localPosition)) {
+      //     print('Chip clicked: ${chipTexts[i]}');
+      //     if(chipTexts[i]=="English"){
+      //       onChipClicked('en_US');
+      //       WaveWidget.localeid="en_US";
+      //     }else if(chipTexts[i]=="Hindi"){
+      //       onChipClicked('hi_IN');
+      //       WaveWidget.localeid="hi_IN";
+      //     }
+      //   }
+      // }
     }
   }
   void _drawMicIcon(Canvas canvas, Size size) {

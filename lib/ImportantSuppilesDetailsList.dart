@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
-
+import 'package:speech_to_text/speech_to_text.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,9 +19,10 @@ import 'package:flutter_tests/sellerType.dart';
 import 'package:flutter_tests/wave_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
-
+import 'package:speech_to_text/speech_recognition_result.dart';
 
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -69,6 +71,7 @@ class ImportantSuppilesDetailsListState
   List<dynamic> items = [];
   List<String> citiesArrayLocal = [];
   List<String> cityIdArrayLocal = [];
+  List<String> categoriesList=["English","Hindi"];
   String currentCityId = "";
 
   var totalItemCount = 0;
@@ -84,7 +87,7 @@ class ImportantSuppilesDetailsListState
   int end = 0;
 
   int currentPage = 0;
-
+  String locale='en_US';
   List<String> related = [];
   List<String> relatedfname = [];
 
@@ -221,7 +224,24 @@ class ImportantSuppilesDetailsListState
           widget.screen, currentCityId);
     }
   }
-
+  reArrangeLanguageArraysAndRefreshScreen(
+      int clickedIndex, String clickedCity) {
+    if(clickedIndex!=0) {
+      categoriesList.removeAt(1);
+      categoriesList.insert(1, categoriesList[0]);
+      categoriesList.removeAt(0);
+      categoriesList.insert(0, clickedCity);
+    }
+    setState(() {
+      if(clickedCity=="English") {
+        locale='en_US';
+      } else {
+        locale='hi_IN';
+      }
+    });
+    Navigator.pop(context);
+    showBottomSheet(context,locale);
+  }
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
     citiesArrayLocal.removeAt(clickedIndex);
@@ -278,22 +298,22 @@ class ImportantSuppilesDetailsListState
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
-        Flushbar(
-          title: code,
-          message: msg,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 4),
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
+        // Flushbar(
+        //   title: code,
+        //   message: msg,
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   isDismissible: true,
+        //   duration: const Duration(seconds: 4),
+        //   backgroundColor: Colors.red,
+        //   margin: const EdgeInsets.all(8),
+        //   borderRadius: BorderRadius.circular(8),
+        //   boxShadows: const [
+        //     BoxShadow(
+        //       offset: Offset(0.0, 2.0),
+        //       blurRadius: 3.0,
+        //     )
+        //   ],
+        // ).show(context);
       } else if (response.statusCode == 200) {
         if (screen_name == "search") {
           resultsArray = json.decode(response.body)['results'];
@@ -448,41 +468,41 @@ class ImportantSuppilesDetailsListState
       EasyLoading.dismiss();
       scrolled = 1;
       if (resultsArray.length > 0) {
-        Flushbar(
-          title: "DONE",
-          message: "API HITTING DONE",
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
+        // Flushbar(
+        //   title: "DONE",
+        //   message: "API HITTING DONE",
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   isDismissible: true,
+        //   duration: const Duration(seconds: 1),
+        //   backgroundColor: Colors.green,
+        //   margin: const EdgeInsets.all(8),
+        //   borderRadius: BorderRadius.circular(8),
+        //   boxShadows: const [
+        //     BoxShadow(
+        //       offset: Offset(0.0, 2.0),
+        //       blurRadius: 3.0,
+        //     )
+        //   ],
+        // ).show(context);
       }
     } catch (e) {
       EasyLoading.dismiss();
-      Flushbar(
-        title: "Error",
-        message: e.toString(),
-        flushbarStyle: FlushbarStyle.FLOATING,
-        isDismissible: true,
-        duration: const Duration(seconds: 4),
-        backgroundColor: Colors.red,
-        margin: const EdgeInsets.all(8),
-        borderRadius: BorderRadius.circular(8),
-        boxShadows: const [
-          BoxShadow(
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-      ).show(context);
+      // Flushbar(
+      //   title: "Error",
+      //   message: e.toString(),
+      //   flushbarStyle: FlushbarStyle.FLOATING,
+      //   isDismissible: true,
+      //   duration: const Duration(seconds: 4),
+      //   backgroundColor: Colors.red,
+      //   margin: const EdgeInsets.all(8),
+      //   borderRadius: BorderRadius.circular(8),
+      //   boxShadows: const [
+      //     BoxShadow(
+      //       offset: Offset(0.0, 2.0),
+      //       blurRadius: 3.0,
+      //     )
+      //   ],
+      // ).show(context);
       // debugPrint(e.toString());
     }
   }
@@ -537,7 +557,7 @@ class ImportantSuppilesDetailsListState
                       ),
                       GestureDetector(
                         onTap: () async {
-                          var x = await showBottomSheet(context);
+                          var x = await showBottomSheet(context,locale);
                           print("nameofproduct=$x");
                           // var selectedChip = await Navigator.push(
                           //     context,
@@ -675,16 +695,17 @@ class ImportantSuppilesDetailsListState
                    visible: widget.screen=="impcat",
                      child: Padding(
                      padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  child:GestureDetector(
-                    onTap: (){
-                      Share.share('Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
-                    },
-                      child:Icon(
-                        Icons.share,
-                        color: Colors.black54,
-                      )
-                  )
-                 )),
+                         child:GestureDetector(
+                          onTap: (){
+                            Share.share('Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
+                          },
+                          child:Icon(
+                            Icons.share,
+                            color: Colors.black54,
+                          )
+                        )
+                       )
+                 ),
               ],
             ),
             const Divider(
@@ -896,34 +917,108 @@ class ImportantSuppilesDetailsListState
     );
   }
 
-   Future showBottomSheet(BuildContext context) async {
+   Future showBottomSheet(BuildContext context,String locale) async {
+     bool isEnglishSelected=true;
+     int selectedCategoryIndex=-1;
+     bool isHindiSelected=false;
      String? enteredText =await showDialog(
       context: context,
       builder: (BuildContext context) {
         return Center(
-            child: GestureDetector(
-          onTap: () {
-            print('Mic clicked');
-          },
-              child: WaveWidget(
-            onTap: (details) {
-              // You can access touch position here as details.localPosition
-              print('Tap position: ${details.localPosition}');
-            },
-            bgColor: Colors.teal,
-//       imgSize: Size(50.0, 0.0),
-            size: Size(
-              MediaQuery.of(context).size.width -
-                  60, // Adjust the width if needed
-              MediaQuery.of(context).size.height -
-                  400, // Adjust the height as a fraction of the screen height
-            ),
-            textForListening: 'hello',
-          ), // Replace WaveWidget with your custom widget
-        ));
+            child: Stack(
+              children: [
+                WaveWidget(
+                  // Your WaveWidget here
+                  size: Size(
+                    MediaQuery.of(context).size.width - 60,
+                    MediaQuery.of(context).size.height - 400,
+                  ),
+                  textForListening: locale, onTap: (TapDownDetails ) {  }, bgColor: Colors.teal,
+                ),
+                Positioned(
+                  left: (MediaQuery.of(context).size.width-60)/2-90, // Adjust the horizontal position as needed
+                  top: MediaQuery.of(context).size.height - 470, // Adjust the vertical position as needed
+                  child:Container(
+                    height: 40,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: categoriesList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var inkWell = InkWell(
+                            onTap: () {
+                              // if (index == 0) {
+                              //   // showLocationSelector();
+                              // } else {
+                                reArrangeLanguageArraysAndRefreshScreen(index,
+                                    categoriesList[index]);
+                              // }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  if (index == 0) ...[
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                  ],
+                                  Text(categoriesList[index]),
+                                ],
+                              ),
+                            ));
+                        return Card(
+                          color: index == 0
+                              ? Colors.teal.shade200
+                              : Colors.grey.shade300,
+                          clipBehavior: Clip.hardEdge,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: inkWell,
+                        );
+                      },
+                    ),
+                  ),
+
+
+                  //     SizedBox(width: 5,),
+                  //     GestureDetector(
+                  //       onTap: (){
+                  //         setState(() {
+                  //           print("isEnglishSelected=$isEnglishSelected");
+                  //           isEnglishSelected=false;
+                  //           isHindiSelected=true;
+                  //         });
+                  //       },
+                  //       child: ActionChip(
+                  //         onPressed: (){},
+                  //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
+                  //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
+                  //           side: BorderSide(
+                  //             color: Colors.teal, // Border color
+                  //             width: 2.0, // Border width
+                  //           ),
+                  //         ),
+                  //       ),
+                  // ),
+                ),
+              ],
+            ));
       },
     );
      print("enteredText=$enteredText");
+     if (enteredText != null && enteredText != "") {
+       resetUI();
+       encodedQueryParam = encodeString(enteredText);
+       widget.productName = enteredText;
+       items.length = 0;
+       widget.screen = "search";
+       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+           widget.screen, currentCityId);
+     }
   }
 
   Future addBannerOrAd(int pos, String value) async {
