@@ -78,7 +78,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       }
     });
       _waveControl.forward();
-    _initSpeech().then((value) => _startListening('hi_IN'));
+    _initSpeech().then((value) => _startListening('en_US'));
   }
 
   @override
@@ -142,7 +142,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   void _startListening(String locale) async {
     print("locale=$locale");
     startTimer();
-    voiceConvertedText = "Listening...";
+    // voiceConvertedText = "Listening...";
     await speechToText.listen(onResult: _onSpeechResult,localeId: locale);
     // voiceConvertedText = "";
     print("Started Lsitening");
@@ -232,10 +232,10 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-    // setState(() {
+    setState(() {
     voiceConvertedText = result.recognizedWords;
     print("voiceConvertedText=$voiceConvertedText");
-    // });
+    });
   }
   void _updateSourceStream(ImageStream newStream) {
     if (_imageStream?.key == newStream?.key) return;
@@ -457,6 +457,8 @@ class _MyWavePaint extends CustomPainter {
         if (details != null && chipRect.contains(details!.localPosition)) {
           print('Chip clicked: ${chipTexts[i]}');
           if(chipTexts[i]=="English"){
+            onChipClicked('en_US');
+          }else if(chipTexts[i]=="Hindi"){
             onChipClicked('hi_IN');
           }
         }

@@ -218,26 +218,32 @@ class _ViewCategoriesState extends State<ViewCategories> {
       idsArray.clear();
       for (var i = 0; i < resultsArray.length; i++) {
         nameArray.add(resultsArray[i]['name']);
-        String imageUrl=resultsArray[i]['img_v2'];
+        String imageUrl = resultsArray[i]['img_v2'];
         List<String> parts = imageUrl.split('/');
         print("path of image=assets/img_v2/${parts.last}");
-        bool doesAsset=await doesAssetExist("assets/img_v2/${parts.last}");
-        print("doesexist=$doesAsset");
-        if(doesAsset)
+
+        // bool doesAsset = await doesAssetExist("assets/img_v2/${parts.last}");
+        // print("doesexist=${parts.last}");
+        // if (doesAsset) {
           imagesArray.add("assets/img_v2/${parts.last}");
-        else
-          imagesArray.add(imageUrl);
+        // } else {
+        //   imagesArray.add(imageUrl);
+        // }
         fnameArray.add(resultsArray[i]['fname']);
         idsArray.add(resultsArray[i]['id']);
+        print("name=${nameArray[i]} image=${imageUrl} ${imagesArray[i]}");
       }
     }
   }
-  Future<bool> doesAssetExist(String assetPath) async {
-    try {
-      await rootBundle.load(assetPath);
-      return true; // Asset exists
-    } catch (e) {
-      return false; // Asset doesn't exist
-    }
-  }
+
+  // Future<bool> doesAssetExist(String assetPath) async {
+  //   try {
+  //     print("assetpath1=$assetPath");
+  //     await rootBundle.load(assetPath);
+  //     print("assetpath=$assetPath");
+  //     return true; // Asset exists
+  //   } catch (e) {
+  //     return false; // Asset doesn't exist
+  //   }
+  // }
 }
