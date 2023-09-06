@@ -227,6 +227,7 @@ class ImportantSuppilesDetailsListState
     cityIdArrayLocal.removeAt(clickedIndex);
     cityIdArrayLocal.insert(0, clickedCityId);
     currentCityId = cityIdArrayLocal[0];
+    items.length = 0;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         widget.screen, currentCityId);
   }
@@ -263,7 +264,7 @@ class ImportantSuppilesDetailsListState
       String pathUrl = "";
       if (screen_name == "search")
         pathUrl =
-            "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=70672&APP_USER_ID=136484661&implicit_info_city_data=jaipur&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+            "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=${cityId}&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
       else {
         pathUrl =
             "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
@@ -426,7 +427,7 @@ class ImportantSuppilesDetailsListState
       });
 
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
-        if (!kIsWeb)
+        if (!kIsWeb);
           // addBannerOrAd(end, "ADEMPTY");
           addBannerOrAd(start + 4, "PBRBANNER");
       } else if (currentPage == 1) {
