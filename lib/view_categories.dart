@@ -3,7 +3,11 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
+
+import 'package:flutter_tests/LocationSelector.dart';
+
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/categories_detail.dart';
@@ -87,6 +91,11 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                                 .viewCategories,
                                             word: "",
                                           )));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             LocationSelector()));
                             },
                             decoration: const InputDecoration(
                                 hintStyle:
