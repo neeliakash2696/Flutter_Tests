@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geocoding/geocoding.dart';
@@ -106,148 +108,157 @@ class _LocationSelectorState extends State<LocationSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Choose Location"),
-        backgroundColor: Colors.teal,
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: Colors.teal,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Your Current Location is",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          getCurrentPosition();
-                        },
-                        child: const Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                          size: 40,
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, _currentAddress);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Choose Location"),
+          backgroundColor: Colors.teal,
+        ),
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Colors.teal,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Your Current Location is",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        _currentAddress ?? "Fetching...",
-                        style: const TextStyle(
+                        GestureDetector(
+                          onTap: () {
+                            getCurrentPosition().then((value) {
+                              Navigator.pop(context, _currentAddress);
+                            });
+                          },
+                          child: const Icon(
+                            Icons.refresh,
                             color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            textInputAction: TextInputAction.done,
-                            focusNode: focus,
-                            autocorrect: false,
-                            autofocus: false,
-                            onChanged: (searchingText) {
-                              if (searchingText.isEmpty == true) {
-                                citiesArrayLocal = FlutterTests.citiesArray;
-                              } else {
-                                citiesArrayLocal = citiesArrayLocal
-                                    .where((item) => item
-                                        .toLowerCase()
-                                        .contains(searchingText.toLowerCase()))
-                                    .toList();
-                              }
-                              setState(() {});
-                            },
-                            onEditingComplete: () {
-                              closeKeyboard(context);
-                            },
-                            onTapOutside: (event) {
-                              closeKeyboard(context);
-                            },
-                            onTap: () {
-                              // TextFeild Clicked
-                            },
-                            controller: searchBar,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                contentPadding: const EdgeInsets.all(8),
-                                filled: true,
-                                fillColor: Colors.white,
-                                hintText: "Search Location"),
+                            size: 40,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          _currentAddress ?? "Fetching...",
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              textInputAction: TextInputAction.done,
+                              focusNode: focus,
+                              autocorrect: false,
+                              autofocus: false,
+                              onChanged: (searchingText) {
+                                if (searchingText.isEmpty == true) {
+                                  citiesArrayLocal = FlutterTests.citiesArray;
+                                } else {
+                                  citiesArrayLocal = citiesArrayLocal
+                                      .where((item) => item
+                                          .toLowerCase()
+                                          .contains(
+                                              searchingText.toLowerCase()))
+                                      .toList();
+                                }
+                                setState(() {});
+                              },
+                              onEditingComplete: () {
+                                closeKeyboard(context);
+                              },
+                              onTapOutside: (event) {
+                                closeKeyboard(context);
+                              },
+                              onTap: () {
+                                // TextFeild Clicked
+                              },
+                              controller: searchBar,
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(8),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  hintText: "Search Location"),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: citiesArrayLocal.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var inkWell = InkWell(
+                      onTap: () {
+                        // Action
+                        _currentAddress = citiesArrayLocal[index];
+                        Navigator.pop(context, _currentAddress);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          citiesArrayLocal[index],
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  )
-                ],
+                    );
+                    return Container(
+                      child: inkWell,
+                    );
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: citiesArrayLocal.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var inkWell = InkWell(
-                    onTap: () {
-                      // Action
-                      _currentAddress = citiesArrayLocal[index];
-                      Navigator.pop(context, _currentAddress);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        citiesArrayLocal[index],
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  );
-                  return Container(
-                    child: inkWell,
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
