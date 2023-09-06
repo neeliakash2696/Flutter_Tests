@@ -19,6 +19,8 @@ import 'package:flutter_tests/wave_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
+
 
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -605,7 +607,11 @@ class ImportantSuppilesDetailsListState
                     ],
                   ),
                 ),
-                const Divider(),
+                const VerticalDivider(
+                  color: Colors.blue, // Partition color
+                  thickness: 1, // Partition thickness
+                  width: 1, // Width of the partition
+                ),
                 TextButton(
                   onPressed: () {
                     openFilters(false, related, relatedfname);
@@ -627,7 +633,11 @@ class ImportantSuppilesDetailsListState
                     ],
                   ),
                 ),
-                const Divider(),
+                const VerticalDivider(
+                  color: Colors.blue, // Partition color
+                  thickness: 1, // Partition thickness
+                  width: 1, // Width of the partition
+                ),
                 TextButton(
                   onPressed: () {
                     if (currentLayout == ScreenLayout.details) {
@@ -658,11 +668,35 @@ class ImportantSuppilesDetailsListState
                     ],
                   ),
                 ),
+                const SizedBox(
+                  height: 5,
+                ),
+                const VerticalDivider(
+                  color: Colors.blue, // Partition color
+                  thickness: 1, // Partition thickness
+                  width: 1, // Width of the partition
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                 Padding(
+                     padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                  child:GestureDetector(
+                    onTap: (){
+                      Share.share('Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
+                    },
+                      child:Icon(
+                        Icons.share,
+                        color: Colors.black54,
+                      )
+                  )
+                 ),
               ],
             ),
-            const Divider(
-              height: 4,
-              color: Colors.black,
+            const VerticalDivider(
+              color: Colors.blue, // Partition color
+              thickness: 1, // Partition thickness
+              width: 1, // Width of the partition
             ),
             Container(
               height: 40,
@@ -715,8 +749,8 @@ class ImportantSuppilesDetailsListState
               height: 5,
             ),
             const Divider(
-              height: 8,
-              color: Colors.grey,
+              color: Colors.blue, // Partition color
+              thickness: 1,  // Width of the partition
             ),
             const SizedBox(
               height: 5,
