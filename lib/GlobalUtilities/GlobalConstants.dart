@@ -28,7 +28,7 @@ List<String> citiesArray = [
 ];
 List<String> cityIdArray = [
   "",
-  "99174",
+  "70472",
   "70532",
   "70699",
   "70701",

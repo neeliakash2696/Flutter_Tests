@@ -18,6 +18,7 @@ class _LocationSelectorState extends State<LocationSelector> {
   TextEditingController searchBar = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   FocusNode focus = FocusNode();
+  List<String> citiesArrayLocal = [];
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -28,6 +29,7 @@ class _LocationSelectorState extends State<LocationSelector> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Location services are disabled. Please enable the services')));
+      Navigator.pop(context);
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -36,6 +38,7 @@ class _LocationSelectorState extends State<LocationSelector> {
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Location permissions are denied')));
+        Navigator.pop(context);
         return false;
       }
     }
@@ -43,21 +46,24 @@ class _LocationSelectorState extends State<LocationSelector> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Location permissions are permanently denied, we cannot request permissions.')));
+      Geolocator.openLocationSettings();
+      Navigator.pop(context);
       return false;
     }
     return true;
   }
 
   Future getCurrentPosition() async {
-    EasyLoading.show(status: "Fetching...");
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
+    EasyLoading.show(status: "Fetching...");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
     }).catchError((e) {
       debugPrint(e);
+      EasyLoading.dismiss();
     });
   }
 
@@ -73,6 +79,7 @@ class _LocationSelectorState extends State<LocationSelector> {
       });
     }).catchError((e) {
       debugPrint(e);
+      EasyLoading.dismiss();
     });
   }
 
@@ -86,12 +93,14 @@ class _LocationSelectorState extends State<LocationSelector> {
   @override
   void initState() {
     super.initState();
+    citiesArrayLocal = FlutterTests.citiesArray;
     getCurrentPosition();
   }
 
   @override
   void dispose() {
     searchBar.dispose();
+    EasyLoading.dismiss();
     super.dispose();
   }
 
@@ -165,29 +174,37 @@ class _LocationSelectorState extends State<LocationSelector> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextField(
-                            textInputAction: TextInputAction.search,
+                            textInputAction: TextInputAction.done,
                             focusNode: focus,
                             autocorrect: false,
                             autofocus: false,
                             onChanged: (searchingText) {
-                              //
+                              if (searchingText.isEmpty == true) {
+                                citiesArrayLocal = FlutterTests.citiesArray;
+                              } else {
+                                citiesArrayLocal = citiesArrayLocal
+                                    .where((item) => item
+                                        .toLowerCase()
+                                        .contains(searchingText.toLowerCase()))
+                                    .toList();
+                              }
+                              setState(() {});
                             },
                             onEditingComplete: () {
-                              print("Search Clicked");
                               closeKeyboard(context);
                             },
                             onTapOutside: (event) {
                               closeKeyboard(context);
                             },
                             onTap: () {
-                              //
+                              // TextFeild Clicked
                             },
                             controller: searchBar,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                contentPadding: EdgeInsets.all(8),
+                                contentPadding: const EdgeInsets.all(8),
                                 filled: true,
                                 fillColor: Colors.white,
                                 hintText: "Search Location"),
@@ -196,7 +213,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   )
                 ],
@@ -205,26 +222,25 @@ class _LocationSelectorState extends State<LocationSelector> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: FlutterTests.citiesArray.length,
+                itemCount: citiesArrayLocal.length,
                 itemBuilder: (BuildContext context, int index) {
                   var inkWell = InkWell(
                     onTap: () {
                       // Action
-                      _currentAddress = FlutterTests.citiesArray[index];
+                      _currentAddress = citiesArrayLocal[index];
                       Navigator.pop(context, _currentAddress);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        FlutterTests.citiesArray[index],
-                        style: TextStyle(
+                        citiesArrayLocal[index],
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 18,
                         ),
                       ),
                     ),
                   );
-
                   return Container(
                     child: inkWell,
                   );
