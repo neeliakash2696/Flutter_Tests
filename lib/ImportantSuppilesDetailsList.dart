@@ -105,7 +105,7 @@ class ImportantSuppilesDetailsListState
     start = 0;
     end = 9;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
-        widget.screen, currentCityId, "");
+        widget.screen, currentCityId, currentCity);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -170,7 +170,7 @@ class ImportantSuppilesDetailsListState
       items.length = 0;
       if (!isSellerType) widget.screen = "impcat";
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
-          widget.screen, currentCityId, "");
+          widget.screen, currentCityId, currentCity);
     }
   }
 
@@ -204,7 +204,7 @@ class ImportantSuppilesDetailsListState
       items.length = 0;
       widget.screen = "search";
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-          widget.screen, currentCityId, "");
+          widget.screen, currentCityId, currentCity);
     }
   }
 
@@ -976,7 +976,7 @@ class ImportantSuppilesDetailsListState
       items.length = 0;
       widget.screen = "search";
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-          widget.screen, currentCityId, "");
+          widget.screen, currentCityId, currentCity);
     }
   }
 
