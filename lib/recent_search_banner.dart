@@ -40,7 +40,7 @@ class _LimitedChipsListState extends State<LimitedChipsList> {
                   ),
                 ),
                 child: Chip(
-                  label: Text(item),
+                  label: Text(item,),
                   backgroundColor: Colors.teal[50], // Set the background color
                   labelStyle: TextStyle(color: Colors.teal), // Set label text color
                 ),
