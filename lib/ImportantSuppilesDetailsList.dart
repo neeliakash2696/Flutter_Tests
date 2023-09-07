@@ -471,44 +471,10 @@ class ImportantSuppilesDetailsListState
       print("resultsArray=${items.length} ${resultsArray?.length},");
       EasyLoading.dismiss();
       scrolled = 1;
-
-      // if (resultsArray.length > 0) {
-      // Flushbar(
-      //   title: "DONE",
-      //   message: "API HITTING DONE",
-      //   flushbarStyle: FlushbarStyle.FLOATING,
-      //   isDismissible: true,
-      //   duration: const Duration(seconds: 1),
-      //   backgroundColor: Colors.green,
-      //   margin: const EdgeInsets.all(8),
-      //   borderRadius: BorderRadius.circular(8),
-      //   boxShadows: const [
-      //     BoxShadow(
-      //       offset: Offset(0.0, 2.0),
-      //       blurRadius: 3.0,
-      //     )
-      //   ],
-      // ).show(context);
-      // }
     } catch (e) {
       EasyLoading.dismiss();
-      // Flushbar(
-      //   title: "Error",
-      //   message: e.toString(),
-      //   flushbarStyle: FlushbarStyle.FLOATING,
-      //   isDismissible: true,
-      //   duration: const Duration(seconds: 4),
-      //   backgroundColor: Colors.red,
-      //   margin: const EdgeInsets.all(8),
-      //   borderRadius: BorderRadius.circular(8),
-      //   boxShadows: const [
-      //     BoxShadow(
-      //       offset: Offset(0.0, 2.0),
-      //       blurRadius: 3.0,
-      //     )
-      //   ],
-      // ).show(context);
-      // debugPrint(e.toString());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
