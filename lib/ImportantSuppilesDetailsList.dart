@@ -1,4 +1,5 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
+import 'package:share_plus/share_plus.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -21,7 +22,6 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share/share.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 
 import 'main_pbr_banner.dart';
@@ -258,8 +258,8 @@ class ImportantSuppilesDetailsListState
   }
 
   showLocationSelector() async {
-    var selectedCity = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LocationSelector()));
+    var selectedCity = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const LocationSelector()));
     print("selected city=$selectedCity");
     if (selectedCity != null) {
       var index = citiesArrayLocal.indexOf(selectedCity);
@@ -448,6 +448,7 @@ class ImportantSuppilesDetailsListState
       }
       setState(() {
         items.addAll(resultsArray);
+        print(resultsArray);
         // print(
         //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
       });
@@ -698,13 +699,13 @@ class ImportantSuppilesDetailsListState
                 Visibility(
                     visible: widget.screen == "impcat",
                     child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                         child: GestureDetector(
                             onTap: () {
                               Share.share(
                                   'Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
                             },
-                            child: Icon(
+                            child: const Icon(
                               Icons.share,
                               color: Colors.black54,
                             )))),
