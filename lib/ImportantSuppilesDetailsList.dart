@@ -69,9 +69,14 @@ class ImportantSuppilesDetailsListState
   bool _isAtEnd = false;
 
   List<dynamic> items = [];
-  List<String> citiesArrayLocal = [];
-  List<String> cityIdArrayLocal = [];
+
   List<String> categoriesList=["English","Hindi"];
+
+  // final List<String> citiesArrayLocal = [];
+  // final List<String> cityIdArrayLocal = [];
+  final List<String> citiesArrayLocal = [...FlutterTests.citiesArray];
+  final List<String> cityIdArrayLocal = [...FlutterTests.cityIdArray];
+
   String currentCityId = "";
 
   var totalItemCount = 0;
@@ -95,8 +100,6 @@ class ImportantSuppilesDetailsListState
   @override
   void initState() {
     super.initState();
-    citiesArrayLocal = FlutterTests.citiesArray;
-    cityIdArrayLocal = FlutterTests.cityIdArray;
     encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
     currentPage = 1;
@@ -467,24 +470,26 @@ class ImportantSuppilesDetailsListState
       print("resultsArray=${items.length} ${resultsArray?.length},");
       EasyLoading.dismiss();
       scrolled = 1;
-      if (resultsArray.length > 0) {
-        // Flushbar(
-        //   title: "DONE",
-        //   message: "API HITTING DONE",
-        //   flushbarStyle: FlushbarStyle.FLOATING,
-        //   isDismissible: true,
-        //   duration: const Duration(seconds: 1),
-        //   backgroundColor: Colors.green,
-        //   margin: const EdgeInsets.all(8),
-        //   borderRadius: BorderRadius.circular(8),
-        //   boxShadows: const [
-        //     BoxShadow(
-        //       offset: Offset(0.0, 2.0),
-        //       blurRadius: 3.0,
-        //     )
-        //   ],
-        // ).show(context);
-      }
+
+      // if (resultsArray.length > 0) {
+      // Flushbar(
+      //   title: "DONE",
+      //   message: "API HITTING DONE",
+      //   flushbarStyle: FlushbarStyle.FLOATING,
+      //   isDismissible: true,
+      //   duration: const Duration(seconds: 1),
+      //   backgroundColor: Colors.green,
+      //   margin: const EdgeInsets.all(8),
+      //   borderRadius: BorderRadius.circular(8),
+      //   boxShadows: const [
+      //     BoxShadow(
+      //       offset: Offset(0.0, 2.0),
+      //       blurRadius: 3.0,
+      //     )
+      //   ],
+      // ).show(context);
+      // }
+
     } catch (e) {
       EasyLoading.dismiss();
       // Flushbar(
