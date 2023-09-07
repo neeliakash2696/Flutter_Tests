@@ -285,14 +285,14 @@ class ImportantSuppilesDetailsListState
   }
 
   getMoreDetails(
-    String category,
-    String biztype,
-    int start,
-    int end,
-    int currentPage,
-    bool shouldUpdateSellerTypeList,
-    String screen_name,
-    String cityId,
+      String category,
+      String biztype,
+      int start,
+      int end,
+      int currentPage,
+      bool shouldUpdateSellerTypeList,
+      String screen_name,
+      String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
     EasyLoading.show(status: 'Loading...');
@@ -320,22 +320,6 @@ class ImportantSuppilesDetailsListState
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
-        // Flushbar(
-        //   title: code,
-        //   message: msg,
-        //   flushbarStyle: FlushbarStyle.FLOATING,
-        //   isDismissible: true,
-        //   duration: const Duration(seconds: 4),
-        //   backgroundColor: Colors.red,
-        //   margin: const EdgeInsets.all(8),
-        //   borderRadius: BorderRadius.circular(8),
-        //   boxShadows: const [
-        //     BoxShadow(
-        //       offset: Offset(0.0, 2.0),
-        //       blurRadius: 3.0,
-        //     )
-        //   ],
-        // ).show(context);
       } else if (response.statusCode == 200) {
         if (screen_name == "search") {
           resultsArray = json.decode(response.body)['results'];
@@ -465,12 +449,12 @@ class ImportantSuppilesDetailsListState
           }
         }
         print("resultsArray $locationsArray");
-      setState(() {
-        items.addAll(resultsArray);
-        print(resultsArray);
-        // print(
-        //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
-      });
+        setState(() {
+          items.addAll(resultsArray);
+
+          // print(
+          //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
+        });
       }
 
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {

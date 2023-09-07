@@ -269,23 +269,23 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            height: 30,
-                            width: 30,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image:
-                                      AssetImage("images/mic_icon_colored.png"),
-                                  fit: BoxFit.cover),
-                            ),
-                            alignment: Alignment.center,
-                          ),
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {},
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: Container(
+                      //       height: 30,
+                      //       width: 30,
+                      //       decoration: const BoxDecoration(
+                      //         image: DecorationImage(
+                      //             image:
+                      //                 AssetImage("images/mic_icon_colored.png"),
+                      //             fit: BoxFit.cover),
+                      //       ),
+                      //       alignment: Alignment.center,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
