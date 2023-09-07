@@ -60,7 +60,7 @@ class _LocationSelectorState extends State<LocationSelector> {
   Future getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
-    EasyLoading.show(status: "Fetching...");
+    // EasyLoading.show(status: "Fetching...");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
@@ -134,23 +134,29 @@ class _LocationSelectorState extends State<LocationSelector> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Your Current Location is",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "Your Current Location is",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500),
+                          ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            getCurrentPosition().then((value) {
-                              Navigator.pop(context, _currentAddress);
-                            });
-                          },
-                          child: const Icon(
-                            Icons.refresh,
-                            color: Colors.white,
-                            size: 40,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, right: 20),
+                          child: GestureDetector(
+                            onTap: () {
+                              getCurrentPosition().then((value) {
+                                Navigator.pop(context, _currentAddress);
+                              });
+                            },
+                            child: const Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                              size: 40,
+                            ),
                           ),
                         ),
                       ],
@@ -231,6 +237,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                   ],
                 ),
               ),
+              const SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -242,15 +249,33 @@ class _LocationSelectorState extends State<LocationSelector> {
                         _currentAddress = citiesArrayLocal[index];
                         Navigator.pop(context, _currentAddress);
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          citiesArrayLocal[index],
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 15, bottom: 15, left: 20, right: 10),
+                            child: Text(
+                              citiesArrayLocal[index],
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: Container(
+                              height: 0.5,
+                              width: MediaQuery.of(context).size.width,
+                              color: Colors.grey,
+                            ),
+                          )
+                          // Divider(
+                          //   thickness: 1,
+                          // ),
+                        ],
                       ),
                     );
                     return Container(

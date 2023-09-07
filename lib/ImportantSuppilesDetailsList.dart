@@ -1,4 +1,5 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
+import 'package:share_plus/share_plus.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -21,7 +22,6 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share/share.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 
 import 'main_pbr_banner.dart';
@@ -70,10 +70,8 @@ class ImportantSuppilesDetailsListState
 
   List<dynamic> items = [];
 
-  List<String> categoriesList=["English","Hindi"];
+  List<String> categoriesList = ["English", "Hindi"];
 
-  // final List<String> citiesArrayLocal = [];
-  // final List<String> cityIdArrayLocal = [];
   final List<String> citiesArrayLocal = [...FlutterTests.citiesArray];
   final List<String> cityIdArrayLocal = [...FlutterTests.cityIdArray];
 
@@ -92,7 +90,7 @@ class ImportantSuppilesDetailsListState
   int end = 0;
 
   int currentPage = 0;
-  String locale='en_US';
+  String locale = 'en_US';
   List<String> related = [];
   List<String> relatedfname = [];
 
@@ -227,24 +225,26 @@ class ImportantSuppilesDetailsListState
           widget.screen, currentCityId);
     }
   }
+
   reArrangeLanguageArraysAndRefreshScreen(
       int clickedIndex, String clickedCity) {
-    if(clickedIndex!=0) {
+    if (clickedIndex != 0) {
       categoriesList.removeAt(1);
       categoriesList.insert(1, categoriesList[0]);
       categoriesList.removeAt(0);
       categoriesList.insert(0, clickedCity);
     }
     setState(() {
-      if(clickedCity=="English") {
-        locale='en_US';
+      if (clickedCity == "English") {
+        locale = 'en_US';
       } else {
-        locale='hi_IN';
+        locale = 'hi_IN';
       }
     });
     Navigator.pop(context);
-    showBottomSheet(context,locale);
+    showBottomSheet(context, locale);
   }
+
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
     citiesArrayLocal.removeAt(clickedIndex);
@@ -258,8 +258,8 @@ class ImportantSuppilesDetailsListState
   }
 
   showLocationSelector() async {
-    var selectedCity = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LocationSelector()));
+    var selectedCity = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const LocationSelector()));
     print("selected city=$selectedCity");
     if (selectedCity != null) {
       var index = citiesArrayLocal.indexOf(selectedCity);
@@ -448,14 +448,15 @@ class ImportantSuppilesDetailsListState
       }
       setState(() {
         items.addAll(resultsArray);
+        print(resultsArray);
         // print(
         //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
       });
 
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
-        if (!kIsWeb);
-          // addBannerOrAd(end, "ADEMPTY");
-          addBannerOrAd(start + 4, "PBRBANNER");
+        if (!kIsWeb) ;
+        // addBannerOrAd(end, "ADEMPTY");
+        addBannerOrAd(start + 4, "PBRBANNER");
       } else if (currentPage == 1) {
         if (!kIsWeb) {
           // addBannerOrAd(2, "ADEMPTY");
@@ -489,7 +490,6 @@ class ImportantSuppilesDetailsListState
       //   ],
       // ).show(context);
       // }
-
     } catch (e) {
       EasyLoading.dismiss();
       // Flushbar(
@@ -562,7 +562,7 @@ class ImportantSuppilesDetailsListState
                       ),
                       GestureDetector(
                         onTap: () async {
-                          var x = await showBottomSheet(context,locale);
+                          var x = await showBottomSheet(context, locale);
                           print("nameofproduct=$x");
                           // var selectedChip = await Navigator.push(
                           //     context,
@@ -696,21 +696,19 @@ class ImportantSuppilesDetailsListState
                 const SizedBox(
                   height: 5,
                 ),
-                 Visibility(
-                   visible: widget.screen=="impcat",
-                     child: Padding(
-                     padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                         child:GestureDetector(
-                          onTap: (){
-                            Share.share('Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
-                          },
-                          child:Icon(
-                            Icons.share,
-                            color: Colors.black54,
-                          )
-                        )
-                       )
-                 ),
+                Visibility(
+                    visible: widget.screen == "impcat",
+                    child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        child: GestureDetector(
+                            onTap: () {
+                              Share.share(
+                                  'Hey, Check out these verified suppliers for ${widget.productName}! \n https://m.indiamart.com/impcat/${widget.productFname}.html \n\n via indiamart App (Download Now):https://e7d27.app.goo.gl/A97Q');
+                            },
+                            child: const Icon(
+                              Icons.share,
+                              color: Colors.black54,
+                            )))),
               ],
             ),
             const Divider(
@@ -922,108 +920,110 @@ class ImportantSuppilesDetailsListState
     );
   }
 
-   Future showBottomSheet(BuildContext context,String locale) async {
-     bool isEnglishSelected=true;
-     int selectedCategoryIndex=-1;
-     bool isHindiSelected=false;
-     String? enteredText =await showDialog(
+  Future showBottomSheet(BuildContext context, String locale) async {
+    bool isEnglishSelected = true;
+    int selectedCategoryIndex = -1;
+    bool isHindiSelected = false;
+    String? enteredText = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return Center(
             child: Stack(
-              children: [
-                WaveWidget(
-                  // Your WaveWidget here
-                  size: Size(
-                    MediaQuery.of(context).size.width - 60,
-                    MediaQuery.of(context).size.height - 400,
-                  ),
-                  textForListening: locale, onTap: (TapDownDetails ) {  }, bgColor: Colors.teal,
-                ),
-                Positioned(
-                  left: (MediaQuery.of(context).size.width-60)/2-90, // Adjust the horizontal position as needed
-                  top: MediaQuery.of(context).size.height - 470, // Adjust the vertical position as needed
-                  child:Container(
-                    height: 40,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categoriesList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        var inkWell = InkWell(
-                            onTap: () {
-                              // if (index == 0) {
-                              //   // showLocationSelector();
-                              // } else {
-                                reArrangeLanguageArraysAndRefreshScreen(index,
-                                    categoriesList[index]);
-                              // }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  if (index == 0) ...[
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                  Text(categoriesList[index]),
-                                ],
-                              ),
-                            ));
-                        return Card(
-                          color: index == 0
-                              ? Colors.teal.shade200
-                              : Colors.grey.shade300,
-                          clipBehavior: Clip.hardEdge,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+          children: [
+            WaveWidget(
+              // Your WaveWidget here
+              size: Size(
+                MediaQuery.of(context).size.width - 60,
+                MediaQuery.of(context).size.height - 400,
+              ),
+              textForListening: locale, onTap: (TapDownDetails) {},
+              bgColor: Colors.teal,
+            ),
+            Positioned(
+              left: (MediaQuery.of(context).size.width - 60) / 2 -
+                  90, // Adjust the horizontal position as needed
+              top: MediaQuery.of(context).size.height -
+                  470, // Adjust the vertical position as needed
+              child: Container(
+                height: 40,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categoriesList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var inkWell = InkWell(
+                        onTap: () {
+                          // if (index == 0) {
+                          //   // showLocationSelector();
+                          // } else {
+                          reArrangeLanguageArraysAndRefreshScreen(
+                              index, categoriesList[index]);
+                          // }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              if (index == 0) ...[
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                              ],
+                              Text(categoriesList[index]),
+                            ],
                           ),
-                          child: inkWell,
-                        );
-                      },
-                    ),
-                  ),
-
-
-                  //     SizedBox(width: 5,),
-                  //     GestureDetector(
-                  //       onTap: (){
-                  //         setState(() {
-                  //           print("isEnglishSelected=$isEnglishSelected");
-                  //           isEnglishSelected=false;
-                  //           isHindiSelected=true;
-                  //         });
-                  //       },
-                  //       child: ActionChip(
-                  //         onPressed: (){},
-                  //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
-                  //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
-                  //         shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
-                  //           side: BorderSide(
-                  //             color: Colors.teal, // Border color
-                  //             width: 2.0, // Border width
-                  //           ),
-                  //         ),
-                  //       ),
-                  // ),
+                        ));
+                    return Card(
+                      color: index == 0
+                          ? Colors.teal.shade200
+                          : Colors.grey.shade300,
+                      clipBehavior: Clip.hardEdge,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: inkWell,
+                    );
+                  },
                 ),
-              ],
-            ));
+              ),
+
+              //     SizedBox(width: 5,),
+              //     GestureDetector(
+              //       onTap: (){
+              //         setState(() {
+              //           print("isEnglishSelected=$isEnglishSelected");
+              //           isEnglishSelected=false;
+              //           isHindiSelected=true;
+              //         });
+              //       },
+              //       child: ActionChip(
+              //         onPressed: (){},
+              //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
+              //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
+              //           side: BorderSide(
+              //             color: Colors.teal, // Border color
+              //             width: 2.0, // Border width
+              //           ),
+              //         ),
+              //       ),
+              // ),
+            ),
+          ],
+        ));
       },
     );
-     print("enteredText=$enteredText");
-     if (enteredText != null && enteredText != "") {
-       resetUI();
-       encodedQueryParam = encodeString(enteredText);
-       widget.productName = enteredText;
-       items.length = 0;
-       widget.screen = "search";
-       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-           widget.screen, currentCityId);
-     }
+    print("enteredText=$enteredText");
+    if (enteredText != null && enteredText != "") {
+      resetUI();
+      encodedQueryParam = encodeString(enteredText);
+      widget.productName = enteredText;
+      items.length = 0;
+      widget.screen = "search";
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+          widget.screen, currentCityId);
+    }
   }
 
   Future addBannerOrAd(int pos, String value) async {
