@@ -5,10 +5,10 @@
 	<key>Applicat</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
-    <array>
-    <string>sms</string>
-    <string>tel</string>
-    </array>
+	<array>
+		<string>sms</string>
+		<string>tel</string>
+	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Indiamart wants to access your Location for giving you better search results</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -22,7 +22,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flutter Tests</string>
+	<string>IndiaMART Flutter</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -30,7 +30,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>flutter_tests</string>
+	<string>IndiaMART Flutter</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
