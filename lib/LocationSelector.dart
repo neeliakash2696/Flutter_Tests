@@ -66,6 +66,9 @@ class _LocationSelectorState extends State<LocationSelector> {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
     }).catchError((e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Can't fetch Location due to ${e.toString()}")));
+
       debugPrint(e);
       EasyLoading.dismiss();
     });
@@ -82,7 +85,9 @@ class _LocationSelectorState extends State<LocationSelector> {
         EasyLoading.dismiss();
       });
     }).catchError((e) {
-      debugPrint(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Can't fetch Location due to ${e.toString()}")));
+      debugPrint(e.toString());
       EasyLoading.dismiss();
     });
   }
