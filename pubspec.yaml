@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
   cached_network_image: ^3.1.0
   carousel_slider: ^4.2.1
-  another_flushbar: ^1.12.30
   http: ^0.13.5
   flutter_easyloading: ^3.0.5
   google_mobile_ads: ^3.0.0

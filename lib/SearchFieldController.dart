@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:http/http.dart' as http;
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -149,22 +148,22 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       if (code == "402" || code == "401") {
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
-        Flushbar(
-          title: code,
-          message: msg,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 4),
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
+        // Flushbar(
+        //   title: code,
+        //   message: msg,
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   isDismissible: true,
+        //   duration: const Duration(seconds: 4),
+        //   backgroundColor: Colors.red,
+        //   margin: const EdgeInsets.all(8),
+        //   borderRadius: BorderRadius.circular(8),
+        //   boxShadows: const [
+        //     BoxShadow(
+        //       offset: Offset(0.0, 2.0),
+        //       blurRadius: 3.0,
+        //     )
+        //   ],
+        // ).show(context);
       } else if (response.statusCode == 200) {
         if (query.isEmpty) {
           var resultsArray = json.decode(response.body)['details']['searches'];

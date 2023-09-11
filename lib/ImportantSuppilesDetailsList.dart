@@ -4,7 +4,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -268,7 +267,10 @@ class ImportantSuppilesDetailsListState
     cityIdArrayLocal.insert(0, clickedCityId);
     currentCityId = cityIdArrayLocal[0];
     currentCity = clickedCity;
+    String productName=widget.productName;
+    resetUI();
     items.length = 0;
+    widget.productName=productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         widget.screen, currentCityId, clickedCity);
   }
