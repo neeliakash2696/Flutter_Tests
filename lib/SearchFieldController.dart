@@ -75,7 +75,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Search(
+                builder: (context) => Search(city: 0,
                       productName: searchQuery,
                       productFname: searchQuery,
                       productIndex: 0,
@@ -91,6 +91,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             context,
             MaterialPageRoute(
                 builder: (context) => Search(
+                  city: 0,
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,
@@ -101,6 +102,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             context,
             MaterialPageRoute(
                 builder: (context) => Search(
+                  city: 0,
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,

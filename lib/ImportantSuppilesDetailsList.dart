@@ -53,6 +53,7 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+  int clickedIndex=0;
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -259,6 +260,7 @@ class ImportantSuppilesDetailsListState
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Search(
+            city: clickedIndex,
             productName:  widget.productName ,
             productFname:  encodedQueryParam ,
             productIndex: 0,
@@ -288,6 +290,7 @@ class ImportantSuppilesDetailsListState
 
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
+    this.clickedIndex=clickedIndex;
     citiesArrayLocal.removeAt(clickedIndex);
     citiesArrayLocal.insert(0, clickedCity);
     cityIdArrayLocal.removeAt(clickedIndex);
@@ -430,15 +433,18 @@ class ImportantSuppilesDetailsListState
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
         if (!kIsWeb) ;
         // addBannerOrAd(end, "ADEMPTY");
+        if(end>start+4)
         addBannerOrAd(start + 4, "PBRBANNER");
       } else if (currentPage == 1) {
-        if (!kIsWeb) {
-          // addBannerOrAd(2, "ADEMPTY");
-          // addBannerOrAd(7, "ADEMPTY");
+        if (!kIsWeb && end>7) {
+          addBannerOrAd(2, "ADEMPTY");
+          addBannerOrAd(7, "ADEMPTY");
         }
-        addBannerOrAd(5, "isq_banner");
-        addBannerOrAd(10, "PBRBANNER");
-        addBannerOrAd(11, "RECENTPBRBANNER");
+        if(end>10) {
+          addBannerOrAd(5, "isq_banner");
+          addBannerOrAd(10, "PBRBANNER");
+          addBannerOrAd(11, "RECENTPBRBANNER");
+        }
       } else
         stop = true;
 
@@ -844,9 +850,9 @@ class ImportantSuppilesDetailsListState
                   } else if (titlesArray?[index] == "RECENTPBRBANNER") {
                     return LimitedChipsList();
                   }
-                  // else if (titlesArray?[index] == "ADEMPTY") {
-                  //   return AdClass();
-                  // }
+                  else if (titlesArray?[index] == "ADEMPTY") {
+                    return AdClass();
+                  }
                   else {
                     return Card(
                       // elevation: 1,

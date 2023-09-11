@@ -20,6 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
+import 'adClass.dart';
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
 as FlutterTests;
@@ -34,8 +35,10 @@ class Search extends StatefulWidget {
   String productFname;
   int productIndex;
   String biztype;
+  int city;
   Search(
       {Key? key,
+        required this.city,
         required this.productName,
         required this.productFname,
         required this.productIndex,
@@ -99,6 +102,13 @@ class SearchState
     currentPage = 1;
     start = 0;
     end = 9;
+    if(widget.city!=0)
+    {
+      currentCity=citiesArrayLocal[widget.city];
+      currentCityId=cityIdArrayLocal[widget.city];
+      reArrangeLocalArraysAndRefreshScreen(widget.city, currentCity, currentCityId);
+    }
+    else
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
         currentCityId, currentCity);
     _scrollController.addListener(() {
@@ -375,13 +385,14 @@ class SearchState
       }
 
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
-        if (!kIsWeb) ;
-        // addBannerOrAd(end, "ADEMPTY");
+      //   if (!kIsWeb) ;
+      //   // addBannerOrAd(end, "ADEMPTY");
         addBannerOrAd(start + 4, "PBRBANNER");
-      } else if (currentPage == 1) {
+      }
+        else if (currentPage == 1) {
         if (!kIsWeb) {
-          // addBannerOrAd(2, "ADEMPTY");
-          // addBannerOrAd(7, "ADEMPTY");
+          addBannerOrAd(2, "ADEMPTY");
+          addBannerOrAd(7, "ADEMPTY");
         }
         addBannerOrAd(5, "isq_banner");
         addBannerOrAd(10, "PBRBANNER");
@@ -404,12 +415,8 @@ class SearchState
 
   Widget build(BuildContext context) {
     super.build(context);
-    if (items.length - 1 < 0) {
-      itemCount = 0;
-    } else {
       itemCount = items.length;
       // print("itemcounta=$itemCount");
-    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -781,9 +788,9 @@ class SearchState
                   } else if (titlesArray?[index] == "RECENTPBRBANNER") {
                     return LimitedChipsList();
                   }
-                  // else if (titlesArray?[index] == "ADEMPTY") {
-                  //   return AdClass();
-                  // }
+                  else if (titlesArray?[index] == "ADEMPTY") {
+                    return AdClass();
+                  }
                   else {
                     return Card(
                       // elevation: 1,
@@ -926,7 +933,7 @@ class SearchState
   bool get wantKeepAlive => true;
 
   void startFromFirst(){
-    items.length = 0;
+    items=[];
     start=0;
     end=9;
   }
