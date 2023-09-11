@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, unrelated_type_equality_checks, use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
+import 'package:flutter_tests/search.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -75,12 +75,11 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
                       productName: searchQuery,
                       productFname: searchQuery,
                       productIndex: 0,
                       biztype: "",
-                      screen: "search",
                     )));
         break;
       case SearchingFromScreen.impSuppliesList:
@@ -91,23 +90,21 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "",)));
       case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "",)));
     }
   }
 
