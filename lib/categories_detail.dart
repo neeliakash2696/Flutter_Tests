@@ -184,11 +184,11 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
+                                        city: 0,
                                         productName: nameArray[index],
                                         productFname: fnameArray[index],
                                         productIndex: 0,
-                                        biztype: "",
-                                        screen: "impcat",
+                                        biztype: ""
                                       )));
                         else
                           Navigator.push(

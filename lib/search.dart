@@ -19,6 +19,7 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'ImportantSuppilesDetailsList.dart';
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
 as FlutterTests;
@@ -46,6 +47,7 @@ class SearchState
     extends State<Search>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late String encodedQueryParam;
+  int clickedIndex=0;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? phoneArray = [];
@@ -160,18 +162,29 @@ class SearchState
       encodedQueryParam = encodeString(widget.productFname);
       print("issellertype=$isSellerType biztype=${selectedChip[0]}");
       if (!isSellerType) {
-        resetUI();
+        // resetUI();
         encodedQueryParam = encodeString(selectedChip[1]);
         widget.productName = selectedChip[0];
       } else {
         var productName = widget.productName;
-        resetUI();
+        // resetUI();
         widget.productName = productName;
         widget.biztype = selectedChip[0];
         widget.productIndex = selectedChip[2];
       }
       startFromFirst();
-      // if (!isSellerType) widget.screen = "impcat";
+      if (!isSellerType) {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ImportantSuppilesDetailsList(
+              city: clickedIndex,
+                  productName:  widget.productName,
+                  productFname:  encodedQueryParam,
+                  productIndex: 0,
+                  biztype: "",
+                )));
+      }
+      else
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
            currentCityId, currentCity);
     }
@@ -179,14 +192,14 @@ class SearchState
 
   void resetUI() {
     setState(() {
-      imagesArray?.clear();
-      phoneArray?.clear();
-      titlesArray?.clear();
-      itemPricesArray?.clear();
-      companyNameArray?.clear();
-      locationsArray?.clear();
-      localityArray?.clear();
-      widget.productName = "";
+      // imagesArray?.clear();
+      // phoneArray?.clear();
+      // titlesArray?.clear();
+      // itemPricesArray?.clear();
+      // companyNameArray?.clear();
+      // locationsArray?.clear();
+      // localityArray?.clear();
+      // widget.productName = "";
       // Add more variables to reset if needed.
     });
   }
@@ -230,6 +243,7 @@ class SearchState
 
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
+    this.clickedIndex=clickedIndex;
     citiesArrayLocal.removeAt(clickedIndex);
     citiesArrayLocal.insert(0, clickedCity);
     cityIdArrayLocal.removeAt(clickedIndex);
