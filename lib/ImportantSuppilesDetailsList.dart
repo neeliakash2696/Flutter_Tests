@@ -51,7 +51,7 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList>
-    with AutomaticKeepAliveClientMixin,WidgetsBindingObserver {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -70,7 +70,7 @@ class ImportantSuppilesDetailsListState
 
   List<dynamic> items = [];
 
-  List<String> categoriesList = ["English", "Hindi"];
+  // List<String> categoriesList = ["English", "Hindi"];
 
   final List<String> citiesArrayLocal = [...FlutterTests.citiesArray];
   final List<String> cityIdArrayLocal = [...FlutterTests.cityIdArray];
@@ -91,7 +91,7 @@ class ImportantSuppilesDetailsListState
   int end = 0;
 
   int currentPage = 0;
-  String locale = 'en_US';
+  // String locale = 'en_US';
   List<String> related = [];
   List<String> relatedfname = [];
 
@@ -134,19 +134,22 @@ class ImportantSuppilesDetailsListState
       }
     });
   }
+
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
+
   @override
   void didChangeMetrics() {
     // This method is called when the layout metrics change,
     // which indicates that the widgets have been fully laid out.
     // You can perform actions after the page is fully loaded here.
-    print("cutrre");
+    // print("cutrre");
     super.didChangeMetrics();
   }
+
   String encodeString(String? inputString) {
     var queryParamRaw = inputString ?? "";
     var encoded = queryParamRaw.replaceAll(" ", "%20");
@@ -202,23 +205,23 @@ class ImportantSuppilesDetailsListState
   }
 
   openVoiceToTextConverter() async {
-    var outputText = await Navigator.push(
-        context,
-        PageRouteBuilder(
-            pageBuilder: (_, __, ___) => VoiceToTextConverter(
-                  fromScreen: VoiceSearchFromScreen.impSuppliesList,
-                ),
-            opaque: false,
-            fullscreenDialog: true));
-    if (outputText != null && outputText != "") {
-      resetUI();
-      encodedQueryParam = encodeString(outputText);
-      widget.productName = outputText;
-      items.length = 0;
-      widget.screen = "search";
-      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-          widget.screen, currentCityId, currentCity);
-    }
+    // var outputText = await Navigator.push(
+    //     context,
+    //     PageRouteBuilder(
+    //         pageBuilder: (_, __, ___) => VoiceToTextConverter(
+    //               fromScreen: VoiceSearchFromScreen.impSuppliesList,
+    //             ),
+    //         opaque: false,
+    //         fullscreenDialog: true));
+    // if (outputText != null && outputText != "") {
+    //   resetUI();
+    //   encodedQueryParam = encodeString(outputText);
+    //   widget.productName = outputText;
+    //   items.length = 0;
+    //   widget.screen = "search";
+    //   getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+    //       widget.screen, currentCityId, currentCity);
+    // }
   }
 
   showSearchController() async {
@@ -240,24 +243,24 @@ class ImportantSuppilesDetailsListState
     }
   }
 
-  reArrangeLanguageArraysAndRefreshScreen(
-      int clickedIndex, String clickedCity) {
-    if (clickedIndex != 0) {
-      categoriesList.removeAt(1);
-      categoriesList.insert(1, categoriesList[0]);
-      categoriesList.removeAt(0);
-      categoriesList.insert(0, clickedCity);
-    }
-    setState(() {
-      if (clickedCity == "English") {
-        locale = 'en_US';
-      } else {
-        locale = 'hi_IN';
-      }
-    });
-    Navigator.pop(context);
-    showBottomSheet(context, locale);
-  }
+  // reArrangeLanguageArraysAndRefreshScreen(
+  //     int clickedIndex, String clickedCity) {
+  //   if (clickedIndex != 0) {
+  //     categoriesList.removeAt(1);
+  //     categoriesList.insert(1, categoriesList[0]);
+  //     categoriesList.removeAt(0);
+  //     categoriesList.insert(0, clickedCity);
+  //   }
+  //   setState(() {
+  //     if (clickedCity == "English") {
+  //       locale = 'en_US';
+  //     } else {
+  //       locale = 'hi_IN';
+  //     }
+  //   });
+  //   Navigator.pop(context);
+  //   // showBottomSheet(context, locale);
+  // }
 
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
@@ -312,7 +315,7 @@ class ImportantSuppilesDetailsListState
         pathUrl =
             // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
             "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
-    else {
+      else {
         pathUrl =
             "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       }
@@ -536,24 +539,29 @@ class ImportantSuppilesDetailsListState
                       ),
                       GestureDetector(
                         onTap: () async {
-                          var x = await showBottomSheet(context, locale);
-                          print("nameofproduct=$x");
-                          // var selectedChip = await Navigator.push(
-                          //     context,
-                          //     PageRouteBuilder(
-                          //         pageBuilder: (_, __, ___) => WaveWidget( onTap: (details) {
-                          //           print('Tap position: ${details.localPosition}');
-                          //         },
-                          //           bgColor: Colors.teal,
-                          //           size: Size(
-                          //             MediaQuery.of(context).size.width -
-                          //                 60,
-                          //             MediaQuery.of(context).size.height -
-                          //                 400,
-                          //           ),
-                          //           textForListening: 'hello',),
-                          //         opaque: false,
-                          //         fullscreenDialog: true));
+                          // var x = await showBottomSheet(context, locale);
+                          // print("nameofproduct=$x");
+                          var receivedText = await Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) => WaveWidget(
+                                        onTap: (details) {
+                                          print(
+                                              'Tap position: ${details.localPosition}');
+                                        },
+                                        bgColor: Colors.teal,
+                                        size: Size(
+                                          MediaQuery.of(context).size.width -
+                                              60,
+                                          MediaQuery.of(context).size.height -
+                                              300,
+                                        ),
+                                        textForListening: 'en-IN',
+                                      ),
+                                  opaque: false,
+                                  fullscreenDialog: true));
+
+                          print("output text $receivedText");
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -894,111 +902,111 @@ class ImportantSuppilesDetailsListState
     );
   }
 
-  Future showBottomSheet(BuildContext context, String locale) async {
-    bool isEnglishSelected = true;
-    int selectedCategoryIndex = -1;
-    bool isHindiSelected = false;
-    String? enteredText = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Center(
-            child: Stack(
-          children: [
-            WaveWidget(
-              // Your WaveWidget here
-              size: Size(
-                MediaQuery.of(context).size.width - 60,
-                MediaQuery.of(context).size.height - 400,
-              ),
-              textForListening: locale, onTap: (TapDownDetails) {},
-              bgColor: Colors.teal,
-            ),
-            Positioned(
-              left: (MediaQuery.of(context).size.width - 60) / 2 -
-                  90, // Adjust the horizontal position as needed
-              top: MediaQuery.of(context).size.height -
-                  470, // Adjust the vertical position as needed
-              child: Container(
-                height: 40,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categoriesList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    var inkWell = InkWell(
-                        onTap: () {
-                          // if (index == 0) {
-                          //   // showLocationSelector();
-                          // } else {
-                          reArrangeLanguageArraysAndRefreshScreen(
-                              index, categoriesList[index]);
-                          // }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              if (index == 0) ...[
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                              ],
-                              Text(categoriesList[index]),
-                            ],
-                          ),
-                        ));
-                    return Card(
-                      color: index == 0
-                          ? Colors.teal.shade200
-                          : Colors.grey.shade300,
-                      clipBehavior: Clip.hardEdge,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: inkWell,
-                    );
-                  },
-                ),
-              ),
+  // Future showBottomSheet(BuildContext context, String locale) async {
+  //   bool isEnglishSelected = true;
+  //   int selectedCategoryIndex = -1;
+  //   bool isHindiSelected = false;
+  //   String? enteredText = await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Center(
+  //           child: Stack(
+  //         children: [
+  //           WaveWidget(
+  //             size: Size(
+  //               MediaQuery.of(context).size.width - 60,
+  //               MediaQuery.of(context).size.height - 400,
+  //             ),
+  //             textForListening: locale,
+  //             onTap: (TapDownDetails) {},
+  //             bgColor: Colors.teal,
+  //           ),
+  //           Positioned(
+  //             left: (MediaQuery.of(context).size.width - 60) / 2 -
+  //                 90, // Adjust the horizontal position as needed
+  //             top: MediaQuery.of(context).size.height -
+  //                 470, // Adjust the vertical position as needed
+  //             child: Container(
+  //               height: 40,
+  //               child: ListView.builder(
+  //                 shrinkWrap: true,
+  //                 scrollDirection: Axis.horizontal,
+  //                 itemCount: categoriesList.length,
+  //                 itemBuilder: (BuildContext context, int index) {
+  //                   var inkWell = InkWell(
+  //                       onTap: () {
+  //                         // if (index == 0) {
+  //                         //   // showLocationSelector();
+  //                         // } else {
+  //                         reArrangeLanguageArraysAndRefreshScreen(
+  //                             index, categoriesList[index]);
+  //                         // }
+  //                       },
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.all(8.0),
+  //                         child: Row(
+  //                           children: [
+  //                             if (index == 0) ...[
+  //                               const SizedBox(
+  //                                 width: 5,
+  //                               ),
+  //                             ],
+  //                             Text(categoriesList[index]),
+  //                           ],
+  //                         ),
+  //                       ));
+  //                   return Card(
+  //                     color: index == 0
+  //                         ? Colors.teal.shade200
+  //                         : Colors.grey.shade300,
+  //                     clipBehavior: Clip.hardEdge,
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(20.0),
+  //                     ),
+  //                     child: inkWell,
+  //                   );
+  //                 },
+  //               ),
+  //             ),
 
-              //     SizedBox(width: 5,),
-              //     GestureDetector(
-              //       onTap: (){
-              //         setState(() {
-              //           print("isEnglishSelected=$isEnglishSelected");
-              //           isEnglishSelected=false;
-              //           isHindiSelected=true;
-              //         });
-              //       },
-              //       child: ActionChip(
-              //         onPressed: (){},
-              //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
-              //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
-              //           side: BorderSide(
-              //             color: Colors.teal, // Border color
-              //             width: 2.0, // Border width
-              //           ),
-              //         ),
-              //       ),
-              // ),
-            ),
-          ],
-        ));
-      },
-    );
-    print("enteredText=$enteredText");
-    if (enteredText != null && enteredText != "") {
-      resetUI();
-      encodedQueryParam = encodeString(enteredText);
-      widget.productName = enteredText;
-      items.length = 0;
-      widget.screen = "search";
-      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-          widget.screen, currentCityId, currentCity);
-    }
-  }
+  //             //     SizedBox(width: 5,),
+  //             //     GestureDetector(
+  //             //       onTap: (){
+  //             //         setState(() {
+  //             //           print("isEnglishSelected=$isEnglishSelected");
+  //             //           isEnglishSelected=false;
+  //             //           isHindiSelected=true;
+  //             //         });
+  //             //       },
+  //             //       child: ActionChip(
+  //             //         onPressed: (){},
+  //             //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
+  //             //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
+  //             //         shape: RoundedRectangleBorder(
+  //             //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
+  //             //           side: BorderSide(
+  //             //             color: Colors.teal, // Border color
+  //             //             width: 2.0, // Border width
+  //             //           ),
+  //             //         ),
+  //             //       ),
+  //             // ),
+  //           ),
+  //         ],
+  //       ));
+  //     },
+  //   );
+  //   print("enteredText=$enteredText");
+  //   if (enteredText != null && enteredText != "") {
+  //     resetUI();
+  //     encodedQueryParam = encodeString(enteredText);
+  //     widget.productName = enteredText;
+  //     items.length = 0;
+  //     widget.screen = "search";
+  //     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
+  //         widget.screen, currentCityId, currentCity);
+  //   }
+  // }
 
   Future addBannerOrAd(int pos, String value) async {
     imagesArray?.insert(pos, "");

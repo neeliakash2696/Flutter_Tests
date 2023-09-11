@@ -25,51 +25,51 @@ class WaveWidget extends StatefulWidget {
   double heightPercentange;
   bool roundImg;
   String textForListening;
-  static var localeid='en_US';
+  static var localeid = 'en_US';
   // ImageProvider<dynamic> imageProvider;
   Color bgColor;
 
   WaveWidget(
-      {
-        required this.onTap,
-        required this.size,
-        this.imgSize = const Size(60.0, 60.0),
-        this.imgOffset = const Offset(0.0, 0.0),
-        this.waveAmplitude = 10.0,
-        this.waveFrequency = 1.6,
-        this.wavePhase = 10.0,
-        required this.bgColor,
-        this.roundImg = true,
-        this.heightPercentange = 0.6,
-        required this.textForListening
-      });
+      {required this.onTap,
+      required this.size,
+      this.imgSize = const Size(60.0, 60.0),
+      this.imgOffset = const Offset(0.0, 0.0),
+      this.waveAmplitude = 10.0,
+      this.waveFrequency = 1.6,
+      this.wavePhase = 10.0,
+      required this.bgColor,
+      this.roundImg = true,
+      this.heightPercentange = 0.6,
+      required this.textForListening});
 
   @override
   State<StatefulWidget> createState() => _WaveWidgetState();
 }
 
 class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
-
-  String info = "Click on Mic when ready";
+  // String audioStatus = "Click on Mic when ready";
   SpeechToText speechToText = SpeechToText();
   bool speechEnabled = false;
   bool recording = false;
   String voiceConvertedText = 'Listening...';
-  late AnimationController _waveControl=new AnimationController(vsync: this, duration: Duration(seconds: 2));
-  late Animation<double> _wavePhaseValue=Tween(begin: widget.wavePhase, end: 360 + widget.wavePhase)
-      .animate(_waveControl);
+  late AnimationController _waveControl = new AnimationController(
+      vsync: this, duration: const Duration(seconds: 2));
+  late Animation<double> _wavePhaseValue =
+      Tween(begin: widget.wavePhase, end: 360 + widget.wavePhase)
+          .animate(_waveControl);
   Image? image;
   TapDownDetails? details;
   bool _isListeningToStream = false;
   ImageStream? _imageStream;
-   Size? imgSize;
-  int start=0;
+  Size? imgSize;
+  int timerTime = 0;
+
   @override
   void initState() {
     super.initState();
     imgSize = widget.imgSize;
-    _waveControl =
-    new AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _waveControl = new AnimationController(
+        vsync: this, duration: const Duration(seconds: 2));
     _wavePhaseValue =
         Tween(begin: widget.wavePhase, end: 360 + widget.wavePhase)
             .animate(_waveControl);
@@ -79,39 +79,33 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
         _waveControl.forward();
       }
     });
-      _waveControl.forward();
+    _waveControl.forward();
     _initSpeech().then((value) => _startListening(widget.textForListening));
   }
   // String previousLocaleId = WaveWidget.localeid; // Store the previous localeid
 
-  // @override
-  // void didUpdateWidget(WaveWidget oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //
-  //   // Check if localeid has changed
-  //   if (previousLocaleId != WaveWidget.localeid) {
-  //     print("localeidh=${WaveWidget.localeid}");
-  //     // Call _startListening with the new localeid
-  //     // _stopListening();
-  //     // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
-  //     previousLocaleId = WaveWidget.localeid; // Update the previous localeid
-  //   }
-  // }
+  @override
+  void didUpdateWidget(WaveWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // _initSpeech().then((value) => _startListening(WaveWidget.localeid));
+    // // Check if localeid has changed
+    // if (previousLocaleId != WaveWidget.localeid) {
+    //   print("localeidh=${WaveWidget.localeid}");
+    //   // Call _startListening with the new localeid
+    //   // _stopListening();
+    //   previousLocaleId = WaveWidget.localeid; // Update the previous localeid
+    // }
+  }
+
   @override
   void didChangeDependencies() {
-
-      if (TickerMode.of(context))
-        _listenToStream();
-      else
-        _stopListeningToStream();
+    if (TickerMode.of(context))
+      _listenToStream();
+    else
+      _stopListeningToStream();
 
     super.didChangeDependencies();
   }
-  //
-  // @override
-  // void didUpdateWidget(WaveWidget oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  // }
 
   @override
   void reassemble() {
@@ -122,63 +116,84 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // late Timer timer;
     late int start;
-    String tappedIndex="-1";
-    return GestureDetector(
-      onTapDown: (TapDownDetails details1){
-        details=details1;
-      },
-        onTap: () {
-          _initSpeech().then((value) => _startListening(widget.textForListening));
-          print("Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
-    },
-      child:CustomPaint(
-      painter: _MyWavePaint(
-          onChipClicked:(locale) {
-            // setState(() {
-            if(WaveWidget.localeid!=locale) {
-                  WaveWidget.localeid = locale;
-                  // _stopListening();
-                  // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
-
-                }
-
-                // });
+    String tappedIndex = "-1";
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(""),
+        backgroundColor: Colors.grey.withOpacity(0.2),
+      ),
+      backgroundColor: Colors.transparent.withOpacity(0.6),
+      body: SafeArea(
+        child: Center(
+          child: GestureDetector(
+            onTapDown: (TapDownDetails details1) {
+              details = details1;
             },
-        details: details,
-          image: image,
-          bgColor: widget.bgColor,
-          imageSize: imgSize,
-          heightPercentange: widget.heightPercentange,
-          repaint: _waveControl,
-          imgOffset: widget.imgOffset,
-          roundImg: widget.roundImg,
-          waveFrequency: widget.waveFrequency,
-          wavePhaseValue: _wavePhaseValue,
-          waveAmplitude: widget.waveAmplitude, textForListening: voiceConvertedText),
-      size: widget.size,
-    ));
+            onTap: () {
+              _startListening(widget.textForListening);
+              print(
+                  "Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
+            },
+            child: CustomPaint(
+              painter: _MyWavePaint(
+                  // onChipClicked: (locale) {
+                  //   _stopListening();
+                  //   // setState(() {
+                  //   if (WaveWidget.localeid != locale) {
+                  //     WaveWidget.localeid = locale;
+                  //     _startListening(WaveWidget.localeid);
+                  //     // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
+                  //   }
 
+                  //   // });
+                  // },
+                  details: details,
+                  image: image,
+                  bgColor: widget.bgColor,
+                  imageSize: imgSize,
+                  heightPercentange: widget.heightPercentange,
+                  repaint: _waveControl,
+                  imgOffset: widget.imgOffset,
+                  roundImg: widget.roundImg,
+                  waveFrequency: widget.waveFrequency,
+                  wavePhaseValue: _wavePhaseValue,
+                  waveAmplitude: widget.waveAmplitude,
+                  textForListening: voiceConvertedText),
+              size: widget.size,
+            ),
+          ),
+        ),
+      ),
+    );
   }
+
   Future _initSpeech() async {
     speechEnabled = await speechToText.initialize();
     // setState(() {});
   }
+
   late Timer timer;
 
   void _startListening(String locale) async {
     startTimer();
     voiceConvertedText = "Listening...";
-    await speechToText.listen(onResult: _onSpeechResult,localeId:locale);
+    await speechToText.listen(
+      onResult: _onSpeechResult,
+      localeId: locale,
+      onDevice: false,
+      // listenFor: const Duration(seconds: 5),
+    );
     // voiceConvertedText = "";
     print("Started Lsitening=$locale");
-    info = "Listening...";
+    // audioStatus = "Listening...";
     recording = true;
     setState(() {});
   }
+
   _stopListening() async {
     await speechToText.stop();
     print("stopped Listening");
-    info = "Tap on the Mic to speak again";
+    // audioStatus = "Tap on the Mic to speak again";
     recording = false;
     speechEnabled = false;
   }
@@ -192,15 +207,15 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
   void startTimer() {
     // late int start;
-    start = 5;
+    timerTime = 5;
     const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
-        if (start == 0) {
+      (Timer timer) {
+        if (timerTime == 0) {
           timer.cancel();
           if (voiceConvertedText == "Listening...") {
-            voiceConvertedText="Tap on the Mic to speak again";
+            voiceConvertedText = "Tap on the Mic to speak again";
             _stopListening();
             setState(() {});
           } else {
@@ -212,56 +227,58 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
           }
         } else {
           setState(() {
-            start--;
+            timerTime--;
           });
         }
       },
     );
   }
-  Future proceedForSearch() async{
+
+  Future proceedForSearch() async {
     // switch (widget.fromScreen) {
     //   case VoiceSearchFromScreen.def:
-        Navigator.pop(context,voiceConvertedText);
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => ImportantSuppilesDetailsList(
-        //             productName: voiceConvertedText,
-        //             productFname: voiceConvertedText,
-        //             productIndex: 0,
-        //             biztype: "",
-        //             screen: "search"
-        //         )));
-      //   break;
-      // case VoiceSearchFromScreen.impSuppliesList:
-      //   Navigator.pop(context, voiceConvertedText);
-      //   break;
-      // case VoiceSearchFromScreen.viewCategories:
-      //   Navigator.pop(context);
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => ImportantSuppilesDetailsList(
-      //               productName: voiceConvertedText,
-      //               productFname: voiceConvertedText,
-      //               productIndex: 0,
-      //               biztype: "",
-      //               screen: "search"
-      //           )));
-      // case VoiceSearchFromScreen.categoriesDetail:
-      //   Navigator.pop(context);
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => ImportantSuppilesDetailsList(
-      //               productName: voiceConvertedText,
-      //               productFname: voiceConvertedText,
-      //               productIndex: 0,
-      //               biztype: "",
-      //               screen: "search"
-      //           )));
+    Navigator.pop(context, voiceConvertedText);
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => ImportantSuppilesDetailsList(
+    //             productName: voiceConvertedText,
+    //             productFname: voiceConvertedText,
+    //             productIndex: 0,
+    //             biztype: "",
+    //             screen: "search"
+    //         )));
+    //   break;
+    // case VoiceSearchFromScreen.impSuppliesList:
+    //   Navigator.pop(context, voiceConvertedText);
+    //   break;
+    // case VoiceSearchFromScreen.viewCategories:
+    //   Navigator.pop(context);
+    //   Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //           builder: (context) => ImportantSuppilesDetailsList(
+    //               productName: voiceConvertedText,
+    //               productFname: voiceConvertedText,
+    //               productIndex: 0,
+    //               biztype: "",
+    //               screen: "search"
+    //           )));
+    // case VoiceSearchFromScreen.categoriesDetail:
+    //   Navigator.pop(context);
+    //   Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //           builder: (context) => ImportantSuppilesDetailsList(
+    //               productName: voiceConvertedText,
+    //               productFname: voiceConvertedText,
+    //               productIndex: 0,
+    //               biztype: "",
+    //               screen: "search"
+    //           )));
     // }
   }
+
   // _stopListening() async {
   //     await speechToText.stop();
   //   print("stopped Listening");
@@ -282,10 +299,12 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   void _updateSourceStream(ImageStream newStream) {
     if (_imageStream?.key == newStream?.key) return;
 
-    if (_isListeningToStream) _imageStream?.removeListener(_handleImageChanged as ImageStreamListener);
+    if (_isListeningToStream)
+      _imageStream?.removeListener(_handleImageChanged as ImageStreamListener);
 
     _imageStream = newStream;
-    if (_isListeningToStream) _imageStream?.addListener(_handleImageChanged as ImageStreamListener);
+    if (_isListeningToStream)
+      _imageStream?.addListener(_handleImageChanged as ImageStreamListener);
   }
 
   void _listenToStream() {
@@ -305,22 +324,12 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     if (timer != null && timer.isActive) {
       timer.cancel();
     }
-    // _stopListening();
+    _stopListening();
     _waveControl.dispose();
     // chipclick=false;
     super.dispose();
   }
 
-  // void _resolveImage() {
-  //   try {
-  //     var asset = widget.imageProvider;
-  //     final ImageStream newStream = asset.resolve(
-  //         createLocalImageConfiguration(context, size: widget.imgSize));
-  //     assert(newStream != null);
-  //     _updateSourceStream(newStream);
-  //   } catch (e) {
-  //     print(e);
-  // }
   void _handleImageChanged(ImageInfo imageInfo, bool synchronousCall) {
     if (imageInfo == null) {
       return;
@@ -351,22 +360,22 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
 
 class _MyWavePaint extends CustomPainter {
   _MyWavePaint({
-      required this.onChipClicked,
-      required this.details,
-      required this.image,
-      required this.imageSize,
-      required this.imgOffset,
-      required this.bgColor,
-      required this.heightPercentange,
-      required this.waveFrequency,
-      required this.wavePhaseValue,
-      required this.waveAmplitude,
-      required Listenable repaint,
-      required this.textForListening,
-        this.roundImg = true,})
-      : super(repaint: repaint);
+    // required this.onChipClicked,
+    required this.details,
+    required this.image,
+    required this.imageSize,
+    required this.imgOffset,
+    required this.bgColor,
+    required this.heightPercentange,
+    required this.waveFrequency,
+    required this.wavePhaseValue,
+    required this.waveAmplitude,
+    required Listenable repaint,
+    required this.textForListening,
+    this.roundImg = true,
+  }) : super(repaint: repaint);
 
-  final Function(String) onChipClicked;
+  // final Function(String) onChipClicked;
   TapDownDetails? details;
   String textForListening;
   double waveAmplitude;
@@ -391,8 +400,10 @@ class _MyWavePaint extends CustomPainter {
   double micIconSize = 48.0; // Customize the mic icon size
   double micIconX = 0.0; // X-coordinate for the mic icon
   double micIconY = 20.0; // Y-coordinate for the mic icon (adjust as needed)
-  String? labelText="Tell us what you need"; // Text to be displayed above the microphone icon
-  TextStyle labelTextStyle = TextStyle(
+  String? labelText =
+      "Tell us what you need"; // Text to be displayed above the microphone icon
+  int? _value = 0;
+  TextStyle labelTextStyle = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.bold,
     fontSize: 30.0, // You can adjust the font size
@@ -425,23 +436,24 @@ class _MyWavePaint extends CustomPainter {
         textPainter.layout(maxWidth: size.width);
 
         double textX = (size.width - textPainter.width) / 2;
-        double textY = micIconY ;
+        double textY = micIconY;
         textPainter.paint(canvas, Offset(textX, textY));
       }
     }
     _fillPath(viewCenterY, size);
 
-    mPaint.color = Color(0xc0ffffff);
+    mPaint.color = const Color(0xc0ffffff);
     canvas.drawPath(path1, mPaint);
 
-    mPaint.color = Color(0xB0ffffff);
+    mPaint.color = const Color(0xB0ffffff);
     canvas.drawPath(path2, mPaint);
     _drawMicIcon(canvas, size);
 
-    mPaint.color = Color(0x80ffffff);
+    mPaint.color = const Color(0x80ffffff);
     canvas.drawPath(path3, mPaint);
     if (textForListening != null) {
-      final textPadding = EdgeInsets.all(8.0); // Adjust the padding value as needed
+      final textPadding =
+          const EdgeInsets.all(8.0); // Adjust the padding value as needed
 
       final textPainter = TextPainter(
         textAlign: TextAlign.center,
@@ -454,21 +466,49 @@ class _MyWavePaint extends CustomPainter {
       textPainter.layout(maxWidth: size.width);
 
       double textX = (size.width - textPainter.width) / 2;
-      double textY = heightPercentange+250 ; // Adjust the vertical position with top padding
-      textPainter.paint(canvas, Offset(textX, size.height-120));
+      double textY = heightPercentange +
+          250; // Adjust the vertical position with top padding
+      textPainter.paint(canvas, Offset(textX, size.height - 120));
       mPaint1.color = Colors.teal[300]!;
       mPaint1.style = PaintingStyle.stroke;
       final List<String> chipTexts = ["English", "Hindi"];
-      List<double> chipPositions = [ size.width/2-60, size.width/2+60]; // Add X coordinates for each chip
+      List<bool> chipsSelection = [true, false];
+      List<double> chipPositions = [
+        size.width / 2 - 60,
+        size.width / 2 + 60
+      ]; // Add X coordinates for each chip
+      Container(
+        height: 40,
+        width: 40,
+        color: Colors.black26,
+      );
+      List<Widget>.generate(
+        chipTexts.length,
+        (int index) {
+          return ChoiceChip(
+            selectedColor: Colors.teal,
+            label: Text(
+              chipTexts[index],
+              style: const TextStyle(
+                fontSize: 13,
+              ),
+            ),
+            selected: _value == index,
+            onSelected: (bool selected) {},
+          );
+        },
+      ).toList();
       // for (int i = 0; i < chipPositions.length; i++) {
       //   final position = chipPositions[i];
-      //   final chipY = size.height-40; // Adjust the vertical position of the chips
+      //   final chipY =
+      //       size.height - 40; // Adjust the vertical position of the chips
       //   final chipWidth = 100.0; // Adjust the chip width as needed
       //   final chipHeight = 30.0; // Adjust the chip height as needed
-      //   final chipRadius = Radius.circular(20.0); //  Adjust the chip size as needed
+      //   final chipRadius =
+      //       const Radius.circular(20.0); //  Adjust the chip size as needed
       //   final chipRect = RRect.fromRectAndRadius(
       //     Rect.fromCenter(
-      //       center: Offset(position,chipY),
+      //       center: Offset(position, chipY),
       //       width: chipWidth,
       //       height: chipHeight,
       //     ),
@@ -478,23 +518,17 @@ class _MyWavePaint extends CustomPainter {
       //   final borderPath = Path();
       //   borderPath.addRRect(chipRect);
       //   canvas.drawPath(borderPath, mPaint1);
-      //   final paragraphStyle = ParagraphStyle(
-      //       textAlign: TextAlign.center,
-      //       fontSize: 16.0
-      //   );
+      //   final paragraphStyle =
+      //       ParagraphStyle(textAlign: TextAlign.center, fontSize: 16.0);
       //   // Draw text inside the chip
       //   final textPainter = TextPainter(
       //     text: TextSpan(
       //       text: chipTexts[i],
-      //       style: TextStyle(
-      //         color: Colors.teal[300],
-      //         fontSize: 16.0
-      //       ),
+      //       style: TextStyle(color: Colors.teal[300], fontSize: 16.0),
       //     ),
       //     textDirection: TextDirection.ltr,
       //   );
-      //
-      //
+
       //   textPainter.layout(
       //     minWidth: 0,
       //     maxWidth: chipWidth - 16.0,
@@ -504,17 +538,18 @@ class _MyWavePaint extends CustomPainter {
       //   textPainter.paint(canvas, Offset(textX, textY));
       //   if (details != null && chipRect.contains(details!.localPosition)) {
       //     print('Chip clicked: ${chipTexts[i]}');
-      //     if(chipTexts[i]=="English"){
-      //       onChipClicked('en_US');
-      //       WaveWidget.localeid="en_US";
-      //     }else if(chipTexts[i]=="Hindi"){
-      //       onChipClicked('hi_IN');
-      //       WaveWidget.localeid="hi_IN";
-      //     }
+      //     // if (chipTexts[i] == "English") {
+      //     //   onChipClicked('en_US');
+      //     //   // WaveWidget.localeid = "en_US";
+      //     // } else if (chipTexts[i] == "Hindi") {
+      //     //   onChipClicked('hi_IN');
+      //     //   // WaveWidget.localeid = "hi_IN";
+      //     // }
       //   }
       // }
     }
   }
+
   void _drawMicIcon(Canvas canvas, Size size) {
     if (micIcon != null) {
       final iconData = Icons.mic;
@@ -537,7 +572,7 @@ class _MyWavePaint extends CustomPainter {
       textPainter.layout();
 
       final iconX = (size.width - textPainter.width) / 2;
-      final iconY = heightPercentange+100;
+      final iconY = heightPercentange + 100;
 
       textPainter.paint(canvas, Offset(iconX, iconY));
       final iconRect = Rect.fromPoints(
@@ -545,13 +580,13 @@ class _MyWavePaint extends CustomPainter {
         Offset(iconX + textPainter.width, iconY + textPainter.height),
       );
 
-      if (details != null && iconRect != null && iconRect.contains(details!.localPosition)) {
-        print('Mic clicked');
+      if (details != null &&
+          iconRect != null &&
+          iconRect.contains(details!.localPosition)) {
+        // print('Mic clicked');
       }
-
     }
   }
-
 
   void _fillPath(double viewCenterY, Size size) {
     path1.reset();
@@ -618,5 +653,4 @@ class _MyWavePaint extends CustomPainter {
     return (sin(
         _tempa * waveFrequency * (currentposition + 1) + startradius * _tempb));
   }
-
 }

@@ -52,12 +52,11 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                      productName: voiceConvertedText,
-                      productFname: voiceConvertedText,
-                  productIndex: 0,
-                  biztype: "",
-                    screen: "search"
-                    )));
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
         break;
       case VoiceSearchFromScreen.impSuppliesList:
         Navigator.pop(context, voiceConvertedText);
@@ -68,24 +67,22 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                      productName: voiceConvertedText,
-                      productFname: voiceConvertedText,
-                  productIndex: 0,
-                  biztype: "",
-                    screen: "search"
-                    )));
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
       case VoiceSearchFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                      productName: voiceConvertedText,
-                      productFname: voiceConvertedText,
-                  productIndex: 0,
-                  biztype: "",
-                    screen: "search"
-                    )));
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
     }
   }
 
