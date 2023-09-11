@@ -109,16 +109,16 @@ class _ViewCategoriesState extends State<ViewCategories> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) =>
-                                        VoiceToTextConverter(
-                                          fromScreen: VoiceSearchFromScreen
-                                              .viewCategories,
-                                        ),
-                                    opaque: false,
-                                    fullscreenDialog: true));
+                            // Navigator.push(
+                            //     context,
+                            //     PageRouteBuilder(
+                            //         pageBuilder: (_, __, ___) =>
+                            //             VoiceToTextConverter(
+                            //               fromScreen: VoiceSearchFromScreen
+                            //                   .viewCategories,
+                            //             ),
+                            //         opaque: false,
+                            //         fullscreenDialog: true));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -182,13 +182,12 @@ class _ViewCategoriesState extends State<ViewCategories> {
                               child: Container(
                                 child: imagesArray[index].startsWith("http")
                                     ? CachedNetworkImage(
-                                      imageUrl: imagesArray[index],
-                                      fit: BoxFit.fill
-                                )
+                                        imageUrl: imagesArray[index],
+                                        fit: BoxFit.fill)
                                     : Image.asset(
-                                  imagesArray[index],
-                                  fit: BoxFit.fill,
-                                ),
+                                        imagesArray[index],
+                                        fit: BoxFit.fill,
+                                      ),
                               ),
                             ),
                           ),
@@ -234,7 +233,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
         // bool doesAsset = await doesAssetExist("assets/img_v2/${parts.last}");
         // print("doesexist=${parts.last}");
         // if (doesAsset) {
-          imagesArray.add("assets/img_v2/${parts.last}");
+        imagesArray.add("assets/img_v2/${parts.last}");
         // } else {
         //   imagesArray.add(imageUrl);
         // }

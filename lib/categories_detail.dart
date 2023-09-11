@@ -122,16 +122,16 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) =>
-                                        VoiceToTextConverter(
-                                          fromScreen: VoiceSearchFromScreen
-                                              .categoriesDetail,
-                                        ),
-                                    opaque: false,
-                                    fullscreenDialog: true));
+                            // Navigator.push(
+                            //     context,
+                            //     PageRouteBuilder(
+                            //         pageBuilder: (_, __, ___) =>
+                            //             VoiceToTextConverter(
+                            //               fromScreen: VoiceSearchFromScreen
+                            //                   .categoriesDetail,
+                            //             ),
+                            //         opaque: false,
+                            //         fullscreenDialog: true));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -185,7 +185,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
                                         productName: nameArray[index],
-                                        productFname:fnameArray[index],
+                                        productFname: fnameArray[index],
                                         productIndex: 0,
                                         biztype: "",
                                         screen: "impcat",
