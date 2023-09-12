@@ -299,7 +299,7 @@ class ImportantSuppilesDetailsListState
     currentCity = clickedCity;
     String productName=widget.productName;
     resetUI();
-    items.length = 0;
+    items.clear();
     widget.productName=productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         currentCityId, clickedCity);
@@ -347,7 +347,7 @@ class ImportantSuppilesDetailsListState
         EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
           resultsArray = json.decode(response.body)['data'];
-          bizWiseArray = json.decode(response.body)['biz_wise_count'];
+        bizWiseArray = json.decode(response.body)['biz_wise_count'];
           sellerTypeArray.clear();
           for (int i = 0; i < bizWiseArray.length; i++)
             sellerTypeArray

@@ -262,6 +262,7 @@ class SearchState
     currentCity = clickedCity;
     String productName=widget.productName;
     resetUI();
+    items.clear();
     startFromFirst();
     widget.productName=productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
@@ -308,6 +309,8 @@ class SearchState
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
+        resultsArray.clear();
+        print("resultsarrayafterclearing=${resultsArray.length}");
           resultsArray = json.decode(response.body)['results'];
           if (resultsArray.length > 0){
             sellerTypeArray =
@@ -327,17 +330,28 @@ class SearchState
             }
       }
         if (currentPage == 1) {
-            dynamic live_mcats =
-            json.decode(response.body)['guess']['guess']['live_mcats'];
-            pbrimage = live_mcats[0]['smallimg'];
+          dynamic live_mcats = json.decode(response.body)['guess']['guess']['live_mcats'];
+
+          if (live_mcats is List) {
+            pbrimage = live_mcats.isNotEmpty ? live_mcats[0]['smallimg'] : "";
             related.clear();
             relatedfname.clear();
+
             for (var i = 0; i < live_mcats.length; i++) {
-              related.add(live_mcats[i]['name']);
-              relatedfname.add(live_mcats[i]['filename']);
+              if (live_mcats[i] != null && live_mcats[i] is Map) {
+                related.add(live_mcats[i]['name']);
+                relatedfname.add(live_mcats[i]['filename']);
+              }
             }
-            totalItemCount =
-            json.decode(response.body)['total_results_without_repetition'];
+
+            totalItemCount = json.decode(response.body)['total_results_without_repetition'];
+          } else {
+            pbrimage = "";
+            related.clear();
+            relatedfname.clear();
+            totalItemCount = 0;
+          }
+
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
