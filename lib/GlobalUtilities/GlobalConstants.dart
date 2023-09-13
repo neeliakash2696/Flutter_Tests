@@ -1,8 +1,7 @@
 library FlutterTests;
 
 final String AK =
-
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5NDU3ODM4NiwiaWF0IjoxNjk0NDkxOTg2LCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxMi0wOS0yMDIzIn0.TymC7qpQHpPFr86wnBZhcT4HgF5KA2eJ-3Jb1BpT5cQ";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSoxKjEqMiozKiIsImV4cCI6MTY5NDY3MTcwMCwiaWF0IjoxNjk0NTg1MzAwLCJzdWIiOiIxMzY0ODQ2NjEiLCJjZHQiOiIxMy0wOS0yMDIzIn0.LXzUKp_VApuUu5uQaFhL6pigONGYJwMBPeTRWQOcOZg";
 
 // List<String> localSearchArray = [];
 final List<String> citiesArray = [
