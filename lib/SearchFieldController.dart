@@ -1,9 +1,8 @@
 // ignore_for_file: must_be_immutable, unrelated_type_equality_checks, use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
+import 'package:flutter_tests/search.dart';
 import 'package:http/http.dart' as http;
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -76,12 +75,11 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(city: 0,
                       productName: searchQuery,
                       productFname: searchQuery,
                       productIndex: 0,
                       biztype: "",
-                      screen: "search",
                     )));
         break;
       case SearchingFromScreen.impSuppliesList:
@@ -92,23 +90,23 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
+                  city: 0,
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "",)));
       case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
+                  city: 0,
                     productName: searchQuery,
                     productFname: searchQuery,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "",)));
     }
   }
 
@@ -149,22 +147,22 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       if (code == "402" || code == "401") {
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
-        Flushbar(
-          title: code,
-          message: msg,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          isDismissible: true,
-          duration: const Duration(seconds: 4),
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          boxShadows: const [
-            BoxShadow(
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-        ).show(context);
+        // Flushbar(
+        //   title: code,
+        //   message: msg,
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   isDismissible: true,
+        //   duration: const Duration(seconds: 4),
+        //   backgroundColor: Colors.red,
+        //   margin: const EdgeInsets.all(8),
+        //   borderRadius: BorderRadius.circular(8),
+        //   boxShadows: const [
+        //     BoxShadow(
+        //       offset: Offset(0.0, 2.0),
+        //       blurRadius: 3.0,
+        //     )
+        //   ],
+        // ).show(context);
       } else if (response.statusCode == 200) {
         if (query.isEmpty) {
           var resultsArray = json.decode(response.body)['details']['searches'];

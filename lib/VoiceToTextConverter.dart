@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
+import 'package:flutter_tests/search.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -51,12 +52,12 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
+                  city: 0,
                     productName: voiceConvertedText,
                     productFname: voiceConvertedText,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "")));
         break;
       case VoiceSearchFromScreen.impSuppliesList:
         Navigator.pop(context, voiceConvertedText);
@@ -66,23 +67,23 @@ class VoiceToTextConverterState extends State<VoiceToTextConverter> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
+                  city: 0,
                     productName: voiceConvertedText,
                     productFname: voiceConvertedText,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "")));
       case VoiceSearchFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
+                builder: (context) => Search(
+                  city: 0,
                     productName: voiceConvertedText,
                     productFname: voiceConvertedText,
                     productIndex: 0,
-                    biztype: "",
-                    screen: "search")));
+                    biztype: "")));
     }
   }
 

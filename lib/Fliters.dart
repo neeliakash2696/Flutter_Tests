@@ -53,8 +53,8 @@ class FiltersState extends State<Filters> {
                   scrollDirection: Axis.vertical,
                   child: Container(
                       color: Colors.transparent,
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
+                      // height: MediaQuery.of(context).size.height,
+                      // width: MediaQuery.of(context).size.width,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
