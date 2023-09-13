@@ -18,7 +18,7 @@ import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:flutter_tests/recent_search_banner.dart';
 import 'package:flutter_tests/sellerType.dart';
-import 'package:flutter_tests/wave_widget.dart';
+import 'package:flutter_tests/SpeechToTextEnglish.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -225,23 +225,33 @@ class ImportantSuppilesDetailsListState
   }
 
   openVoiceToTextConverter() async {
-    // var outputText = await Navigator.push(
-    //     context,
-    //     PageRouteBuilder(
-    //         pageBuilder: (_, __, ___) => VoiceToTextConverter(
-    //               fromScreen: VoiceSearchFromScreen.impSuppliesList,
-    //             ),
-    //         opaque: false,
-    //         fullscreenDialog: true));
-    // if (outputText != null && outputText != "") {
-    //   resetUI();
-    //   encodedQueryParam = encodeString(outputText);
-    //   widget.productName = outputText;
-    //   items.length = 0;
-    //   widget.screen = "search";
-    //   getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-    //       widget.screen, currentCityId, currentCity);
-    // }
+    var receivedText = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => SpeechToTextEnglish(
+                  onTap: (details) {
+                    //
+                  },
+                  bgColor: Colors.teal,
+                  size: Size(
+                    MediaQuery.of(context).size.width - 60,
+                    MediaQuery.of(context).size.height - 300,
+                  ),
+                  fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                  localeId: "en_US",
+                  selectedIndex: 0,
+                ),
+            opaque: false,
+            fullscreenDialog: true));
+    if (receivedText != "" && receivedText != null) {
+      print("output text at impCat page $receivedText");
+      encodedQueryParam = encodeString(receivedText);
+      widget.productName = receivedText;
+      items.length = 0;
+      widget.screen = "search";
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
+          widget.screen, currentCityId, currentCity);
+    }
   }
 
   showSearchController() async {
@@ -297,10 +307,12 @@ class ImportantSuppilesDetailsListState
     cityIdArrayLocal.insert(0, clickedCityId);
     currentCityId = cityIdArrayLocal[0];
     currentCity = clickedCity;
+
     String productName=widget.productName;
     resetUI();
     items.clear();
     widget.productName=productName;
+
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         currentCityId, clickedCity);
   }
@@ -510,29 +522,7 @@ class ImportantSuppilesDetailsListState
                       ),
                       GestureDetector(
                         onTap: () async {
-                          // var x = await showBottomSheet(context, locale);
-                          // print("nameofproduct=$x");
-                          var receivedText = await Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => WaveWidget(
-                                        onTap: (details) {
-                                          print(
-                                              'Tap position: ${details.localPosition}');
-                                        },
-                                        bgColor: Colors.teal,
-                                        size: Size(
-                                          MediaQuery.of(context).size.width -
-                                              60,
-                                          MediaQuery.of(context).size.height -
-                                              300,
-                                        ),
-                                        textForListening: 'en-IN',
-                                      ),
-                                  opaque: false,
-                                  fullscreenDialog: true));
-
-                          print("output text $receivedText");
+                          openVoiceToTextConverter();
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

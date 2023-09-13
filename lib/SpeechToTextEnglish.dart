@@ -6,15 +6,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart' hide Image;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
-import 'dart:ui' show Image, ParagraphStyle;
+import 'dart:ui' show Image;
 
 import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
 
-class WaveWidget extends StatefulWidget {
+class SpeechToTextEnglish extends StatefulWidget {
   final Function(TapDownDetails) onTap;
   Size size;
   Size imgSize;
@@ -24,29 +26,35 @@ class WaveWidget extends StatefulWidget {
   double waveFrequency;
   double heightPercentange;
   bool roundImg;
-  String textForListening;
-  static var localeid = 'en_US';
+  String localeId;
+  int selectedIndex;
+  VoiceSearchFromScreen fromScreen;
+  // static var localeid = 'en_US';
   // ImageProvider<dynamic> imageProvider;
   Color bgColor;
 
-  WaveWidget(
-      {required this.onTap,
-      required this.size,
-      this.imgSize = const Size(60.0, 60.0),
-      this.imgOffset = const Offset(0.0, 0.0),
-      this.waveAmplitude = 10.0,
-      this.waveFrequency = 1.6,
-      this.wavePhase = 10.0,
-      required this.bgColor,
-      this.roundImg = true,
-      this.heightPercentange = 0.6,
-      required this.textForListening});
+  SpeechToTextEnglish({
+    required this.onTap,
+    required this.size,
+    this.imgSize = const Size(60.0, 60.0),
+    this.imgOffset = const Offset(0.0, 0.0),
+    this.waveAmplitude = 10.0,
+    this.waveFrequency = 1.6,
+    this.wavePhase = 10.0,
+    required this.bgColor,
+    this.roundImg = true,
+    this.heightPercentange = 0.6,
+    required this.fromScreen,
+    required this.localeId,
+    required this.selectedIndex,
+  });
 
   @override
-  State<StatefulWidget> createState() => _WaveWidgetState();
+  State<StatefulWidget> createState() => _SpeechToTextEnglishState();
 }
 
-class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
+class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
+    with TickerProviderStateMixin {
   // String audioStatus = "Click on Mic when ready";
   SpeechToText speechToText = SpeechToText();
   bool speechEnabled = false;
@@ -63,6 +71,9 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   ImageStream? _imageStream;
   Size? imgSize;
   int timerTime = 0;
+  String lastError = '';
+  String lastStatus = '';
+  final List<String> chipTexts = ["English", "Hindi"];
 
   @override
   void initState() {
@@ -80,21 +91,15 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
       }
     });
     _waveControl.forward();
-    _initSpeech().then((value) => _startListening(widget.textForListening));
+    if (speechToText.isListening) {
+      cancelListening();
+    }
+    _initSpeech().then((value) => _startListening(widget.localeId));
   }
-  // String previousLocaleId = WaveWidget.localeid; // Store the previous localeid
 
   @override
-  void didUpdateWidget(WaveWidget oldWidget) {
+  void didUpdateWidget(SpeechToTextEnglish oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // _initSpeech().then((value) => _startListening(WaveWidget.localeid));
-    // // Check if localeid has changed
-    // if (previousLocaleId != WaveWidget.localeid) {
-    //   print("localeidh=${WaveWidget.localeid}");
-    //   // Call _startListening with the new localeid
-    //   // _stopListening();
-    //   previousLocaleId = WaveWidget.localeid; // Update the previous localeid
-    // }
   }
 
   @override
@@ -112,102 +117,65 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     super.reassemble();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // late Timer timer;
-    late int start;
-    String tappedIndex = "-1";
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(""),
-        backgroundColor: Colors.grey.withOpacity(0.2),
-      ),
-      backgroundColor: Colors.transparent.withOpacity(0.6),
-      body: SafeArea(
-        child: Center(
-          child: GestureDetector(
-            onTapDown: (TapDownDetails details1) {
-              details = details1;
-            },
-            onTap: () {
-              _startListening(widget.textForListening);
-              print(
-                  "Mic icon clicked=$voiceConvertedText"); // You can pass additional details if needed
-            },
-            child: CustomPaint(
-              painter: _MyWavePaint(
-                  // onChipClicked: (locale) {
-                  //   _stopListening();
-                  //   // setState(() {
-                  //   if (WaveWidget.localeid != locale) {
-                  //     WaveWidget.localeid = locale;
-                  //     _startListening(WaveWidget.localeid);
-                  //     // _initSpeech().then((value) =>_startListening(WaveWidget.localeid));
-                  //   }
-
-                  //   // });
-                  // },
-                  details: details,
-                  image: image,
-                  bgColor: widget.bgColor,
-                  imageSize: imgSize,
-                  heightPercentange: widget.heightPercentange,
-                  repaint: _waveControl,
-                  imgOffset: widget.imgOffset,
-                  roundImg: widget.roundImg,
-                  waveFrequency: widget.waveFrequency,
-                  wavePhaseValue: _wavePhaseValue,
-                  waveAmplitude: widget.waveAmplitude,
-                  textForListening: voiceConvertedText),
-              size: widget.size,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Future _initSpeech() async {
     speechEnabled = await speechToText.initialize();
-    // setState(() {});
   }
 
   late Timer timer;
 
-  void _startListening(String locale) async {
+  void _startListening(String locale) {
     startTimer();
     voiceConvertedText = "Listening...";
-    await speechToText.listen(
+    speechToText.listen(
       onResult: _onSpeechResult,
       localeId: locale,
       onDevice: false,
+      cancelOnError: false,
+      partialResults: true,
       // listenFor: const Duration(seconds: 5),
     );
-    // voiceConvertedText = "";
     print("Started Lsitening=$locale");
-    // audioStatus = "Listening...";
     recording = true;
     setState(() {});
   }
 
-  _stopListening() async {
-    await speechToText.stop();
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    // setState(() {
+    voiceConvertedText = result.recognizedWords;
+    print(widget.localeId);
+    print(voiceConvertedText);
+    // });
+  }
+
+  void errorListener(SpeechRecognitionError error) {
+    setState(() {
+      lastError = '${error.errorMsg} - ${error.permanent}';
+      print("Error $lastError");
+    });
+  }
+
+  _stopListening() {
+    speechToText.stop();
     print("stopped Listening");
     // audioStatus = "Tap on the Mic to speak again";
     recording = false;
     speechEnabled = false;
   }
 
-  void _onSpeechResult(SpeechRecognitionResult result) {
+  void cancelListening() {
+    speechToText.cancel();
+    voiceConvertedText = "Tap on the Mic to speak again";
+    setState(() {});
+  }
+
+  void statusListener(String status) {
     setState(() {
-      voiceConvertedText = result.recognizedWords;
-      print(voiceConvertedText);
+      lastStatus = status;
     });
   }
 
   void startTimer() {
-    // late int start;
-    timerTime = 5;
+    timerTime = 7;
     const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(
       oneSec,
@@ -230,72 +198,52 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
             timerTime--;
           });
         }
+        // print("time left $timerTime");
       },
     );
   }
 
   Future proceedForSearch() async {
-    // switch (widget.fromScreen) {
-    //   case VoiceSearchFromScreen.def:
-    Navigator.pop(context, voiceConvertedText);
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => ImportantSuppilesDetailsList(
-    //             productName: voiceConvertedText,
-    //             productFname: voiceConvertedText,
-    //             productIndex: 0,
-    //             biztype: "",
-    //             screen: "search"
-    //         )));
-    //   break;
-    // case VoiceSearchFromScreen.impSuppliesList:
-    //   Navigator.pop(context, voiceConvertedText);
-    //   break;
-    // case VoiceSearchFromScreen.viewCategories:
-    //   Navigator.pop(context);
-    //   Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //           builder: (context) => ImportantSuppilesDetailsList(
-    //               productName: voiceConvertedText,
-    //               productFname: voiceConvertedText,
-    //               productIndex: 0,
-    //               biztype: "",
-    //               screen: "search"
-    //           )));
-    // case VoiceSearchFromScreen.categoriesDetail:
-    //   Navigator.pop(context);
-    //   Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //           builder: (context) => ImportantSuppilesDetailsList(
-    //               productName: voiceConvertedText,
-    //               productFname: voiceConvertedText,
-    //               productIndex: 0,
-    //               biztype: "",
-    //               screen: "search"
-    //           )));
-    // }
+    switch (widget.fromScreen) {
+      case VoiceSearchFromScreen.def:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
+        break;
+      case VoiceSearchFromScreen.impSuppliesList:
+        Navigator.pop(context, voiceConvertedText);
+        break;
+      case VoiceSearchFromScreen.viewCategories:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
+      case VoiceSearchFromScreen.categoriesDetail:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportantSuppilesDetailsList(
+                    productName: voiceConvertedText,
+                    productFname: voiceConvertedText,
+                    productIndex: 0,
+                    biztype: "",
+                    screen: "search")));
+    }
   }
 
-  // _stopListening() async {
-  //     await speechToText.stop();
-  //   print("stopped Listening");
-  //   info = "Tap on the Mic to speak again";
-  //     recording = false;
-  //     speechEnabled = false;
-  //     if (timer != null && timer.isActive) {
-  //       timer.cancel();
-  //     }
-  //   }
-  //
-  // void _onSpeechResult(SpeechRecognitionResult result) {
-  //   setState(() {
-  //   voiceConvertedText = result.recognizedWords;
-  //   print("voiceConvertedText=$voiceConvertedText");
-  //   });
-  // }
   void _updateSourceStream(ImageStream newStream) {
     if (_imageStream?.key == newStream?.key) return;
 
@@ -355,6 +303,114 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
             imageInfo.image.height * imgSize!.width / imageInfo.image.width);
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // late Timer timer;
+    late int start;
+    String tappedIndex = "-1";
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(""),
+        backgroundColor: Colors.grey.withOpacity(0.2),
+      ),
+      backgroundColor: Colors.transparent.withOpacity(0.6),
+      body: SafeArea(
+        child: Center(
+          child: GestureDetector(
+            onTapDown: (TapDownDetails details1) {
+              details = details1;
+            },
+            onTap: () {
+              _startListening(widget.localeId);
+            },
+            child: Stack(
+              children: [
+                Container(
+                  child: CustomPaint(
+                    painter: _MyWavePaint(
+                        details: details,
+                        image: image,
+                        bgColor: widget.bgColor,
+                        imageSize: imgSize,
+                        heightPercentange: widget.heightPercentange,
+                        repaint: _waveControl,
+                        imgOffset: widget.imgOffset,
+                        roundImg: widget.roundImg,
+                        waveFrequency: widget.waveFrequency,
+                        wavePhaseValue: _wavePhaseValue,
+                        waveAmplitude: widget.waveAmplitude,
+                        textForListening: voiceConvertedText),
+                    size: widget.size,
+                  ),
+                ),
+                Positioned(
+                  left: (MediaQuery.of(context).size.width) /
+                      4, // Adjust the horizontal position as needed
+                  top: MediaQuery.of(context).size.height -
+                      370, // Adjust the vertical position as needed
+                  child: Container(
+                    height: 40,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: chipTexts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var inkWell = InkWell(
+                            onTap: () async {
+                              if (index == 0) {
+                                widget.localeId = "en_US";
+                                widget.selectedIndex = 0;
+                              } else if (index == 1) {
+                                widget.localeId = "hi_IN";
+                                widget.selectedIndex = 1;
+                              }
+                              if (speechToText.isListening == true) {
+                                cancelListening();
+                                timer.cancel();
+                                EasyLoading.show(status: "Please wait");
+                                Future.delayed(Duration(seconds: 1), () {
+                                  EasyLoading.dismiss();
+                                  _startListening(widget.localeId);
+                                });
+                              } else {
+                                _startListening(widget.localeId);
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  if (index == 0) ...[
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                  ],
+                                  Text(chipTexts[index]),
+                                ],
+                              ),
+                            ));
+                        return Card(
+                          color: index == widget.selectedIndex
+                              ? Colors.teal.shade200
+                              : Colors.grey.shade300,
+                          clipBehavior: Clip.hardEdge,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: inkWell,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -471,82 +527,10 @@ class _MyWavePaint extends CustomPainter {
       textPainter.paint(canvas, Offset(textX, size.height - 120));
       mPaint1.color = Colors.teal[300]!;
       mPaint1.style = PaintingStyle.stroke;
-      final List<String> chipTexts = ["English", "Hindi"];
-      List<bool> chipsSelection = [true, false];
       List<double> chipPositions = [
         size.width / 2 - 60,
         size.width / 2 + 60
       ]; // Add X coordinates for each chip
-      Container(
-        height: 40,
-        width: 40,
-        color: Colors.black26,
-      );
-      List<Widget>.generate(
-        chipTexts.length,
-        (int index) {
-          return ChoiceChip(
-            selectedColor: Colors.teal,
-            label: Text(
-              chipTexts[index],
-              style: const TextStyle(
-                fontSize: 13,
-              ),
-            ),
-            selected: _value == index,
-            onSelected: (bool selected) {},
-          );
-        },
-      ).toList();
-      // for (int i = 0; i < chipPositions.length; i++) {
-      //   final position = chipPositions[i];
-      //   final chipY =
-      //       size.height - 40; // Adjust the vertical position of the chips
-      //   final chipWidth = 100.0; // Adjust the chip width as needed
-      //   final chipHeight = 30.0; // Adjust the chip height as needed
-      //   final chipRadius =
-      //       const Radius.circular(20.0); //  Adjust the chip size as needed
-      //   final chipRect = RRect.fromRectAndRadius(
-      //     Rect.fromCenter(
-      //       center: Offset(position, chipY),
-      //       width: chipWidth,
-      //       height: chipHeight,
-      //     ),
-      //     chipRadius,
-      //   );
-      //   // Draw the chip
-      //   final borderPath = Path();
-      //   borderPath.addRRect(chipRect);
-      //   canvas.drawPath(borderPath, mPaint1);
-      //   final paragraphStyle =
-      //       ParagraphStyle(textAlign: TextAlign.center, fontSize: 16.0);
-      //   // Draw text inside the chip
-      //   final textPainter = TextPainter(
-      //     text: TextSpan(
-      //       text: chipTexts[i],
-      //       style: TextStyle(color: Colors.teal[300], fontSize: 16.0),
-      //     ),
-      //     textDirection: TextDirection.ltr,
-      //   );
-
-      //   textPainter.layout(
-      //     minWidth: 0,
-      //     maxWidth: chipWidth - 16.0,
-      //   );
-      //   final textX = chipRect.center.dx - textPainter.width / 2;
-      //   final textY = chipRect.center.dy - textPainter.height / 2;
-      //   textPainter.paint(canvas, Offset(textX, textY));
-      //   if (details != null && chipRect.contains(details!.localPosition)) {
-      //     print('Chip clicked: ${chipTexts[i]}');
-      //     // if (chipTexts[i] == "English") {
-      //     //   onChipClicked('en_US');
-      //     //   // WaveWidget.localeid = "en_US";
-      //     // } else if (chipTexts[i] == "Hindi") {
-      //     //   onChipClicked('hi_IN');
-      //     //   // WaveWidget.localeid = "hi_IN";
-      //     // }
-      //   }
-      // }
     }
   }
 
