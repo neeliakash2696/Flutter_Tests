@@ -14,12 +14,13 @@ import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:flutter_tests/recent_search_banner.dart';
 import 'package:flutter_tests/sellerType.dart';
-import 'package:flutter_tests/wave_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
+import 'SpeechToTextEnglish.dart';
+import 'VoiceToTextConverter.dart';
 import 'adClass.dart';
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -312,6 +313,10 @@ class SearchState
         resultsArray.clear();
         print("resultsarrayafterclearing=${resultsArray.length}");
           resultsArray = json.decode(response.body)['results'];
+        if(resultsArray.length>0) {
+          DateTime now = DateTime.now();
+          print("search_api_hit_time=${now.difference(then)}");
+        }
           if (resultsArray.length > 0){
             sellerTypeArray =
             json.decode(response.body)['facet_fields']['biztype'];
@@ -328,6 +333,7 @@ class SearchState
                 }
               }
             }
+            print("search_a,,pi_hit_time)}");
       }
         if (currentPage == 1) {
           dynamic live_mcats = json.decode(response.body)['guess']['guess']['live_mcats'];
@@ -478,19 +484,19 @@ class SearchState
                           var receivedText = await Navigator.push(
                               context,
                               PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => WaveWidget(
-                                    onTap: (details) {
-                                      print(
-                                          'Tap position: ${details.localPosition}');
-                                    },
-                                    bgColor: Colors.teal,
-                                    size: Size(
-                                      MediaQuery.of(context).size.width -
-                                          60,
-                                      MediaQuery.of(context).size.height -
-                                          300,
-                                    ),
-                                    textForListening: 'en-IN',
+                                  pageBuilder: (_, __, ___) => SpeechToTextEnglish(
+                                      onTap: (details) {
+                                        //
+                                      },
+                                      bgColor: Colors.teal,
+                                      size: Size(
+                                        MediaQuery.of(context).size.width - 60,
+                                        MediaQuery.of(context).size.height - 300,
+                                      ),
+                                      fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                                      localeId: "en_US",
+                                      selectedIndex: 0,
+                                      cityIndex:widget.city
                                   ),
                                   opaque: false,
                                   fullscreenDialog: true));

@@ -240,6 +240,7 @@ class ImportantSuppilesDetailsListState
                   fromScreen: VoiceSearchFromScreen.impSuppliesList,
                   localeId: "en_US",
                   selectedIndex: 0,
+              cityIndex:widget.city
                 ),
             opaque: false,
             fullscreenDialog: true));
@@ -248,9 +249,15 @@ class ImportantSuppilesDetailsListState
       encodedQueryParam = encodeString(receivedText);
       widget.productName = receivedText;
       items.length = 0;
-      widget.screen = "search";
-      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
-          widget.screen, currentCityId, currentCity);
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => Search(
+              city: clickedIndex,
+              productName:  widget.productName ,
+              productFname:  encodedQueryParam ,
+              productIndex: 0,
+              biztype: widget.biztype
+          )));
     }
   }
 

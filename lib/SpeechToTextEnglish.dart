@@ -32,6 +32,7 @@ class SpeechToTextEnglish extends StatefulWidget {
   // static var localeid = 'en_US';
   // ImageProvider<dynamic> imageProvider;
   Color bgColor;
+  int cityIndex;
 
   SpeechToTextEnglish({
     required this.onTap,
@@ -47,6 +48,7 @@ class SpeechToTextEnglish extends StatefulWidget {
     required this.fromScreen,
     required this.localeId,
     required this.selectedIndex,
+    required this.cityIndex
   });
 
   @override
@@ -214,7 +216,7 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
                     productFname: voiceConvertedText,
                     productIndex: 0,
                     biztype: "",
-                    screen: "search")));
+                    city: widget.cityIndex,)));
         break;
       case VoiceSearchFromScreen.impSuppliesList:
         Navigator.pop(context, voiceConvertedText);
@@ -229,7 +231,7 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
                     productFname: voiceConvertedText,
                     productIndex: 0,
                     biztype: "",
-                    screen: "search")));
+                  city: widget.cityIndex,)));
       case VoiceSearchFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
@@ -240,7 +242,7 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
                     productFname: voiceConvertedText,
                     productIndex: 0,
                     biztype: "",
-                    screen: "search")));
+                  city: widget.cityIndex,)));
     }
   }
 
