@@ -2,6 +2,8 @@
 // Created by ckckck on 2018/9/19.
 //
 
+// ignore_for_file: must_be_immutable
+
 import 'dart:async';
 import 'dart:math';
 
