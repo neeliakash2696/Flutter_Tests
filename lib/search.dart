@@ -984,7 +984,20 @@ class SearchState extends State<Search>
     start = 0;
     end = 9;
   }
+  String getSupplierType( int custTypeWeight, String tsCode) {
+    if (custTypeWeight == 149 ||
+        custTypeWeight == 179 ||
+        (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
+        (tsCode != null && tsCode.isEmpty && custTypeWeight == 199)) {
+      return 'images/trustseal_supplier.png';
+    } else if (custTypeWeight < 1400 && custTypeWeight != 755) {
+      return 'images/shared_ic_verifiedsupplier.png';
+    } else {
+      return 'images/company_icon.png';
+    }
+  }
 }
+
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
@@ -1037,30 +1050,17 @@ class CustomButton extends StatelessWidget {
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final call = "tel:+91 $phoneNumber";
-    final Uri convertedNumber = Uri.parse(call);
+    final call = "+91 $phoneNumber";
     if (!kIsWeb) {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
-        if (await launchUrl(convertedNumber)) {
-          await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        } else {
-          throw 'Could not launch $call';
-        }
-      } else {
-        if (await launchUrl(convertedNumber)) {
-          await makePhoneCall(call);
-        } else {
-          throw 'Could not launch $call';
-        }
+        await FlutterPhoneDirectCaller.callNumber(phoneNumber);
       }
-    } else {
-      if (await launchUrl(convertedNumber)) {
+      else
         await makePhoneCall(call);
-      } else {
-        throw 'Could not launch $call';
-      }
     }
+    else
+      await makePhoneCall(call);
   }
 
   Future makePhoneCall(String phoneNumber) async {

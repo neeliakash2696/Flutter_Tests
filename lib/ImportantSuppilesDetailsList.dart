@@ -60,6 +60,7 @@ class ImportantSuppilesDetailsListState
   List<String>? phoneArray = [];
   List<String>? itemPricesArray = [];
   List<String>? companyNameArray = [];
+  List<String>? sealArray = [];
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
@@ -371,6 +372,7 @@ class ImportantSuppilesDetailsListState
           titlesArray?.clear();
           itemPricesArray?.clear();
           companyNameArray?.clear();
+          sealArray?.clear();
           locationsArray?.clear();
           localityArray?.clear();
         }
@@ -395,6 +397,10 @@ class ImportantSuppilesDetailsListState
 
           var company = resultsArray[i]['COMPANY'] ?? "NA";
           companyNameArray?.add(company);
+
+          var CUSTTYPE_WEIGHT1 = resultsArray[i]['CUSTTYPE_WEIGHT1'] ?? "NA";
+          var tsCode=resultsArray[i]['tscode'] ?? "NA";
+          sealArray?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
 
           var city = resultsArray[i]['city_orig'] ?? "NA";
           var localityForAddress =
@@ -741,7 +747,9 @@ class ImportantSuppilesDetailsListState
                                     locality: localityArray?[index] ?? "NA",
                                     location: locationsArray?[index] ?? "NA",
                                     title: titlesArray?[index] ?? "NA",
-                                    phone: phoneArray?[index] ?? "NA"),
+                                    phone: phoneArray?[index] ?? "NA",
+                                    seal: sealArray?[index] ?? "NA"
+                                ),
                               ),
                             ],
                           ),
@@ -788,6 +796,7 @@ class ImportantSuppilesDetailsListState
                                   location: locationsArray?[index] ?? "NA",
                                   title: titlesArray?[index] ?? "NA",
                                   phone: phoneArray?[index] ?? "NA",
+                                  seal: sealArray?[index] ?? "NA",
                                 ),
                               ),
                             ],
@@ -840,6 +849,7 @@ class ImportantSuppilesDetailsListState
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
     phoneArray?.insert(pos, "");
+    sealArray?.insert(pos, "");
     items.length += 1;
     // itemCount++;
   }
@@ -848,6 +858,19 @@ class ImportantSuppilesDetailsListState
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
+  String getSupplierType( int custTypeWeight, String tsCode) {
+    if (custTypeWeight == 149 ||
+        custTypeWeight == 179 ||
+        (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
+        (tsCode != null && tsCode.isEmpty && custTypeWeight == 199)) {
+      return 'images/trustseal_supplier.png';
+    } else if (custTypeWeight < 1400 && custTypeWeight != 755) {
+      return 'images/shared_ic_verifiedsupplier.png';
+    } else {
+      return 'images/company_icon.png';
+    }
+  }
 }
 
 class CustomButton extends StatelessWidget {
@@ -901,30 +924,17 @@ class CustomButton extends StatelessWidget {
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final call = "tel:+91 $phoneNumber";
-    final Uri convertedNumber = Uri.parse(call);
+    final call = "+91 $phoneNumber";
     if (!kIsWeb) {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
-        if (await launchUrl(convertedNumber)) {
           await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        } else {
-          throw 'Could not launch $call';
         }
-      } else {
-        if (await launchUrl(convertedNumber)) {
-          await makePhoneCall(call);
-        } else {
-          throw 'Could not launch $call';
-        }
-      }
-    } else {
-      if (await launchUrl(convertedNumber)) {
+      else
         await makePhoneCall(call);
-      } else {
-        throw 'Could not launch $call';
-      }
     }
+    else
+      await makePhoneCall(call);
   }
 
   Future makePhoneCall(String phoneNumber) async {
@@ -988,6 +998,7 @@ class Description extends StatefulWidget {
   String location;
   String locality;
   String phone;
+  String seal;
   Description(
       {Key? key,
       required this.title,
@@ -995,7 +1006,9 @@ class Description extends StatefulWidget {
       required this.companyName,
       required this.location,
       required this.locality,
-      required this.phone})
+      required this.phone,
+      required this.seal
+      })
       : super(key: key);
 }
 
@@ -1065,9 +1078,9 @@ class _DescriptionState extends State<Description> {
               child: Container(
                 height: 15,
                 width: 15,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("images/trustseal_supplier.png"),
+                      image: AssetImage(widget.seal),
                       fit: BoxFit.contain),
                 ),
                 alignment: Alignment.center,
