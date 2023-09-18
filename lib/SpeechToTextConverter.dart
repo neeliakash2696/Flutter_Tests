@@ -358,7 +358,7 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                   top: MediaQuery.of(context).size.height -
                       370, // Adjust the vertical position as needed
                   child: Container(
-                    height: 40,
+                    height: 50,
                     child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
