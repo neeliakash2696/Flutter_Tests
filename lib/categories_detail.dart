@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
+import 'package:flutter_tests/SpeechToTextConverter.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:http/http.dart' as http;
 import 'ImportantSuppilesDetailsList.dart';
@@ -85,15 +86,13 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                     ),
                     child: Row(
                       children: [
-                        Container(
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.search,
-                              size: 30,
-                            ),
-                            onPressed: () {},
-                            color: Colors.grey[600],
+                        IconButton(
+                          icon: const Icon(
+                            Icons.search,
+                            size: 30,
                           ),
+                          onPressed: () {},
+                          color: Colors.grey[600],
                         ),
                         // SizedBox(width: 8),
                         Expanded(
@@ -122,16 +121,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     PageRouteBuilder(
-                            //         pageBuilder: (_, __, ___) =>
-                            //             VoiceToTextConverter(
-                            //               fromScreen: VoiceSearchFromScreen
-                            //                   .categoriesDetail,
-                            //             ),
-                            //         opaque: false,
-                            //         fullscreenDialog: true));
+                            openVoiceToTextConverter();
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -162,7 +152,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
           future: getCategories(),
           builder: (context, snapshot) {
             return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, childAspectRatio: 0.8
                     // mainAxisSpacing: 4.0, // Space between rows
                     // crossAxisSpacing: 4.0,
@@ -178,19 +168,18 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                       onTap: () {
                         print("pageno");
                         print(widget.pageNo);
-                        if (widget.pageNo >= 3)
+                        if (widget.pageNo >= 3) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ImportantSuppilesDetailsList(
-                                        city: 0,
-                                        productName: nameArray[index],
-                                        productFname: fnameArray[index],
-                                        productIndex: 0,
-                                        biztype: ""
-                                      )));
-                        else
+                                          city: 0,
+                                          productName: nameArray[index],
+                                          productFname: fnameArray[index],
+                                          productIndex: 0,
+                                          biztype: "")));
+                        } else {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -202,6 +191,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                             "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=${FlutterTests.AK}&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
                                         pageNo: (widget.pageNo) + 1,
                                       )));
+                        }
                       },
                       behavior: HitTestBehavior.deferToChild,
                       child: Container(
@@ -260,10 +250,11 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
       print("message=$msg");
     } else if (response.statusCode == 200) {
       print(widget.pageNo);
-      if (widget.pageNo == 2)
+      if (widget.pageNo == 2) {
         resultsArray = json.decode(response.body)['scats']['scat'];
-      else
+      } else {
         resultsArray = json.decode(response.body)['mcats']['mcat'];
+      }
       fnameArray.clear();
       nameArray.clear();
       imagesArray.clear();
@@ -280,5 +271,26 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
         idsArray.add(resultsArray[i]['id']);
       }
     }
+  }
+
+  openVoiceToTextConverter() {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => SpeechToTextConverter(
+                onTap: (details) {
+                  //
+                },
+                bgColor: Colors.teal,
+                size: Size(
+                  MediaQuery.of(context).size.width - 60,
+                  MediaQuery.of(context).size.height - 300,
+                ),
+                fromScreen: VoiceSearchFromScreen.categoriesDetail,
+                localeId: "en_US",
+                selectedIndex: 0,
+                cityIndex: 0),
+            opaque: false,
+            fullscreenDialog: true));
   }
 }

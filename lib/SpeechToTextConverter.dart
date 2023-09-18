@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
+import 'package:flutter_tests/search.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'dart:ui' show Image;
@@ -16,7 +17,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
 
-class SpeechToTextEnglish extends StatefulWidget {
+class SpeechToTextConverter extends StatefulWidget {
   final Function(TapDownDetails) onTap;
   Size size;
   Size imgSize;
@@ -34,28 +35,27 @@ class SpeechToTextEnglish extends StatefulWidget {
   Color bgColor;
   int cityIndex;
 
-  SpeechToTextEnglish({
-    required this.onTap,
-    required this.size,
-    this.imgSize = const Size(60.0, 60.0),
-    this.imgOffset = const Offset(0.0, 0.0),
-    this.waveAmplitude = 10.0,
-    this.waveFrequency = 1.6,
-    this.wavePhase = 10.0,
-    required this.bgColor,
-    this.roundImg = true,
-    this.heightPercentange = 0.6,
-    required this.fromScreen,
-    required this.localeId,
-    required this.selectedIndex,
-    required this.cityIndex
-  });
+  SpeechToTextConverter(
+      {required this.onTap,
+      required this.size,
+      this.imgSize = const Size(60.0, 60.0),
+      this.imgOffset = const Offset(0.0, 0.0),
+      this.waveAmplitude = 10.0,
+      this.waveFrequency = 1.6,
+      this.wavePhase = 10.0,
+      required this.bgColor,
+      this.roundImg = true,
+      this.heightPercentange = 0.6,
+      required this.fromScreen,
+      required this.localeId,
+      required this.selectedIndex,
+      required this.cityIndex});
 
   @override
-  State<StatefulWidget> createState() => _SpeechToTextEnglishState();
+  State<StatefulWidget> createState() => _SpeechToTextConverterState();
 }
 
-class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
+class _SpeechToTextConverterState extends State<SpeechToTextConverter>
     with TickerProviderStateMixin {
   // String audioStatus = "Click on Mic when ready";
   SpeechToText speechToText = SpeechToText();
@@ -100,7 +100,7 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
   }
 
   @override
-  void didUpdateWidget(SpeechToTextEnglish oldWidget) {
+  void didUpdateWidget(SpeechToTextConverter oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 
@@ -212,11 +212,12 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
             context,
             MaterialPageRoute(
                 builder: (context) => ImportantSuppilesDetailsList(
-                    productName: voiceConvertedText,
-                    productFname: voiceConvertedText,
-                    productIndex: 0,
-                    biztype: "",
-                    city: widget.cityIndex,)));
+                      productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
+                      productIndex: 0,
+                      biztype: "",
+                      city: widget.cityIndex,
+                    )));
         break;
       case VoiceSearchFromScreen.impSuppliesList:
         Navigator.pop(context, voiceConvertedText);
@@ -226,23 +227,25 @@ class _SpeechToTextEnglishState extends State<SpeechToTextEnglish>
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
-                    productName: voiceConvertedText,
-                    productFname: voiceConvertedText,
-                    productIndex: 0,
-                    biztype: "",
-                  city: widget.cityIndex,)));
+                builder: (context) => Search(
+                      productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
+                      productIndex: 0,
+                      biztype: "",
+                      city: widget.cityIndex,
+                    )));
       case VoiceSearchFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ImportantSuppilesDetailsList(
-                    productName: voiceConvertedText,
-                    productFname: voiceConvertedText,
-                    productIndex: 0,
-                    biztype: "",
-                  city: widget.cityIndex,)));
+                builder: (context) => Search(
+                      productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
+                      productIndex: 0,
+                      biztype: "",
+                      city: widget.cityIndex,
+                    )));
     }
   }
 
