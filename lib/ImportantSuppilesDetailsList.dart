@@ -18,7 +18,7 @@ import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
 import 'package:flutter_tests/recent_search_banner.dart';
 import 'package:flutter_tests/sellerType.dart';
-import 'package:flutter_tests/SpeechToTextEnglish.dart';
+import 'package:flutter_tests/SpeechToTextConverter.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -42,7 +42,7 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
   int city;
   ImportantSuppilesDetailsList(
       {Key? key,
-        required this.city,
+      required this.city,
       required this.productName,
       required this.productFname,
       required this.productIndex,
@@ -53,7 +53,7 @@ class ImportantSuppilesDetailsList extends StatefulWidget {
 class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
-  int clickedIndex=0;
+  int clickedIndex = 0;
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
@@ -108,15 +108,14 @@ class ImportantSuppilesDetailsListState
     start = 0;
     end = 9;
     print("currentCity=${widget.city}");
-    if(widget.city!=0)
-      {
-        currentCity=citiesArrayLocal[widget.city];
-        currentCityId=cityIdArrayLocal[widget.city];
-        reArrangeLocalArraysAndRefreshScreen(widget.city, currentCity, currentCityId);
-      }
-    else
-    getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
-         currentCityId, currentCity);
+    if (widget.city != 0) {
+      currentCity = citiesArrayLocal[widget.city];
+      currentCityId = cityIdArrayLocal[widget.city];
+      reArrangeLocalArraysAndRefreshScreen(
+          widget.city, currentCity, currentCityId);
+    } else
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
+          currentCityId, currentCity);
     // getProductDetails(encodedQueryParam);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
@@ -134,7 +133,7 @@ class ImportantSuppilesDetailsListState
           if (stop == false && start <= end) {
             currentPage += 1;
             getMoreDetails(encodedQueryParam, widget.biztype, start, end,
-                currentPage, false,  currentCityId, currentCity);
+                currentPage, false, currentCityId, currentCity);
           } // Mark that you've reached the end
         });
       } else {
@@ -194,19 +193,9 @@ class ImportantSuppilesDetailsListState
         widget.productIndex = selectedChip[2];
       }
       items.length = 0;
-      // if (!isSellerType) {
-      //   Navigator.of(context).pop();
-      //   Navigator.of(context).push(MaterialPageRoute(
-      //       builder: (context) => Search(
-      //         productName:  widget.productName,
-      //         productFname:  encodedQueryParam,
-      //         productIndex: 0,
-      //         biztype: "",
-      //       )));
-      // }
-      // else
+
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
-           currentCityId, currentCity);
+          currentCityId, currentCity);
     }
   }
 
@@ -228,20 +217,19 @@ class ImportantSuppilesDetailsListState
     var receivedText = await Navigator.push(
         context,
         PageRouteBuilder(
-            pageBuilder: (_, __, ___) => SpeechToTextEnglish(
-                  onTap: (details) {
-                    //
-                  },
-                  bgColor: Colors.teal,
-                  size: Size(
-                    MediaQuery.of(context).size.width - 60,
-                    MediaQuery.of(context).size.height - 300,
-                  ),
-                  fromScreen: VoiceSearchFromScreen.impSuppliesList,
-                  localeId: "en_US",
-                  selectedIndex: 0,
-              cityIndex:widget.city
+            pageBuilder: (_, __, ___) => SpeechToTextConverter(
+                onTap: (details) {
+                  //
+                },
+                bgColor: Colors.teal,
+                size: Size(
+                  MediaQuery.of(context).size.width - 60,
+                  MediaQuery.of(context).size.height - 300,
                 ),
+                fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                localeId: "en_US",
+                selectedIndex: 0,
+                cityIndex: widget.city),
             opaque: false,
             fullscreenDialog: true));
     if (receivedText != "" && receivedText != null) {
@@ -253,11 +241,10 @@ class ImportantSuppilesDetailsListState
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Search(
               city: clickedIndex,
-              productName:  widget.productName ,
-              productFname:  encodedQueryParam ,
+              productName: widget.productName,
+              productFname: encodedQueryParam,
               productIndex: 0,
-              biztype: widget.biztype
-          )));
+              biztype: widget.biztype)));
     }
   }
 
@@ -277,37 +264,17 @@ class ImportantSuppilesDetailsListState
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Search(
-            city: clickedIndex,
-            productName:  widget.productName ,
-            productFname:  encodedQueryParam ,
-            productIndex: 0,
-            biztype: ""
-          )));
+              city: clickedIndex,
+              productName: widget.productName,
+              productFname: encodedQueryParam,
+              productIndex: 0,
+              biztype: "")));
     }
   }
 
-  // reArrangeLanguageArraysAndRefreshScreen(
-  //     int clickedIndex, String clickedCity) {
-  //   if (clickedIndex != 0) {
-  //     categoriesList.removeAt(1);
-  //     categoriesList.insert(1, categoriesList[0]);
-  //     categoriesList.removeAt(0);
-  //     categoriesList.insert(0, clickedCity);
-  //   }
-  //   setState(() {
-  //     if (clickedCity == "English") {
-  //       locale = 'en_US';
-  //     } else {
-  //       locale = 'hi_IN';
-  //     }
-  //   });
-  //   Navigator.pop(context);
-  //   // showBottomSheet(context, locale);
-  // }
-
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
-    this.clickedIndex=clickedIndex;
+    this.clickedIndex = clickedIndex;
     citiesArrayLocal.removeAt(clickedIndex);
     citiesArrayLocal.insert(0, clickedCity);
     cityIdArrayLocal.removeAt(clickedIndex);
@@ -315,10 +282,10 @@ class ImportantSuppilesDetailsListState
     currentCityId = cityIdArrayLocal[0];
     currentCity = clickedCity;
 
-    String productName=widget.productName;
+    String productName = widget.productName;
     resetUI();
     items.clear();
-    widget.productName=productName;
+    widget.productName = productName;
 
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
         currentCityId, clickedCity);
@@ -356,8 +323,8 @@ class ImportantSuppilesDetailsListState
       // print("biztype_data=$biztype_data");
       String pathUrl = "";
       print("api=$cityId");
-        pathUrl =
-            "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
+      pathUrl =
+          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -365,13 +332,13 @@ class ImportantSuppilesDetailsListState
         var msg = json.decode(response.body)['MESSAGE'];
         EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
-          resultsArray = json.decode(response.body)['data'];
+        resultsArray = json.decode(response.body)['data'];
         bizWiseArray = json.decode(response.body)['biz_wise_count'];
-          sellerTypeArray.clear();
-          for (int i = 0; i < bizWiseArray.length; i++)
-            sellerTypeArray
-                .add((bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
-          // print("resultsArray=$resultsArray $sellerTypeArray");
+        sellerTypeArray.clear();
+        for (int i = 0; i < bizWiseArray.length; i++)
+          sellerTypeArray
+              .add((bizWiseArray[i]['PRD_SEARCH_PRIMARY_BIZ_ID']).toString());
+        // print("resultsArray=$resultsArray $sellerTypeArray");
         List<String> stringsOnly = [];
         if (shouldUpdateSellerTypeList) {
           sellerTypeModelList.clear();
@@ -386,19 +353,19 @@ class ImportantSuppilesDetailsListState
           }
         }
         if (currentPage == 1) {
-            dynamic live_mcats = json.decode(response.body)['mcatdata'];
-            pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
-            related.clear();
-            relatedfname.clear();
-            for (var i = 0; i < live_mcats.length; i++) {
-              related.add(live_mcats[i]['GLCAT_MCAT_NAME']);
-              relatedfname.add(live_mcats[i]['GLCAT_MCAT_FLNAME']);
-            }
-            print("pbrimage=$sellerTypeModelList");
-            print(
-                "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
-            totalItemCount = int.tryParse(
-                json.decode(response.body)['out_total_unq_count'])!;
+          dynamic live_mcats = json.decode(response.body)['mcatdata'];
+          pbrimage = live_mcats[0]['GLCAT_MCAT_IMG1_125X125'];
+          related.clear();
+          relatedfname.clear();
+          for (var i = 0; i < live_mcats.length; i++) {
+            related.add(live_mcats[i]['GLCAT_MCAT_NAME']);
+            relatedfname.add(live_mcats[i]['GLCAT_MCAT_FLNAME']);
+          }
+          print("pbrimage=$sellerTypeModelList");
+          print(
+              "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
+          totalItemCount =
+              int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -408,37 +375,37 @@ class ImportantSuppilesDetailsListState
           localityArray?.clear();
         }
         for (var i = 0; i < resultsArray.length; i++) {
-            var image = resultsArray[i]['photo_250'] ?? "NA";
-            imagesArray?.add(image);
+          var image = resultsArray[i]['photo_250'] ?? "NA";
+          imagesArray?.add(image);
 
-            var title = resultsArray[i]['prd_name'] ?? "NA";
-            titlesArray?.add(title);
+          var title = resultsArray[i]['prd_name'] ?? "NA";
+          titlesArray?.add(title);
 
-            var phoneNo = resultsArray[i]['comp_contct'] ?? "NA";
-            phoneArray?.add(phoneNo);
+          var phoneNo = resultsArray[i]['comp_contct'] ?? "NA";
+          phoneArray?.add(phoneNo);
 
-            // print("phone=$phoneNo");
+          // print("phone=$phoneNo");
 
-            var itemPrices = resultsArray[i]['prd_price'];
-            if (itemPrices == "" || itemPrices == null) {
-              itemPricesArray?.add("Prices on demand");
-            } else {
-              itemPricesArray?.add(itemPrices);
-            }
+          var itemPrices = resultsArray[i]['prd_price'];
+          if (itemPrices == "" || itemPrices == null) {
+            itemPricesArray?.add("Prices on demand");
+          } else {
+            itemPricesArray?.add(itemPrices);
+          }
 
-            var company = resultsArray[i]['COMPANY'] ?? "NA";
-            companyNameArray?.add(company);
+          var company = resultsArray[i]['COMPANY'] ?? "NA";
+          companyNameArray?.add(company);
 
-            var city = resultsArray[i]['city_orig'] ?? "NA";
-            var localityForAddress =
-                resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
-            if (localityForAddress == "" || locationsArray == "NA")
-              localityArray?.add(city);
-            else if (city != "")
-              localityArray?.add(city + " - " + localityForAddress);
+          var city = resultsArray[i]['city_orig'] ?? "NA";
+          var localityForAddress =
+              resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
+          if (localityForAddress == "" || locationsArray == "NA")
+            localityArray?.add(city);
+          else if (city != "")
+            localityArray?.add(city + " - " + localityForAddress);
 
-            var locality = resultsArray[i]['city'] ?? "";
-            locationsArray?.add("Deals in $locality");
+          var locality = resultsArray[i]['city'] ?? "";
+          locationsArray?.add("Deals in $locality");
         }
         print("resultsArray $locationsArray");
         setState(() {
@@ -452,14 +419,13 @@ class ImportantSuppilesDetailsListState
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
         if (!kIsWeb) ;
         // addBannerOrAd(end, "ADEMPTY");
-        if(end>start+4)
-        addBannerOrAd(start + 4, "PBRBANNER");
+        if (end > start + 4) addBannerOrAd(start + 4, "PBRBANNER");
       } else if (currentPage == 1) {
-        if (!kIsWeb && end>7) {
+        if (!kIsWeb && end > 7) {
           addBannerOrAd(2, "ADEMPTY");
           addBannerOrAd(7, "ADEMPTY");
         }
-        if(end>10) {
+        if (end > 10) {
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
           addBannerOrAd(11, "RECENTPBRBANNER");
@@ -846,11 +812,9 @@ class ImportantSuppilesDetailsListState
                         productName: widget.productName, img: pbrimage);
                   } else if (titlesArray?[index] == "RECENTPBRBANNER") {
                     return LimitedChipsList();
-                  }
-                  else if (titlesArray?[index] == "ADEMPTY") {
+                  } else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
-                  }
-                  else {
+                  } else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -867,112 +831,6 @@ class ImportantSuppilesDetailsListState
       ),
     );
   }
-
-  // Future showBottomSheet(BuildContext context, String locale) async {
-  //   bool isEnglishSelected = true;
-  //   int selectedCategoryIndex = -1;
-  //   bool isHindiSelected = false;
-  //   String? enteredText = await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Center(
-  //           child: Stack(
-  //         children: [
-  //           WaveWidget(
-  //             size: Size(
-  //               MediaQuery.of(context).size.width - 60,
-  //               MediaQuery.of(context).size.height - 400,
-  //             ),
-  //             textForListening: locale,
-  //             onTap: (TapDownDetails) {},
-  //             bgColor: Colors.teal,
-  //           ),
-  //           Positioned(
-  //             left: (MediaQuery.of(context).size.width - 60) / 2 -
-  //                 90, // Adjust the horizontal position as needed
-  //             top: MediaQuery.of(context).size.height -
-  //                 470, // Adjust the vertical position as needed
-  //             child: Container(
-  //               height: 40,
-  //               child: ListView.builder(
-  //                 shrinkWrap: true,
-  //                 scrollDirection: Axis.horizontal,
-  //                 itemCount: categoriesList.length,
-  //                 itemBuilder: (BuildContext context, int index) {
-  //                   var inkWell = InkWell(
-  //                       onTap: () {
-  //                         // if (index == 0) {
-  //                         //   // showLocationSelector();
-  //                         // } else {
-  //                         reArrangeLanguageArraysAndRefreshScreen(
-  //                             index, categoriesList[index]);
-  //                         // }
-  //                       },
-  //                       child: Padding(
-  //                         padding: const EdgeInsets.all(8.0),
-  //                         child: Row(
-  //                           children: [
-  //                             if (index == 0) ...[
-  //                               const SizedBox(
-  //                                 width: 5,
-  //                               ),
-  //                             ],
-  //                             Text(categoriesList[index]),
-  //                           ],
-  //                         ),
-  //                       ));
-  //                   return Card(
-  //                     color: index == 0
-  //                         ? Colors.teal.shade200
-  //                         : Colors.grey.shade300,
-  //                     clipBehavior: Clip.hardEdge,
-  //                     shape: RoundedRectangleBorder(
-  //                       borderRadius: BorderRadius.circular(20.0),
-  //                     ),
-  //                     child: inkWell,
-  //                   );
-  //                 },
-  //               ),
-  //             ),
-
-  //             //     SizedBox(width: 5,),
-  //             //     GestureDetector(
-  //             //       onTap: (){
-  //             //         setState(() {
-  //             //           print("isEnglishSelected=$isEnglishSelected");
-  //             //           isEnglishSelected=false;
-  //             //           isHindiSelected=true;
-  //             //         });
-  //             //       },
-  //             //       child: ActionChip(
-  //             //         onPressed: (){},
-  //             //         label: Text('Hindi',style: TextStyle(color: isHindiSelected?Colors.white: Colors.teal),),
-  //             //         backgroundColor:isHindiSelected?Colors.teal: Colors.transparent,
-  //             //         shape: RoundedRectangleBorder(
-  //             //           borderRadius: BorderRadius.circular(20.0), // Adjust border radius as needed
-  //             //           side: BorderSide(
-  //             //             color: Colors.teal, // Border color
-  //             //             width: 2.0, // Border width
-  //             //           ),
-  //             //         ),
-  //             //       ),
-  //             // ),
-  //           ),
-  //         ],
-  //       ));
-  //     },
-  //   );
-  //   print("enteredText=$enteredText");
-  //   if (enteredText != null && enteredText != "") {
-  //     resetUI();
-  //     encodedQueryParam = encodeString(enteredText);
-  //     widget.productName = enteredText;
-  //     items.length = 0;
-  //     widget.screen = "search";
-  //     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-  //         widget.screen, currentCityId, currentCity);
-  //   }
-  // }
 
   Future addBannerOrAd(int pos, String value) async {
     imagesArray?.insert(pos, "");

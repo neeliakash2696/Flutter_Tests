@@ -19,19 +19,18 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
-import 'SpeechToTextEnglish.dart';
+import 'SpeechToTextConverter.dart';
 import 'VoiceToTextConverter.dart';
 import 'adClass.dart';
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
-as FlutterTests;
+    as FlutterTests;
 
 enum ScreenLayout { details, list }
 
 class Search extends StatefulWidget {
   @override
-  SearchState createState() =>
-      SearchState();
+  SearchState createState() => SearchState();
   String productName;
   String productFname;
   int productIndex;
@@ -39,19 +38,18 @@ class Search extends StatefulWidget {
   int city;
   Search(
       {Key? key,
-        required this.city,
-        required this.productName,
-        required this.productFname,
-        required this.productIndex,
-        required this.biztype})
+      required this.city,
+      required this.productName,
+      required this.productFname,
+      required this.productIndex,
+      required this.biztype})
       : super(key: key);
 }
 
-class SearchState
-    extends State<Search>
+class SearchState extends State<Search>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late String encodedQueryParam;
-  int clickedIndex=0;
+  int clickedIndex = 0;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? phoneArray = [];
@@ -103,18 +101,17 @@ class SearchState
     currentPage = 1;
     start = 0;
     end = 9;
-    if(widget.city!=0)
-    {
-      currentCity=citiesArrayLocal[widget.city];
-      currentCityId=cityIdArrayLocal[widget.city];
-      reArrangeLocalArraysAndRefreshScreen(widget.city, currentCity, currentCityId);
-    }
-    else
-    getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
-        currentCityId, currentCity);
+    if (widget.city != 0) {
+      currentCity = citiesArrayLocal[widget.city];
+      currentCityId = cityIdArrayLocal[widget.city];
+      reArrangeLocalArraysAndRefreshScreen(
+          widget.city, currentCity, currentCityId);
+    } else
+      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, currentPage, true,
+          currentCityId, currentCity);
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent) &&
+              _scrollController.position.maxScrollExtent) &&
           scrolled == 1) {
         setState(() {
           _isAtEnd = true;
@@ -161,11 +158,11 @@ class SearchState
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => Filters(
-              categoriesList: list,
-              backList: list1,
-              isSellerType: isSellerType,
-              productIndex: widget.productIndex,
-            ),
+                  categoriesList: list,
+                  backList: list1,
+                  isSellerType: isSellerType,
+                  productIndex: widget.productIndex,
+                ),
             opaque: false,
             fullscreenDialog: true));
 
@@ -188,16 +185,44 @@ class SearchState
         Navigator.of(context).pop();
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ImportantSuppilesDetailsList(
-              city: clickedIndex,
-                  productName:  widget.productName,
-                  productFname:  encodedQueryParam,
+                  city: clickedIndex,
+                  productName: widget.productName,
+                  productFname: encodedQueryParam,
                   productIndex: 0,
                   biztype: "",
                 )));
-      }
-      else
+      } else
+        getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
+            currentCityId, currentCity);
+    }
+  }
+
+  openVoiceToTextConverter() async {
+    var receivedText = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => SpeechToTextConverter(
+                onTap: (details) {
+                  //
+                },
+                bgColor: Colors.teal,
+                size: Size(
+                  MediaQuery.of(context).size.width - 60,
+                  MediaQuery.of(context).size.height - 300,
+                ),
+                fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                localeId: "en_US",
+                selectedIndex: 0,
+                cityIndex: widget.city),
+            opaque: false,
+            fullscreenDialog: true));
+    if (receivedText != "" && receivedText != null) {
+      print("output text at impCat page $receivedText");
+      encodedQueryParam = encodeString(receivedText);
+      widget.productName = receivedText;
+      items.length = 0;
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
-           currentCityId, currentCity);
+          currentCityId, currentCity);
     }
   }
 
@@ -220,16 +245,16 @@ class SearchState
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
-              fromScreen: SearchingFromScreen.impSuppliesList,
-              word: widget.productName,
-            )));
+                  fromScreen: SearchingFromScreen.impSuppliesList,
+                  word: widget.productName,
+                )));
     if (outputText != null && outputText != "") {
       resetUI();
       encodedQueryParam = encodeString(outputText);
       widget.productName = outputText;
       startFromFirst();
-      getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-           currentCityId, "");
+      getMoreDetails(
+          encodedQueryParam, widget.biztype, 0, 9, 1, true, currentCityId, "");
     }
   }
 
@@ -254,20 +279,20 @@ class SearchState
 
   reArrangeLocalArraysAndRefreshScreen(
       int clickedIndex, String clickedCity, String clickedCityId) {
-    this.clickedIndex=clickedIndex;
+    this.clickedIndex = clickedIndex;
     citiesArrayLocal.removeAt(clickedIndex);
     citiesArrayLocal.insert(0, clickedCity);
     cityIdArrayLocal.removeAt(clickedIndex);
     cityIdArrayLocal.insert(0, clickedCityId);
     currentCityId = cityIdArrayLocal[0];
     currentCity = clickedCity;
-    String productName=widget.productName;
+    String productName = widget.productName;
     resetUI();
     items.clear();
     startFromFirst();
-    widget.productName=productName;
+    widget.productName = productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
-       currentCityId, clickedCity);
+        currentCityId, clickedCity);
   }
 
   showLocationSelector() async {
@@ -297,12 +322,11 @@ class SearchState
       if (SellerTypeData.getValueFromName(biztype) != "")
         biztype_data = SellerTypeData.getValueFromName(biztype);
       String pathUrl = "";
-      if(cityName=="All India")
-        cityName="";
+      if (cityName == "All India") cityName = "";
       print("api=$cityName");
-        pathUrl =
-        // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-        "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
+      pathUrl =
+          // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -312,31 +336,32 @@ class SearchState
       } else if (response.statusCode == 200) {
         resultsArray.clear();
         print("resultsarrayafterclearing=${resultsArray.length}");
-          resultsArray = json.decode(response.body)['results'];
-        if(resultsArray.length>0) {
+        resultsArray = json.decode(response.body)['results'];
+        if (resultsArray.length > 0) {
           DateTime now = DateTime.now();
           print("search_api_hit_time=${now.difference(then)}");
         }
-          if (resultsArray.length > 0){
-            sellerTypeArray =
-            json.decode(response.body)['facet_fields']['biztype'];
-            List<String> stringsOnly = [];
-            if (shouldUpdateSellerTypeList) {
-              sellerTypeModelList.clear();
-              sellerTypeModelList.add("All");
-              for (var item in sellerTypeArray) {
-                if (item is String) {
-                  stringsOnly.add(item);
-                  if (SellerTypeData.getNameOfSellerType(item) != "")
-                    sellerTypeModelList
-                        .add(SellerTypeData.getNameOfSellerType(item));
-                }
+        if (resultsArray.length > 0) {
+          sellerTypeArray =
+              json.decode(response.body)['facet_fields']['biztype'];
+          List<String> stringsOnly = [];
+          if (shouldUpdateSellerTypeList) {
+            sellerTypeModelList.clear();
+            sellerTypeModelList.add("All");
+            for (var item in sellerTypeArray) {
+              if (item is String) {
+                stringsOnly.add(item);
+                if (SellerTypeData.getNameOfSellerType(item) != "")
+                  sellerTypeModelList
+                      .add(SellerTypeData.getNameOfSellerType(item));
               }
             }
-            print("search_a,,pi_hit_time)}");
-      }
+          }
+          print("search_a,,pi_hit_time)}");
+        }
         if (currentPage == 1) {
-          dynamic live_mcats = json.decode(response.body)['guess']['guess']['live_mcats'];
+          dynamic live_mcats =
+              json.decode(response.body)['guess']['guess']['live_mcats'];
 
           if (live_mcats is List) {
             pbrimage = live_mcats.isNotEmpty ? live_mcats[0]['smallimg'] : "";
@@ -350,7 +375,8 @@ class SearchState
               }
             }
 
-            totalItemCount = json.decode(response.body)['total_results_without_repetition'];
+            totalItemCount =
+                json.decode(response.body)['total_results_without_repetition'];
           } else {
             pbrimage = "";
             related.clear();
@@ -367,36 +393,36 @@ class SearchState
           localityArray?.clear();
         }
         for (var i = 0; i < resultsArray.length; i++) {
-            var image = resultsArray[i]['fields']['large_image'];
-            imagesArray?.add(image);
+          var image = resultsArray[i]['fields']['large_image'];
+          imagesArray?.add(image);
 
-            var title = resultsArray[i]['fields']['title'];
-            titlesArray?.add(title ?? "NA");
+          var title = resultsArray[i]['fields']['title'];
+          titlesArray?.add(title ?? "NA");
 
-            var phoneNo = resultsArray[i]['fields']['pns'];
-            phoneArray?.add(phoneNo ?? "NA");
-            var itemPrices = resultsArray[i]['fields']['itemprice'];
-            var units = resultsArray[i]['fields']['moq_type'];
-            if (itemPrices == "" || itemPrices == null) {
-              itemPricesArray?.add("Prices on demand");
-            } else {
-              if (units == "" || units == null) {
-                units = "units";
-              }
-              itemPricesArray?.add((itemPrices) + "/ " + (units));
+          var phoneNo = resultsArray[i]['fields']['pns'];
+          phoneArray?.add(phoneNo ?? "NA");
+          var itemPrices = resultsArray[i]['fields']['itemprice'];
+          var units = resultsArray[i]['fields']['moq_type'];
+          if (itemPrices == "" || itemPrices == null) {
+            itemPricesArray?.add("Prices on demand");
+          } else {
+            if (units == "" || units == null) {
+              units = "units";
             }
-            var company = resultsArray[i]['fields']['companyname'];
-            companyNameArray?.add(company ?? "NA");
+            itemPricesArray?.add((itemPrices) + "/ " + (units));
+          }
+          var company = resultsArray[i]['fields']['companyname'];
+          companyNameArray?.add(company ?? "NA");
 
-            var dealsLocation = resultsArray[i]['fields']['deals_in_loc'] ?? "NA";
-            locationsArray?.add("$dealsLocation");
+          var dealsLocation = resultsArray[i]['fields']['deals_in_loc'] ?? "NA";
+          locationsArray?.add("$dealsLocation");
 
-            var city = resultsArray[i]['fields']['city'] ?? "";
+          var city = resultsArray[i]['fields']['city'] ?? "";
 
-            var locality = resultsArray[i]['fields']['locality'] ?? "NA";
-            if (locality == "" || locality == "NA")
-              localityArray?.add(city);
-            else if (city != "") localityArray?.add(city + " - " + locality);
+          var locality = resultsArray[i]['fields']['locality'] ?? "NA";
+          if (locality == "" || locality == "NA")
+            localityArray?.add(city);
+          else if (city != "") localityArray?.add(city + " - " + locality);
         }
         print("resultsArray $locationsArray");
         setState(() {
@@ -405,11 +431,10 @@ class SearchState
       }
 
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
-      //   if (!kIsWeb) ;
-      //   // addBannerOrAd(end, "ADEMPTY");
+        //   if (!kIsWeb) ;
+        //   // addBannerOrAd(end, "ADEMPTY");
         addBannerOrAd(start + 4, "PBRBANNER");
-      }
-        else if (currentPage == 1) {
+      } else if (currentPage == 1) {
         if (!kIsWeb) {
           addBannerOrAd(2, "ADEMPTY");
           addBannerOrAd(7, "ADEMPTY");
@@ -435,8 +460,8 @@ class SearchState
 
   Widget build(BuildContext context) {
     super.build(context);
-      itemCount = items.length;
-      // print("itemcounta=$itemCount");
+    itemCount = items.length;
+    // print("itemcounta=$itemCount");
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -479,29 +504,33 @@ class SearchState
                       ),
                       GestureDetector(
                         onTap: () async {
+                          openVoiceToTextConverter();
                           // var x = await showBottomSheet(context, locale);
                           // print("nameofproduct=$x");
-                          var receivedText = await Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => SpeechToTextEnglish(
-                                      onTap: (details) {
-                                        //
-                                      },
-                                      bgColor: Colors.teal,
-                                      size: Size(
-                                        MediaQuery.of(context).size.width - 60,
-                                        MediaQuery.of(context).size.height - 300,
-                                      ),
-                                      fromScreen: VoiceSearchFromScreen.impSuppliesList,
-                                      localeId: "en_US",
-                                      selectedIndex: 0,
-                                      cityIndex:widget.city
-                                  ),
-                                  opaque: false,
-                                  fullscreenDialog: true));
+                          // var receivedText = await Navigator.push(
+                          //     context,
+                          //     PageRouteBuilder(
+                          //         pageBuilder: (_, __, ___) =>
+                          //             SpeechToTextEnglish(
+                          //                 onTap: (details) {
+                          //                   //
+                          //                 },
+                          //                 bgColor: Colors.teal,
+                          //                 size: Size(
+                          //                   MediaQuery.of(context).size.width -
+                          //                       60,
+                          //                   MediaQuery.of(context).size.height -
+                          //                       300,
+                          //                 ),
+                          //                 fromScreen: VoiceSearchFromScreen
+                          //                     .impSuppliesList,
+                          //                 localeId: "en_US",
+                          //                 selectedIndex: 0,
+                          //                 cityIndex: widget.city),
+                          //         opaque: false,
+                          //         fullscreenDialog: true));
 
-                          print("output text $receivedText");
+                          // print("output text $receivedText");
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -511,7 +540,7 @@ class SearchState
                             decoration: const BoxDecoration(
                               image: DecorationImage(
                                   image:
-                                  AssetImage("images/mic_icon_colored.png"),
+                                      AssetImage("images/mic_icon_colored.png"),
                                   fit: BoxFit.cover),
                             ),
                             alignment: Alignment.center,
@@ -723,7 +752,7 @@ class SearchState
                                   alignment: Alignment.topCenter,
                                   child: Image(
                                     image: CachedNetworkImageProvider(imagesArray?[
-                                    index] ??
+                                            index] ??
                                         "https://ik.imagekit.io/hpapi/harry.jpg"),
                                     fit: BoxFit.fill,
                                   ),
@@ -756,7 +785,7 @@ class SearchState
                                       "No Image Available",
                                       style: TextStyle(
                                           color:
-                                          Color.fromARGB(255, 103, 97, 97),
+                                              Color.fromARGB(255, 103, 97, 97),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w900),
                                       textAlign: TextAlign.center,
@@ -769,7 +798,7 @@ class SearchState
                                   alignment: Alignment.topCenter,
                                   child: Image(
                                     image: CachedNetworkImageProvider(imagesArray?[
-                                    index] ??
+                                            index] ??
                                         "https://ik.imagekit.io/hpapi/harry.jpg"),
                                   ),
                                 ),
@@ -807,11 +836,9 @@ class SearchState
                         productName: widget.productName, img: pbrimage);
                   } else if (titlesArray?[index] == "RECENTPBRBANNER") {
                     return LimitedChipsList();
-                  }
-                  else if (titlesArray?[index] == "ADEMPTY") {
+                  } else if (titlesArray?[index] == "ADEMPTY") {
                     return AdClass();
-                  }
-                  else {
+                  } else {
                     return Card(
                       // elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -952,10 +979,10 @@ class SearchState
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
-  void startFromFirst(){
-    items=[];
-    start=0;
-    end=9;
+  void startFromFirst() {
+    items = [];
+    start = 0;
+    end = 9;
   }
 }
 
@@ -1078,7 +1105,7 @@ class CustomButton2 extends StatelessWidget {
               const Text(
                 'Get Best Price',
                 style:
-                TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -1099,12 +1126,12 @@ class Description extends StatefulWidget {
   String phone;
   Description(
       {Key? key,
-        required this.title,
-        required this.itemPrice,
-        required this.companyName,
-        required this.location,
-        required this.locality,
-        required this.phone})
+      required this.title,
+      required this.itemPrice,
+      required this.companyName,
+      required this.location,
+      required this.locality,
+      required this.phone})
       : super(key: key);
 }
 

@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tests/LocationSelector.dart';
 
 import 'package:flutter_tests/SearchFieldController.dart';
+import 'package:flutter_tests/SpeechToTextConverter.dart';
 import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/categories_detail.dart';
 import 'package:http/http.dart' as http;
@@ -91,11 +92,6 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                                 .viewCategories,
                                             word: "",
                                           )));
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) =>
-                              //             LocationSelector()));
                             },
                             decoration: const InputDecoration(
                                 hintStyle:
@@ -109,16 +105,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     PageRouteBuilder(
-                            //         pageBuilder: (_, __, ___) =>
-                            //             VoiceToTextConverter(
-                            //               fromScreen: VoiceSearchFromScreen
-                            //                   .viewCategories,
-                            //             ),
-                            //         opaque: false,
-                            //         fullscreenDialog: true));
+                            openVoiceToTextConverter();
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -244,14 +231,24 @@ class _ViewCategoriesState extends State<ViewCategories> {
     }
   }
 
-  // Future<bool> doesAssetExist(String assetPath) async {
-  //   try {
-  //     print("assetpath1=$assetPath");
-  //     await rootBundle.load(assetPath);
-  //     print("assetpath=$assetPath");
-  //     return true; // Asset exists
-  //   } catch (e) {
-  //     return false; // Asset doesn't exist
-  //   }
-  // }
+  openVoiceToTextConverter() {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => SpeechToTextConverter(
+                onTap: (details) {
+                  //
+                },
+                bgColor: Colors.teal,
+                size: Size(
+                  MediaQuery.of(context).size.width - 60,
+                  MediaQuery.of(context).size.height - 300,
+                ),
+                fromScreen: VoiceSearchFromScreen.viewCategories,
+                localeId: "en_US",
+                selectedIndex: 0,
+                cityIndex: 0),
+            opaque: false,
+            fullscreenDialog: true));
+  }
 }
