@@ -34,7 +34,7 @@ void configLoading() {
     ..maskColor = Colors.blue
     ..maskType = EasyLoadingMaskType.clear
     ..userInteractions = true
-    ..dismissOnTap = false;
+    ..dismissOnTap = true;
   EasyLoadingToastPosition.bottom;
 }
 
