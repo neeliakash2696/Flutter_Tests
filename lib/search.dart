@@ -55,6 +55,7 @@ class SearchState extends State<Search>
   List<String>? phoneArray = [];
   List<String>? itemPricesArray = [];
   List<String>? companyNameArray = [];
+  List<String>? sealArray = [];
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
@@ -389,6 +390,7 @@ class SearchState extends State<Search>
           titlesArray?.clear();
           itemPricesArray?.clear();
           companyNameArray?.clear();
+          sealArray?.clear();
           locationsArray?.clear();
           localityArray?.clear();
         }
@@ -416,6 +418,10 @@ class SearchState extends State<Search>
 
           var dealsLocation = resultsArray[i]['fields']['deals_in_loc'] ?? "NA";
           locationsArray?.add("$dealsLocation");
+
+          int CUSTTYPE_WEIGHT1 = resultsArray[i]['fields']['CustTypeWt']??"NA";
+          var tsCode=resultsArray[i]['fields']['tscode'] ?? "NA";
+          sealArray?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
 
           var city = resultsArray[i]['fields']['city'] ?? "";
 
@@ -765,7 +771,9 @@ class SearchState extends State<Search>
                                     locality: localityArray?[index] ?? "NA",
                                     location: locationsArray?[index] ?? "NA",
                                     title: titlesArray?[index] ?? "NA",
-                                    phone: phoneArray?[index] ?? "NA"),
+                                    phone: phoneArray?[index] ?? "NA",
+                                    seal: sealArray?[index] ?? "NA"
+                                ),
                               ),
                             ],
                           ),
@@ -812,6 +820,7 @@ class SearchState extends State<Search>
                                   location: locationsArray?[index] ?? "NA",
                                   title: titlesArray?[index] ?? "NA",
                                   phone: phoneArray?[index] ?? "NA",
+                                  seal: sealArray?[index] ?? "NA",
                                 ),
                               ),
                             ],
@@ -967,6 +976,7 @@ class SearchState extends State<Search>
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");
     companyNameArray?.insert(pos, "");
+    sealArray?.insert(pos, "");
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
     phoneArray?.insert(pos, "");
@@ -1124,6 +1134,7 @@ class Description extends StatefulWidget {
   String location;
   String locality;
   String phone;
+  String seal;
   Description(
       {Key? key,
       required this.title,
@@ -1131,7 +1142,9 @@ class Description extends StatefulWidget {
       required this.companyName,
       required this.location,
       required this.locality,
-      required this.phone})
+      required this.phone,
+      required this.seal,
+      })
       : super(key: key);
 }
 
