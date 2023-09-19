@@ -19,6 +19,23 @@ void main() {
     home: ViewCategories(),
     builder: EasyLoading.init(),
   ));
+  configLoading();
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..progressColor = Colors.teal
+    ..backgroundColor = Colors.white
+    ..indicatorColor = Colors.teal
+    ..textColor = Colors.teal
+    ..maskColor = Colors.blue
+    ..maskType = EasyLoadingMaskType.clear
+    ..userInteractions = true
+    ..dismissOnTap = true;
+  EasyLoadingToastPosition.bottom;
 }
 
 class MyApp extends StatelessWidget {
@@ -139,7 +156,7 @@ class SectionWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ImportantSuppilesDetailsList(
-                              city: 0,
+                                city: 0,
                                 productName: section.items[index],
                                 productFname: section.items[index],
                                 productIndex: 0,

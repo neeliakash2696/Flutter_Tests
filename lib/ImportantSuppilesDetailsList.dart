@@ -24,7 +24,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
-
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
     as FlutterTests;
@@ -875,6 +874,7 @@ class ImportantSuppilesDetailsListState
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
+
   CustomButton({required this.phoneNo});
 
   @override
@@ -887,7 +887,10 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery.of(context).size.width / 2 - 25,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -928,14 +931,15 @@ class CustomButton extends StatelessWidget {
     if (!kIsWeb) {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
-          await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        }
+        await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+      }
       else
         await makePhoneCall(call);
     }
     else
       await makePhoneCall(call);
   }
+}
 
   Future makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
@@ -944,7 +948,7 @@ class CustomButton extends StatelessWidget {
     );
     await launchUrl(launchUri);
   }
-}
+
 
 class CustomButton2 extends StatelessWidget {
   @override

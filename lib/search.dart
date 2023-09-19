@@ -1011,6 +1011,7 @@ class SearchState extends State<Search>
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
+
   CustomButton({required this.phoneNo});
 
   @override
@@ -1023,7 +1024,10 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery.of(context).size.width / 2 - 25,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -1072,6 +1076,7 @@ class CustomButton extends StatelessWidget {
     else
       await makePhoneCall(call);
   }
+
 
   Future makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
