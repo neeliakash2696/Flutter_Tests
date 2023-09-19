@@ -313,7 +313,8 @@ class ImportantSuppilesDetailsListState
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
-    // EasyLoading.show(status: 'Loading...');
+    if(currentPage==1)
+    EasyLoading.show(status: 'Loading...');
     // print("cateory=$category");
     // print(
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
@@ -445,7 +446,8 @@ class ImportantSuppilesDetailsListState
         stop = true;
 
       print("resultsArray=${items.length} ${resultsArray?.length},");
-      // EasyLoading.dismiss();
+      if(currentPage==1)
+      EasyLoading.dismiss();
       DateTime now = DateTime.now();
       print("DateTime now = DateTime.now();${now.difference(then)}");
       scrolled = 1;
