@@ -319,6 +319,7 @@ class ImportantSuppilesDetailsListState
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       setState(() {
+        if(currentPage>1)
         isLoading = true;
       });
       String biztype_data = "";
