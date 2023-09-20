@@ -348,7 +348,7 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                         textForListening: voiceConvertedText),
                     size: Size(
                       MediaQuery.of(context).size.width - 60,
-                      MediaQuery.of(context).size.height - 300,
+                      MediaQuery.of(context).size.height - 400,
                     ),
                   ),
                 ),
@@ -356,7 +356,7 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                   left: (MediaQuery.of(context).size.width) /
                       4, // Adjust the horizontal position as needed
                   top: MediaQuery.of(context).size.height -
-                      370, // Adjust the vertical position as needed
+                      470, // Adjust the vertical position as needed
                   child: Container(
                     height: 50,
                     child: ListView.builder(
@@ -478,7 +478,7 @@ class _MyWavePaint extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var viewCenterY = size.height * heightPercentange;
+    var viewCenterY = 200.0;
     viewWidth = size.width;
     if (bgColor != null) {
       mPaint.color = bgColor;
@@ -514,8 +514,8 @@ class _MyWavePaint extends CustomPainter {
     mPaint.color = const Color(0x80ffffff);
     canvas.drawPath(path3, mPaint);
     if (textForListening != null) {
-      final textPadding =
-          const EdgeInsets.all(8.0); // Adjust the padding value as needed
+      // const textPadding = EdgeInsets.fromLTRB(
+      //     10, 10, 10, 40); // Adjust the padding value as needed
 
       final textPainter = TextPainter(
         textAlign: TextAlign.center,
@@ -528,21 +528,20 @@ class _MyWavePaint extends CustomPainter {
       textPainter.layout(maxWidth: size.width);
 
       double textX = (size.width - textPainter.width) / 2;
-      double textY = heightPercentange +
-          250; // Adjust the vertical position with top padding
-      textPainter.paint(canvas, Offset(textX, size.height - 120));
+      double textY = size.height - 180;
+      textPainter.paint(canvas, Offset(textX, textY));
       mPaint1.color = Colors.teal[300] ?? Colors.grey;
       mPaint1.style = PaintingStyle.stroke;
-      List<double> chipPositions = [
-        size.width / 2 - 60,
-        size.width / 2 + 60
-      ]; // Add X coordinates for each chip
+      // List<double> chipPositions = [
+      //   size.width / 2 - 60,
+      //   size.width / 2 + 60
+      // ]; // Add X coordinates for each chip
     }
   }
 
   void _drawMicIcon(Canvas canvas, Size size) {
     if (micIcon != null) {
-      final iconData = Icons.mic;
+      const iconData = Icons.mic;
 
       final textSpan = TextSpan(
         text: String.fromCharCode(iconData.codePoint),
