@@ -336,7 +336,8 @@ class ImportantSuppilesDetailsListState
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
-        // EasyLoading.dismiss();
+        if(currentPage==1)
+        EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['data'];
         bizWiseArray = json.decode(response.body)['biz_wise_count'];
@@ -707,7 +708,9 @@ class ImportantSuppilesDetailsListState
                    if (index == itemCount) {
                      print("index==$index $itemCount");
                      return (isLoading)
-                         ? Center(child: CircularProgressIndicator()):Text("");
+                         ? Center(child: Padding(
+                          padding:EdgeInsets.all(8),
+                          child:CircularProgressIndicator())):Text("");
                     }
                    else{
                     print("index==$index $itemCount");

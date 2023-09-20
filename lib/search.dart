@@ -92,6 +92,8 @@ class SearchState extends State<Search>
   List<String> related = [];
   List<String> relatedfname = [];
 
+  bool isLoading=false;
+
   // View Did Load
   @override
   void initState() {
@@ -123,7 +125,7 @@ class SearchState extends State<Search>
             start = end - 10;
             end = totalItemCount;
           }
-          if (stop == false && start <= end) {
+          if (stop == false && start <= end && !isLoading) {
             currentPage += 1;
             getMoreDetails(encodedQueryParam, widget.biztype, start, end,
                 currentPage, false, currentCityId, currentCity);
@@ -317,8 +319,13 @@ class SearchState extends State<Search>
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
+    if(currentPage==1)
     EasyLoading.show(status: 'Loading...');
     try {
+      setState(() {
+        if(currentPage>1)
+          isLoading = true;
+      });
       String biztype_data = "";
       if (SellerTypeData.getValueFromName(biztype) != "")
         biztype_data = SellerTypeData.getValueFromName(biztype);
@@ -333,6 +340,7 @@ class SearchState extends State<Search>
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
+        if(currentPage==1)
         EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray.clear();
@@ -432,6 +440,7 @@ class SearchState extends State<Search>
         }
         print("resultsArray $locationsArray");
         setState(() {
+          isLoading = false;
           items.addAll(resultsArray);
         });
       }
@@ -452,12 +461,13 @@ class SearchState extends State<Search>
         stop = true;
 
       print("resultsArray=${items.length} ${resultsArray?.length},");
+      if(currentPage==1)
       EasyLoading.dismiss();
       DateTime now = DateTime.now();
       print("DateTime now = DateTime.now();${now.difference(then)}");
       scrolled = 1;
     } catch (e) {
-      EasyLoading.dismiss();
+      // EasyLoading.dismiss();
       print("exception is ${e.toString()} $start");
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -719,25 +729,83 @@ class SearchState extends State<Search>
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: itemCount,
+                itemCount: itemCount+1,
                 itemBuilder: (BuildContext context, int index) {
-                  var inkWell = InkWell(
-                    onTap: () {
-                      // Action
-                    },
-                    child: Column(
-                      children: [
-                        if (currentLayout == ScreenLayout.details) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (imagesArray?[index] == "") ...[
-                                Container(
+                  if (index == itemCount) {
+                    print("index==$index $itemCount");
+                    return (isLoading)
+                        ? Center(child: Padding(
+                        padding:EdgeInsets.all(8),
+                        child:CircularProgressIndicator())):Text("");
+                  }
+                  else {
+                    var inkWell = InkWell(
+                      onTap: () {
+                        // Action
+                      },
+                      child: Column(
+                        children: [
+                          if (currentLayout == ScreenLayout.details) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (imagesArray?[index] == "") ...[
+                                  Container(
+                                      margin: const EdgeInsets.all(10),
+                                      height: 150,
+                                      width: 100,
+                                      color: Colors.grey.shade200,
+                                      alignment: Alignment.topCenter,
+                                      child: const Center(
+                                        child: Text(
+                                          "No Image Available",
+                                          style: TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 103, 97, 97),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w900),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )),
+                                ] else ...[
+                                  Container(
                                     margin: const EdgeInsets.all(10),
                                     height: 150,
                                     width: 100,
+                                    alignment: Alignment.topCenter,
+                                    child: Image(
+                                      image: CachedNetworkImageProvider(
+                                          imagesArray?[index] ??
+                                              "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ],
+                                Flexible(
+                                  child: Description(
+                                      companyName:
+                                          companyNameArray?[index] ?? "",
+                                      itemPrice:
+                                          itemPricesArray?[index] ?? "NA",
+                                      locality: localityArray?[index] ?? "NA",
+                                      location: locationsArray?[index] ?? "NA",
+                                      title: titlesArray?[index] ?? "NA",
+                                      phone: phoneArray?[index] ?? "NA",
+                                      seal: sealArray?[index] ?? "NA"),
+                                ),
+                              ],
+                            ),
+                          ] else ...[
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (imagesArray?[index] == "") ...[
+                                  Container(
+                                    height: 150,
                                     color: Colors.grey.shade200,
+                                    margin: const EdgeInsets.all(10),
                                     alignment: Alignment.topCenter,
                                     child: const Center(
                                       child: Text(
@@ -749,112 +817,64 @@ class SearchState extends State<Search>
                                             fontWeight: FontWeight.w900),
                                         textAlign: TextAlign.center,
                                       ),
-                                    )),
-                              ] else ...[
-                                Container(
-                                  margin: const EdgeInsets.all(10),
-                                  height: 150,
-                                  width: 100,
-                                  alignment: Alignment.topCenter,
-                                  child: Image(
-                                    image: CachedNetworkImageProvider(imagesArray?[
-                                            index] ??
-                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                    fit: BoxFit.fill,
+                                    ),
                                   ),
-                                ),
-                              ],
-                              Flexible(
-                                child: Description(
+                                ] else ...[
+                                  Container(
+                                    margin: const EdgeInsets.all(10),
+                                    alignment: Alignment.topCenter,
+                                    child: Image(
+                                      image: CachedNetworkImageProvider(
+                                          imagesArray?[index] ??
+                                              "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                    ),
+                                  ),
+                                ],
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Description(
                                     companyName: companyNameArray?[index] ?? "",
                                     itemPrice: itemPricesArray?[index] ?? "NA",
                                     locality: localityArray?[index] ?? "NA",
                                     location: locationsArray?[index] ?? "NA",
                                     title: titlesArray?[index] ?? "NA",
                                     phone: phoneArray?[index] ?? "NA",
-                                    seal: sealArray?[index] ?? "NA"
-                                ),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (imagesArray?[index] == "") ...[
-                                Container(
-                                  height: 150,
-                                  color: Colors.grey.shade200,
-                                  margin: const EdgeInsets.all(10),
-                                  alignment: Alignment.topCenter,
-                                  child: const Center(
-                                    child: Text(
-                                      "No Image Available",
-                                      style: TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 103, 97, 97),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w900),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ] else ...[
-                                Container(
-                                  margin: const EdgeInsets.all(10),
-                                  alignment: Alignment.topCenter,
-                                  child: Image(
-                                    image: CachedNetworkImageProvider(imagesArray?[
-                                            index] ??
-                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                    seal: sealArray?[index] ?? "NA",
                                   ),
                                 ),
                               ],
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20),
-                                child: Description(
-                                  companyName: companyNameArray?[index] ?? "",
-                                  itemPrice: itemPricesArray?[index] ?? "NA",
-                                  locality: localityArray?[index] ?? "NA",
-                                  location: locationsArray?[index] ?? "NA",
-                                  title: titlesArray?[index] ?? "NA",
-                                  phone: phoneArray?[index] ?? "NA",
-                                  seal: sealArray?[index] ?? "NA",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CustomButton(phoneNo: phoneArray![index]),
-                            CustomButton2()
+                            ),
                           ],
-                        )
-                      ],
-                    ),
-                  );
-
-                  if (titlesArray?[index] == "PBRBANNER") {
-                    return PBRBanner(product_name: widget.productName);
-                  } else if (titlesArray?[index] == "isq_banner") {
-                    return MainPBRBanner(
-                        productName: widget.productName, img: pbrimage);
-                  } else if (titlesArray?[index] == "RECENTPBRBANNER") {
-                    return LimitedChipsList();
-                  } else if (titlesArray?[index] == "ADEMPTY") {
-                    return AdClass();
-                  } else {
-                    return Card(
-                      // elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              CustomButton(phoneNo: phoneArray![index]),
+                              CustomButton2()
+                            ],
+                          )
+                        ],
                       ),
-                      child: inkWell,
                     );
+
+                    if (titlesArray?[index] == "PBRBANNER") {
+                      return PBRBanner(product_name: widget.productName);
+                    } else if (titlesArray?[index] == "isq_banner") {
+                      return MainPBRBanner(
+                          productName: widget.productName, img: pbrimage);
+                    } else if (titlesArray?[index] == "RECENTPBRBANNER") {
+                      return LimitedChipsList();
+                    } else if (titlesArray?[index] == "ADEMPTY") {
+                      return AdClass();
+                    } else {
+                      return Card(
+                        // elevation: 1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: inkWell,
+                      );
+                    }
                   }
                 },
               ),
