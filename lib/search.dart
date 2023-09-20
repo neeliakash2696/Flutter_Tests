@@ -249,6 +249,7 @@ class SearchState extends State<Search>
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
                   word: widget.productName,
+              cityIndex: clickedIndex,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();

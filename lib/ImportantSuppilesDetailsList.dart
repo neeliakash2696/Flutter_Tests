@@ -249,12 +249,14 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
+
     var outputText = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
                   word: widget.productName,
+              cityIndex:clickedIndex,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();
