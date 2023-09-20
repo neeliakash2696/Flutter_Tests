@@ -9,7 +9,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/search.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -19,9 +18,16 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
 
+enum VoiceSearchFromScreen {
+  def,
+  impSuppliesList,
+  viewCategories,
+  categoriesDetail
+}
+
 class SpeechToTextConverter extends StatefulWidget {
   final Function(TapDownDetails) onTap;
-  Size size;
+  // Size size;
   Size imgSize;
   Offset imgOffset;
   double waveAmplitude;
@@ -39,7 +45,7 @@ class SpeechToTextConverter extends StatefulWidget {
 
   SpeechToTextConverter(
       {required this.onTap,
-      required this.size,
+      // required this.size,
       this.imgSize = const Size(60.0, 60.0),
       this.imgOffset = const Offset(0.0, 0.0),
       this.waveAmplitude = 10.0,
@@ -47,7 +53,7 @@ class SpeechToTextConverter extends StatefulWidget {
       this.wavePhase = 10.0,
       required this.bgColor,
       this.roundImg = true,
-      this.heightPercentange = 0.6,
+      this.heightPercentange = 0.43,
       required this.fromScreen,
       required this.localeId,
       required this.selectedIndex,
@@ -73,7 +79,7 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
   TapDownDetails? details;
   bool _isListeningToStream = false;
   ImageStream? _imageStream;
-  Size? imgSize;
+  // Size? imgSize;
   int timerTime = 0;
   String lastError = '';
   String lastStatus = '';
@@ -82,7 +88,7 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
   @override
   void initState() {
     super.initState();
-    imgSize = widget.imgSize;
+    // imgSize = widget.imgSize;
     _waveControl = new AnimationController(
         vsync: this, duration: const Duration(seconds: 2));
     _wavePhaseValue =
@@ -251,17 +257,6 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
     }
   }
 
-  void _updateSourceStream(ImageStream newStream) {
-    if (_imageStream?.key == newStream?.key) return;
-
-    if (_isListeningToStream)
-      _imageStream?.removeListener(_handleImageChanged as ImageStreamListener);
-
-    _imageStream = newStream;
-    if (_isListeningToStream)
-      _imageStream?.addListener(_handleImageChanged as ImageStreamListener);
-  }
-
   void _listenToStream() {
     if (_isListeningToStream) return;
     _imageStream?.addListener(ImageStreamListener(_handleImageChanged));
@@ -281,7 +276,6 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
     }
     _stopListening();
     _waveControl.dispose();
-    // chipclick=false;
     super.dispose();
   }
 
@@ -289,28 +283,28 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
     if (imageInfo == null) {
       return;
     }
-    _caculatePercentangeSize(imageInfo);
+    // _caculatePercentangeSize(imageInfo);
     setState(() {
       image = imageInfo.image;
       _waveControl.forward();
     });
   }
 
-  void _caculatePercentangeSize(ImageInfo imageInfo) {
-    if (imgSize!.width == 0.0 && imgSize!.height == 0.0) {
-      imgSize = Size(
-          imageInfo.image.width.toDouble(), imageInfo.image.height.toDouble());
-    } else if (imgSize!.isEmpty) {
-      if (imgSize!.width == 0.0) {
-        imgSize = Size(
-            imageInfo.image.width * imgSize!.height / imageInfo.image.height,
-            imgSize!.height);
-      } else {
-        imgSize = Size(imgSize!.width,
-            imageInfo.image.height * imgSize!.width / imageInfo.image.width);
-      }
-    }
-  }
+  // void _caculatePercentangeSize(ImageInfo imageInfo) {
+  //   if (imgSize!.width == 0.0 && imgSize!.height == 0.0) {
+  //     imgSize = Size(
+  //         imageInfo.image.width.toDouble(), imageInfo.image.height.toDouble());
+  //   } else if (imgSize!.isEmpty) {
+  //     if (imgSize!.width == 0.0) {
+  //       imgSize = Size(
+  //           imageInfo.image.width * imgSize!.height / imageInfo.image.height,
+  //           imgSize!.height);
+  //     } else {
+  //       imgSize = Size(imgSize!.width,
+  //           imageInfo.image.height * imgSize!.width / imageInfo.image.width);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -340,7 +334,10 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                         details: details,
                         image: image,
                         bgColor: widget.bgColor,
-                        imageSize: imgSize,
+                        // imageSize: Size(
+                        //   MediaQuery.of(context).size.width - 60,
+                        //   MediaQuery.of(context).size.height * 0.6,
+                        // ),
                         heightPercentange: widget.heightPercentange,
                         repaint: _waveControl,
                         imgOffset: widget.imgOffset,
@@ -349,7 +346,10 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                         wavePhaseValue: _wavePhaseValue,
                         waveAmplitude: widget.waveAmplitude,
                         textForListening: voiceConvertedText),
-                    size: widget.size,
+                    size: Size(
+                      MediaQuery.of(context).size.width - 60,
+                      MediaQuery.of(context).size.height - 300,
+                    ),
                   ),
                 ),
                 Positioned(
@@ -426,7 +426,7 @@ class _MyWavePaint extends CustomPainter {
     // required this.onChipClicked,
     required this.details,
     required this.image,
-    required this.imageSize,
+    // required this.imageSize,
     required this.imgOffset,
     required this.bgColor,
     required this.heightPercentange,
@@ -449,7 +449,7 @@ class _MyWavePaint extends CustomPainter {
   bool roundImg;
   Image? image;
   Color bgColor;
-  Size? imageSize;
+  // Size? imageSize;
   Path path1 = Path();
   Path path2 = Path();
   Path path3 = Path();
@@ -465,11 +465,10 @@ class _MyWavePaint extends CustomPainter {
   double micIconY = 20.0; // Y-coordinate for the mic icon (adjust as needed)
   String? labelText =
       "Tell us what you need"; // Text to be displayed above the microphone icon
-  int? _value = 0;
-  TextStyle labelTextStyle = const TextStyle(
+  TextStyle labelTextStyle = TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.bold,
-    fontSize: 30.0, // You can adjust the font size
+    fontSize: 25.0, // You can adjust the font size
   );
   TextStyle listenTextStyle = TextStyle(
     color: Colors.teal[300],
@@ -532,7 +531,7 @@ class _MyWavePaint extends CustomPainter {
       double textY = heightPercentange +
           250; // Adjust the vertical position with top padding
       textPainter.paint(canvas, Offset(textX, size.height - 120));
-      mPaint1.color = Colors.teal[300]!;
+      mPaint1.color = Colors.teal[300] ?? Colors.grey;
       mPaint1.style = PaintingStyle.stroke;
       List<double> chipPositions = [
         size.width / 2 - 60,

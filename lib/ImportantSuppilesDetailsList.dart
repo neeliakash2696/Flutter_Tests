@@ -12,7 +12,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_tests/LocationSelector.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
-import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/adClass.dart';
 import 'package:flutter_tests/pbr_banner.dart';
 import 'package:flutter_tests/Fliters.dart';
@@ -223,10 +222,10 @@ class ImportantSuppilesDetailsListState
                   //
                 },
                 bgColor: Colors.teal,
-                size: Size(
-                  MediaQuery.of(context).size.width - 60,
-                  MediaQuery.of(context).size.height - 300,
-                ),
+                // size: Size(
+                //   MediaQuery.of(context).size.width - 60,
+                //   MediaQuery.of(context).size.height * 0.6,
+                // ),
                 fromScreen: VoiceSearchFromScreen.impSuppliesList,
                 localeId: "en_US",
                 selectedIndex: 0,
