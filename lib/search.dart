@@ -447,7 +447,8 @@ class SearchState extends State<Search>
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
         //   if (!kIsWeb) ;
         //   // addBannerOrAd(end, "ADEMPTY");
-        addBannerOrAd(start + 4, "PBRBANNER");
+        if(start<end)
+        addBannerOrAd(items.length - 4, "PBRBANNER");
       } else if (currentPage == 1) {
         if (!kIsWeb) {
           addBannerOrAd(2, "ADEMPTY");

@@ -371,7 +371,7 @@ class ImportantSuppilesDetailsListState
           print(
               "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
           totalItemCount =
-              int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+          int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -404,7 +404,7 @@ class ImportantSuppilesDetailsListState
           companyNameArray?.add(company);
 
           var CUSTTYPE_WEIGHT1 = resultsArray[i]['CUSTTYPE_WEIGHT1'] ?? "NA";
-          var tsCode=resultsArray[i]['tscode'] ?? "NA";
+          var tsCode = resultsArray[i]['tscode'] ?? "NA";
           sealArray?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
 
           var city = resultsArray[i]['city_orig'] ?? "NA";
@@ -425,32 +425,34 @@ class ImportantSuppilesDetailsListState
           // print(
           //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
+
+
+        if (resultsArray.length > 0)
+          if (currentPage > 1 && totalItemCount > 10) {
+            // if (!kIsWeb)
+            // addBannerOrAd(end, "ADEMPTY");
+            if (end > start) addBannerOrAd(items.length - 4, "PBRBANNER");
+          } else if (currentPage == 1) {
+            if (!kIsWeb && end > 7) {
+              addBannerOrAd(2, "ADEMPTY");
+              addBannerOrAd(7, "ADEMPTY");
+            }
+            print("end=$end");
+            if (end >= 9) {
+              addBannerOrAd(5, "isq_banner");
+              addBannerOrAd(10, "PBRBANNER");
+              addBannerOrAd(11, "RECENTPBRBANNER");
+            }
+          } else
+            stop = true;
+
+        print("resultsArray=${items.length} ${resultsArray?.length} start=$start end=$end ,");
+        if (currentPage == 1)
+          EasyLoading.dismiss();
+        DateTime now = DateTime.now();
+        print("DateTime now = DateTime.now();${now.difference(then)}");
+        scrolled = 1;
       }
-
-      if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
-        if (!kIsWeb) ;
-        // addBannerOrAd(end, "ADEMPTY");
-        if (end > start + 4) addBannerOrAd(start + 4, "PBRBANNER");
-      } else if (currentPage == 1) {
-        if (!kIsWeb && end > 7) {
-          addBannerOrAd(2, "ADEMPTY");
-          addBannerOrAd(7, "ADEMPTY");
-        }
-        print("end=$end");
-        if (end >=9) {
-          addBannerOrAd(5, "isq_banner");
-          addBannerOrAd(10, "PBRBANNER");
-          addBannerOrAd(11, "RECENTPBRBANNER");
-        }
-      } else
-        stop = true;
-
-      print("resultsArray=${items.length} ${resultsArray?.length},");
-      if(currentPage==1)
-      EasyLoading.dismiss();
-      DateTime now = DateTime.now();
-      print("DateTime now = DateTime.now();${now.difference(then)}");
-      scrolled = 1;
     } catch (e) {
       // EasyLoading.dismiss();
       ScaffoldMessenger.of(context)
