@@ -90,6 +90,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                             fromScreen: SearchingFromScreen
                                                 .viewCategories,
                                             word: "",
+                                            cityIndex: 0,
                                           )));
                             },
                             decoration: const InputDecoration(

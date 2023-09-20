@@ -10,6 +10,8 @@ import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
+import 'SpeechToTextConverter.dart';
+
 enum SearchingFromScreen {
   def,
   impSuppliesList,
@@ -22,8 +24,9 @@ class SearchFieldController extends StatefulWidget {
   SearchFieldControllerState createState() => SearchFieldControllerState();
   SearchingFromScreen fromScreen;
   String word;
+  int cityIndex;
   SearchFieldController(
-      {Key? key, required this.fromScreen, required this.word})
+      {Key? key, required this.fromScreen, required this.word, required this.cityIndex})
       : super(key: key);
 }
 
@@ -267,23 +270,34 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           ),
                         ),
                       ),
-                      // GestureDetector(
-                      //   onTap: () {},
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(8.0),
-                      //     child: Container(
-                      //       height: 30,
-                      //       width: 30,
-                      //       decoration: const BoxDecoration(
-                      //         image: DecorationImage(
-                      //             image:
-                      //                 AssetImage("images/mic_icon_colored.png"),
-                      //             fit: BoxFit.cover),
-                      //       ),
-                      //       alignment: Alignment.center,
-                      //     ),
-                      //   ),
-                      // ),
+                      GestureDetector(
+                        onTap: ()async {hasText?searchBar.clear(): openVoiceToTextConverter();
+                        if(hasText)
+                        setState(() {
+                          hasText = false;
+                          searchQuery = "";
+                          getRecents(searchQuery);
+                        });},
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 30,
+                            width: 30,
+                            decoration: hasText? BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                  AssetImage("images/cross_icon_bl_balance_strip.png"),
+                                  fit: BoxFit.cover),
+                            ): BoxDecoration(
+                                    image: DecorationImage(
+                                        image:
+                                            AssetImage("images/mic_icon_colored.png"),
+                                        fit: BoxFit.cover),
+                                  ),
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -374,7 +388,42 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       ),
     );
   }
-
+  openVoiceToTextConverter() async {
+    var receivedText = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (_, __, ___) => SpeechToTextConverter(
+                onTap: (details) {
+                  //
+                },
+                bgColor: Colors.teal,
+                // size: Size(
+                //   MediaQuery.of(context).size.width - 60,
+                //   MediaQuery.of(context).size.height * 0.6,
+                // ),
+                fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                localeId: "en_US",
+                selectedIndex: 0,
+                cityIndex: widget.cityIndex),
+            opaque: false,
+            fullscreenDialog: true));
+    if (receivedText != "" && receivedText != null) {
+      print("output text at impCat page $receivedText");
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => Search(
+              city: widget.cityIndex,
+              productName:receivedText,
+              productFname: encodeString(receivedText),
+              productIndex: 0,
+              biztype: "")));
+    }
+  }
+  String encodeString(String? inputString) {
+    var queryParamRaw = inputString ?? "";
+    var encoded = queryParamRaw.replaceAll(" ", "%20");
+    return encoded;
+  }
   TextSpan _buildTextSpan(String text, String searchText) {
     final startIndex = text.indexOf(searchText);
     if (startIndex == -1) {

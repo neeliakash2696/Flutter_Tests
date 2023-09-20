@@ -106,6 +106,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                             fromScreen: SearchingFromScreen
                                                 .categoriesDetail,
                                             word: "",
+                                            cityIndex: 0,
                                           )));
                             },
                             decoration: const InputDecoration(
