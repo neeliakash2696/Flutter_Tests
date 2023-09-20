@@ -20,7 +20,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'ImportantSuppilesDetailsList.dart';
 import 'SpeechToTextConverter.dart';
-import 'VoiceToTextConverter.dart';
 import 'adClass.dart';
 import 'main_pbr_banner.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -206,10 +205,10 @@ class SearchState extends State<Search>
                   //
                 },
                 bgColor: Colors.teal,
-                size: Size(
-                  MediaQuery.of(context).size.width - 60,
-                  MediaQuery.of(context).size.height - 300,
-                ),
+                // size: Size(
+                //   MediaQuery.of(context).size.width - 60,
+                //   MediaQuery.of(context).size.height - 300,
+                // ),
                 fromScreen: VoiceSearchFromScreen.impSuppliesList,
                 localeId: "en_US",
                 selectedIndex: 0,

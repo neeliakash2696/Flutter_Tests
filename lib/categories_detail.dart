@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/SpeechToTextConverter.dart';
-import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:http/http.dart' as http;
 import 'ImportantSuppilesDetailsList.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -282,10 +281,10 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                   //
                 },
                 bgColor: Colors.teal,
-                size: Size(
-                  MediaQuery.of(context).size.width - 60,
-                  MediaQuery.of(context).size.height - 300,
-                ),
+                // size: Size(
+                //   MediaQuery.of(context).size.width - 60,
+                //   MediaQuery.of(context).size.height - 300,
+                // ),
                 fromScreen: VoiceSearchFromScreen.categoriesDetail,
                 localeId: "en_US",
                 selectedIndex: 0,
