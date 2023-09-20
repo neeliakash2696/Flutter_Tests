@@ -52,12 +52,14 @@ class ImportantSuppilesDetailsListState
     extends State<ImportantSuppilesDetailsList>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   int clickedIndex = 0;
+  bool isLoading = false;
   late String encodedQueryParam;
   List<String>? imagesArray = [];
   List<String>? titlesArray = [];
   List<String>? phoneArray = [];
   List<String>? itemPricesArray = [];
   List<String>? companyNameArray = [];
+  List<String>? sealArray = [];
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
@@ -128,7 +130,7 @@ class ImportantSuppilesDetailsListState
             start = end - 10;
             end = totalItemCount;
           }
-          if (stop == false && start <= end) {
+          if (stop == false && start <= end && !isLoading) {
             currentPage += 1;
             getMoreDetails(encodedQueryParam, widget.biztype, start, end,
                 currentPage, false, currentCityId, currentCity);
@@ -310,11 +312,16 @@ class ImportantSuppilesDetailsListState
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
+    if(currentPage==1)
     EasyLoading.show(status: 'Loading...');
     // print("cateory=$category");
     // print(
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
+      setState(() {
+        if(currentPage>1)
+        isLoading = true;
+      });
       String biztype_data = "";
       if (SellerTypeData.getValueFromName(biztype) != "")
         biztype_data = SellerTypeData.getValueFromName(biztype);
@@ -328,7 +335,7 @@ class ImportantSuppilesDetailsListState
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
-        EasyLoading.dismiss();
+        // EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['data'];
         bizWiseArray = json.decode(response.body)['biz_wise_count'];
@@ -369,6 +376,7 @@ class ImportantSuppilesDetailsListState
           titlesArray?.clear();
           itemPricesArray?.clear();
           companyNameArray?.clear();
+          sealArray?.clear();
           locationsArray?.clear();
           localityArray?.clear();
         }
@@ -394,6 +402,10 @@ class ImportantSuppilesDetailsListState
           var company = resultsArray[i]['COMPANY'] ?? "NA";
           companyNameArray?.add(company);
 
+          var CUSTTYPE_WEIGHT1 = resultsArray[i]['CUSTTYPE_WEIGHT1'] ?? "NA";
+          var tsCode=resultsArray[i]['tscode'] ?? "NA";
+          sealArray?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
+
           var city = resultsArray[i]['city_orig'] ?? "NA";
           var localityForAddress =
               resultsArray[i]['SDA_GLUSR_USR_LOCALITY'] ?? "NA";
@@ -407,8 +419,8 @@ class ImportantSuppilesDetailsListState
         }
         print("resultsArray $locationsArray");
         setState(() {
+          isLoading = false;
           items.addAll(resultsArray);
-
           // print(
           //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
@@ -423,7 +435,8 @@ class ImportantSuppilesDetailsListState
           addBannerOrAd(2, "ADEMPTY");
           addBannerOrAd(7, "ADEMPTY");
         }
-        if (end > 10) {
+        print("end=$end");
+        if (end >=9) {
           addBannerOrAd(5, "isq_banner");
           addBannerOrAd(10, "PBRBANNER");
           addBannerOrAd(11, "RECENTPBRBANNER");
@@ -432,12 +445,13 @@ class ImportantSuppilesDetailsListState
         stop = true;
 
       print("resultsArray=${items.length} ${resultsArray?.length},");
+      if(currentPage==1)
       EasyLoading.dismiss();
       DateTime now = DateTime.now();
       print("DateTime now = DateTime.now();${now.difference(then)}");
       scrolled = 1;
     } catch (e) {
-      EasyLoading.dismiss();
+      // EasyLoading.dismiss();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
@@ -445,7 +459,7 @@ class ImportantSuppilesDetailsListState
 
   Widget build(BuildContext context) {
     super.build(context);
-    if (items.length - 1 < 0) {
+    if (items.length == 0) {
       itemCount = 0;
     } else {
       itemCount = items.length;
@@ -687,141 +701,155 @@ class ImportantSuppilesDetailsListState
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: itemCount,
+                itemCount: itemCount+1,
                 itemBuilder: (BuildContext context, int index) {
-                  var inkWell = InkWell(
-                    onTap: () {
-                      // Action
-                    },
-                    child: Column(
-                      children: [
-                        if (currentLayout == ScreenLayout.details) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                   if (index == itemCount) {
+                     print("index==$index $itemCount");
+                     return (isLoading)
+                         ? Center(child: CircularProgressIndicator()):Text("");
+                    }
+                   else{
+                    print("index==$index $itemCount");
+                    if (titlesArray?[index] == "PBRBANNER") {
+                      return PBRBanner(product_name: widget.productName);
+                    } else if (titlesArray?[index] == "isq_banner") {
+                      return MainPBRBanner(
+                          productName: widget.productName, img: pbrimage);
+                    } else if (titlesArray?[index] == "RECENTPBRBANNER") {
+                      return LimitedChipsList();
+                    } else if (titlesArray?[index] == "ADEMPTY") {
+                      return AdClass();
+                    } else {
+                      return Card(
+                        // elevation: 1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:  InkWell(
+                          onTap: () {
+                            // Action
+                          },
+                          child: Column(
                             children: [
-                              if (imagesArray?[index] == "") ...[
-                                Container(
-                                    margin: const EdgeInsets.all(10),
-                                    height: 150,
-                                    width: 100,
-                                    color: Colors.grey.shade200,
-                                    alignment: Alignment.topCenter,
-                                    child: const Center(
-                                      child: Text(
-                                        "No Image Available",
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 103, 97, 97),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w900),
-                                        textAlign: TextAlign.center,
+                              if (currentLayout == ScreenLayout.details) ...[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (imagesArray?[index] == "") ...[
+                                      Container(
+                                          margin: const EdgeInsets.all(10),
+                                          height: 150,
+                                          width: 100,
+                                          color: Colors.grey.shade200,
+                                          alignment: Alignment.topCenter,
+                                          child: const Center(
+                                            child: Text(
+                                              "No Image Available",
+                                              style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 103, 97, 97),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w900),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )),
+                                    ] else
+                                      ...[
+                                        Container(
+                                          margin: const EdgeInsets.all(10),
+                                          height: 150,
+                                          width: 100,
+                                          alignment: Alignment.topCenter,
+                                          child: Image(
+                                            image: CachedNetworkImageProvider(
+                                                imagesArray?[
+                                                index] ??
+                                                    "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                      ],
+                                    Flexible(
+                                      child: Description(
+                                          companyName: companyNameArray?[index] ?? "",
+                                          itemPrice: itemPricesArray?[index] ?? "NA",
+                                          locality: localityArray?[index] ?? "NA",
+                                          location: locationsArray?[index] ?? "NA",
+                                          title: titlesArray?[index] ?? "NA",
+                                          phone: phoneArray?[index] ?? "NA",
+                                          seal: sealArray?[index] ?? "NA"
                                       ),
-                                    )),
-                              ] else ...[
-                                Container(
-                                  margin: const EdgeInsets.all(10),
-                                  height: 150,
-                                  width: 100,
-                                  alignment: Alignment.topCenter,
-                                  child: Image(
-                                    image: CachedNetworkImageProvider(imagesArray?[
-                                            index] ??
-                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ],
-                              Flexible(
-                                child: Description(
-                                    companyName: companyNameArray?[index] ?? "",
-                                    itemPrice: itemPricesArray?[index] ?? "NA",
-                                    locality: localityArray?[index] ?? "NA",
-                                    location: locationsArray?[index] ?? "NA",
-                                    title: titlesArray?[index] ?? "NA",
-                                    phone: phoneArray?[index] ?? "NA"),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (imagesArray?[index] == "") ...[
-                                Container(
-                                  height: 150,
-                                  color: Colors.grey.shade200,
-                                  margin: const EdgeInsets.all(10),
-                                  alignment: Alignment.topCenter,
-                                  child: const Center(
-                                    child: Text(
-                                      "No Image Available",
-                                      style: TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 103, 97, 97),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w900),
-                                      textAlign: TextAlign.center,
                                     ),
+                                  ],
+                                ),
+                              ] else
+                                ...[
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (imagesArray?[index] == "") ...[
+                                        Container(
+                                          height: 150,
+                                          color: Colors.grey.shade200,
+                                          margin: const EdgeInsets.all(10),
+                                          alignment: Alignment.topCenter,
+                                          child: const Center(
+                                            child: Text(
+                                              "No Image Available",
+                                              style: TextStyle(
+                                                  color:
+                                                  Color.fromARGB(255, 103, 97, 97),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w900),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ] else
+                                        ...[
+                                          Container(
+                                            margin: const EdgeInsets.all(10),
+                                            alignment: Alignment.topCenter,
+                                            child: Image(
+                                              image: CachedNetworkImageProvider(
+                                                  imagesArray?[
+                                                  index] ??
+                                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                            ),
+                                          ),
+                                        ],
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 20),
+                                        child: Description(
+                                          companyName: companyNameArray?[index] ?? "",
+                                          itemPrice: itemPricesArray?[index] ?? "NA",
+                                          locality: localityArray?[index] ?? "NA",
+                                          location: locationsArray?[index] ?? "NA",
+                                          title: titlesArray?[index] ?? "NA",
+                                          phone: phoneArray?[index] ?? "NA",
+                                          seal: sealArray?[index] ?? "NA",
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ] else ...[
-                                Container(
-                                  margin: const EdgeInsets.all(10),
-                                  alignment: Alignment.topCenter,
-                                  child: Image(
-                                    image: CachedNetworkImageProvider(imagesArray?[
-                                            index] ??
-                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                  ),
-                                ),
-                              ],
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20),
-                                child: Description(
-                                  companyName: companyNameArray?[index] ?? "",
-                                  itemPrice: itemPricesArray?[index] ?? "NA",
-                                  locality: localityArray?[index] ?? "NA",
-                                  location: locationsArray?[index] ?? "NA",
-                                  title: titlesArray?[index] ?? "NA",
-                                  phone: phoneArray?[index] ?? "NA",
-                                ),
-                              ),
+                                ],
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CustomButton(phoneNo: phoneArray![index]),
+                                  CustomButton2()
+                                ],
+                              )
                             ],
                           ),
-                        ],
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CustomButton(phoneNo: phoneArray![index]),
-                            CustomButton2()
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-
-                  if (titlesArray?[index] == "PBRBANNER") {
-                    return PBRBanner(product_name: widget.productName);
-                  } else if (titlesArray?[index] == "isq_banner") {
-                    return MainPBRBanner(
-                        productName: widget.productName, img: pbrimage);
-                  } else if (titlesArray?[index] == "RECENTPBRBANNER") {
-                    return LimitedChipsList();
-                  } else if (titlesArray?[index] == "ADEMPTY") {
-                    return AdClass();
-                  } else {
-                    return Card(
-                      // elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: inkWell,
-                    );
+                        ),
+                      );
+                    }
                   }
-                },
+                } ,
               ),
             )
           ],
@@ -838,6 +866,7 @@ class ImportantSuppilesDetailsListState
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
     phoneArray?.insert(pos, "");
+    sealArray?.insert(pos, "");
     items.length += 1;
     // itemCount++;
   }
@@ -846,10 +875,24 @@ class ImportantSuppilesDetailsListState
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
+  String getSupplierType( int custTypeWeight, String tsCode) {
+    if (custTypeWeight == 149 ||
+        custTypeWeight == 179 ||
+        (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
+        (tsCode != null && tsCode.isEmpty && custTypeWeight == 199)) {
+      return 'images/trustseal_supplier.png';
+    } else if (custTypeWeight < 1400 && custTypeWeight != 755) {
+      return 'images/shared_ic_verifiedsupplier.png';
+    } else {
+      return 'images/company_icon.png';
+    }
+  }
 }
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
+
   CustomButton({required this.phoneNo});
 
   @override
@@ -862,7 +905,10 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery.of(context).size.width / 2 - 25,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -904,13 +950,14 @@ class CustomButton extends StatelessWidget {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      } else {
-        await makePhoneCall(call);
       }
-    } else {
-      await makePhoneCall(call);
+      else
+        await makePhoneCall(call);
     }
+    else
+      await makePhoneCall(call);
   }
+}
 
   Future makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
@@ -919,7 +966,7 @@ class CustomButton extends StatelessWidget {
     );
     await launchUrl(launchUri);
   }
-}
+
 
 class CustomButton2 extends StatelessWidget {
   @override
@@ -973,6 +1020,7 @@ class Description extends StatefulWidget {
   String location;
   String locality;
   String phone;
+  String seal;
   Description(
       {Key? key,
       required this.title,
@@ -980,7 +1028,9 @@ class Description extends StatefulWidget {
       required this.companyName,
       required this.location,
       required this.locality,
-      required this.phone})
+      required this.phone,
+      required this.seal
+      })
       : super(key: key);
 }
 
@@ -1050,9 +1100,9 @@ class _DescriptionState extends State<Description> {
               child: Container(
                 height: 15,
                 width: 15,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("images/trustseal_supplier.png"),
+                      image: AssetImage(widget.seal),
                       fit: BoxFit.contain),
                 ),
                 alignment: Alignment.center,

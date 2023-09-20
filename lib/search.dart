@@ -54,6 +54,7 @@ class SearchState extends State<Search>
   List<String>? phoneArray = [];
   List<String>? itemPricesArray = [];
   List<String>? companyNameArray = [];
+  List<String>? sealArray = [];
   List<String>? locationsArray = [];
   List<String>? localityArray = [];
   List<dynamic> resultsArray = [];
@@ -388,6 +389,7 @@ class SearchState extends State<Search>
           titlesArray?.clear();
           itemPricesArray?.clear();
           companyNameArray?.clear();
+          sealArray?.clear();
           locationsArray?.clear();
           localityArray?.clear();
         }
@@ -415,6 +417,10 @@ class SearchState extends State<Search>
 
           var dealsLocation = resultsArray[i]['fields']['deals_in_loc'] ?? "NA";
           locationsArray?.add("$dealsLocation");
+
+          int CUSTTYPE_WEIGHT1 = resultsArray[i]['fields']['CustTypeWt']??"NA";
+          var tsCode=resultsArray[i]['fields']['tscode'] ?? "NA";
+          sealArray?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
 
           var city = resultsArray[i]['fields']['city'] ?? "";
 
@@ -764,7 +770,9 @@ class SearchState extends State<Search>
                                     locality: localityArray?[index] ?? "NA",
                                     location: locationsArray?[index] ?? "NA",
                                     title: titlesArray?[index] ?? "NA",
-                                    phone: phoneArray?[index] ?? "NA"),
+                                    phone: phoneArray?[index] ?? "NA",
+                                    seal: sealArray?[index] ?? "NA"
+                                ),
                               ),
                             ],
                           ),
@@ -811,6 +819,7 @@ class SearchState extends State<Search>
                                   location: locationsArray?[index] ?? "NA",
                                   title: titlesArray?[index] ?? "NA",
                                   phone: phoneArray?[index] ?? "NA",
+                                  seal: sealArray?[index] ?? "NA",
                                 ),
                               ),
                             ],
@@ -966,6 +975,7 @@ class SearchState extends State<Search>
     titlesArray?.insert(pos, value);
     itemPricesArray?.insert(pos, "");
     companyNameArray?.insert(pos, "");
+    sealArray?.insert(pos, "");
     locationsArray?.insert(pos, "");
     localityArray?.insert(pos, "");
     phoneArray?.insert(pos, "");
@@ -983,10 +993,24 @@ class SearchState extends State<Search>
     start = 0;
     end = 9;
   }
+  String getSupplierType( int custTypeWeight, String tsCode) {
+    if (custTypeWeight == 149 ||
+        custTypeWeight == 179 ||
+        (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
+        (tsCode != null && tsCode.isEmpty && custTypeWeight == 199)) {
+      return 'images/trustseal_supplier.png';
+    } else if (custTypeWeight < 1400 && custTypeWeight != 755) {
+      return 'images/shared_ic_verifiedsupplier.png';
+    } else {
+      return 'images/company_icon.png';
+    }
+  }
 }
+
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
+
   CustomButton({required this.phoneNo});
 
   @override
@@ -999,7 +1023,10 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery.of(context).size.width / 2 - 25,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -1041,13 +1068,14 @@ class CustomButton extends StatelessWidget {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      } else {
-        await makePhoneCall(call);
       }
-    } else {
-      await makePhoneCall(call);
+      else
+        await makePhoneCall(call);
     }
+    else
+      await makePhoneCall(call);
   }
+
 
   Future makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
@@ -1110,6 +1138,7 @@ class Description extends StatefulWidget {
   String location;
   String locality;
   String phone;
+  String seal;
   Description(
       {Key? key,
       required this.title,
@@ -1117,7 +1146,9 @@ class Description extends StatefulWidget {
       required this.companyName,
       required this.location,
       required this.locality,
-      required this.phone})
+      required this.phone,
+      required this.seal,
+      })
       : super(key: key);
 }
 
