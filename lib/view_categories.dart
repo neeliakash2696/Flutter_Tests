@@ -10,7 +10,6 @@ import 'package:flutter_tests/LocationSelector.dart';
 
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/SpeechToTextConverter.dart';
-import 'package:flutter_tests/VoiceToTextConverter.dart';
 import 'package:flutter_tests/categories_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
@@ -240,10 +239,10 @@ class _ViewCategoriesState extends State<ViewCategories> {
                   //
                 },
                 bgColor: Colors.teal,
-                size: Size(
-                  MediaQuery.of(context).size.width - 60,
-                  MediaQuery.of(context).size.height - 300,
-                ),
+                // size: Size(
+                //   MediaQuery.of(context).size.width - 60,
+                //   MediaQuery.of(context).size.height - 300,
+                // ),
                 fromScreen: VoiceSearchFromScreen.viewCategories,
                 localeId: "en_US",
                 selectedIndex: 0,
