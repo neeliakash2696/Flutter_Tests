@@ -314,15 +314,13 @@ class ImportantSuppilesDetailsListState
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
-    if(currentPage==1)
-    EasyLoading.show(status: 'Loading...');
+    if (currentPage == 1) EasyLoading.show(status: 'Loading...');
     // print("cateory=$category");
     // print(
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
     try {
       setState(() {
-        if(currentPage>1)
-        isLoading = true;
+        if (currentPage > 1) isLoading = true;
       });
       String biztype_data = "";
       if (SellerTypeData.getValueFromName(biztype) != "")
@@ -429,6 +427,7 @@ class ImportantSuppilesDetailsListState
         });
 
 
+
         if (resultsArray.length > 0)
           if (currentPage > 1 && totalItemCount > 10) {
             // if (!kIsWeb)
@@ -455,6 +454,7 @@ class ImportantSuppilesDetailsListState
         print("DateTime now = DateTime.now();${now.difference(then)}");
         scrolled = 1;
       }
+
     } catch (e) {
       // EasyLoading.dismiss();
       ScaffoldMessenger.of(context)
@@ -706,8 +706,9 @@ class ImportantSuppilesDetailsListState
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: itemCount+1,
+                itemCount: itemCount + 1,
                 itemBuilder: (BuildContext context, int index) {
+
                    if (index == itemCount) {
                      print("index==$index $itemCount");
                      return (isLoading)
@@ -716,6 +717,7 @@ class ImportantSuppilesDetailsListState
                           child:CircularProgressIndicator())):Text("");
                     }
                    else{
+
                     print("index==$index $itemCount");
                     if (titlesArray?[index] == "PBRBANNER") {
                       return PBRBanner(product_name: widget.productName);
@@ -732,7 +734,7 @@ class ImportantSuppilesDetailsListState
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child:  InkWell(
+                        child: InkWell(
                           onTap: () {
                             // Action
                           },
@@ -761,89 +763,91 @@ class ImportantSuppilesDetailsListState
                                               textAlign: TextAlign.center,
                                             ),
                                           )),
-                                    ] else
-                                      ...[
-                                        Container(
-                                          margin: const EdgeInsets.all(10),
-                                          height: 150,
-                                          width: 100,
-                                          alignment: Alignment.topCenter,
-                                          child: Image(
-                                            image: CachedNetworkImageProvider(
-                                                imagesArray?[
-                                                index] ??
-                                                    "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                            fit: BoxFit.fill,
-                                          ),
+                                    ] else ...[
+                                      Container(
+                                        margin: const EdgeInsets.all(10),
+                                        height: 150,
+                                        width: 100,
+                                        alignment: Alignment.topCenter,
+                                        child: Image(
+                                          image: CachedNetworkImageProvider(
+                                              imagesArray?[index] ??
+                                                  "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                          fit: BoxFit.fill,
                                         ),
-                                      ],
+                                      ),
+                                    ],
                                     Flexible(
                                       child: Description(
-                                          companyName: companyNameArray?[index] ?? "",
-                                          itemPrice: itemPricesArray?[index] ?? "NA",
-                                          locality: localityArray?[index] ?? "NA",
-                                          location: locationsArray?[index] ?? "NA",
+                                          companyName:
+                                              companyNameArray?[index] ?? "",
+                                          itemPrice:
+                                              itemPricesArray?[index] ?? "NA",
+                                          locality:
+                                              localityArray?[index] ?? "NA",
+                                          location:
+                                              locationsArray?[index] ?? "NA",
                                           title: titlesArray?[index] ?? "NA",
                                           phone: phoneArray?[index] ?? "NA",
-                                          seal: sealArray?[index] ?? "NA"
+                                          seal: sealArray?[index] ?? "NA"),
+                                    ),
+                                  ],
+                                ),
+                              ] else ...[
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (imagesArray?[index] == "") ...[
+                                      Container(
+                                        height: 150,
+                                        color: Colors.grey.shade200,
+                                        margin: const EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        child: const Center(
+                                          child: Text(
+                                            "No Image Available",
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 103, 97, 97),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w900),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      Container(
+                                        margin: const EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        child: Image(
+                                          image: CachedNetworkImageProvider(
+                                              imagesArray?[index] ??
+                                                  "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                        ),
+                                      ),
+                                    ],
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 20),
+                                      child: Description(
+                                        companyName:
+                                            companyNameArray?[index] ?? "",
+                                        itemPrice:
+                                            itemPricesArray?[index] ?? "NA",
+                                        locality: localityArray?[index] ?? "NA",
+                                        location:
+                                            locationsArray?[index] ?? "NA",
+                                        title: titlesArray?[index] ?? "NA",
+                                        phone: phoneArray?[index] ?? "NA",
+                                        seal: sealArray?[index] ?? "NA",
                                       ),
                                     ),
                                   ],
                                 ),
-                              ] else
-                                ...[
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      if (imagesArray?[index] == "") ...[
-                                        Container(
-                                          height: 150,
-                                          color: Colors.grey.shade200,
-                                          margin: const EdgeInsets.all(10),
-                                          alignment: Alignment.topCenter,
-                                          child: const Center(
-                                            child: Text(
-                                              "No Image Available",
-                                              style: TextStyle(
-                                                  color:
-                                                  Color.fromARGB(255, 103, 97, 97),
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w900),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ] else
-                                        ...[
-                                          Container(
-                                            margin: const EdgeInsets.all(10),
-                                            alignment: Alignment.topCenter,
-                                            child: Image(
-                                              image: CachedNetworkImageProvider(
-                                                  imagesArray?[
-                                                  index] ??
-                                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                            ),
-                                          ),
-                                        ],
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 20),
-                                        child: Description(
-                                          companyName: companyNameArray?[index] ?? "",
-                                          itemPrice: itemPricesArray?[index] ?? "NA",
-                                          locality: localityArray?[index] ?? "NA",
-                                          location: locationsArray?[index] ?? "NA",
-                                          title: titlesArray?[index] ?? "NA",
-                                          phone: phoneArray?[index] ?? "NA",
-                                          seal: sealArray?[index] ?? "NA",
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              ],
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CustomButton(phoneNo: phoneArray![index]),
@@ -856,7 +860,7 @@ class ImportantSuppilesDetailsListState
                       );
                     }
                   }
-                } ,
+                },
               ),
             )
           ],
@@ -883,7 +887,7 @@ class ImportantSuppilesDetailsListState
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
-  String getSupplierType( int custTypeWeight, String tsCode) {
+  String getSupplierType(int custTypeWeight, String tsCode) {
     if (custTypeWeight == 149 ||
         custTypeWeight == 179 ||
         (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
@@ -912,10 +916,7 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width / 2 - 25,
+            width: MediaQuery.of(context).size.width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -957,23 +958,20 @@ class CustomButton extends StatelessWidget {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      }
-      else
+      } else
         await makePhoneCall(call);
-    }
-    else
+    } else
       await makePhoneCall(call);
   }
 }
 
-  Future makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    await launchUrl(launchUri);
-  }
-
+Future makePhoneCall(String phoneNumber) async {
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: phoneNumber,
+  );
+  await launchUrl(launchUri);
+}
 
 class CustomButton2 extends StatelessWidget {
   @override
@@ -1036,8 +1034,7 @@ class Description extends StatefulWidget {
       required this.location,
       required this.locality,
       required this.phone,
-      required this.seal
-      })
+      required this.seal})
       : super(key: key);
 }
 
@@ -1109,8 +1106,7 @@ class _DescriptionState extends State<Description> {
                 width: 15,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage(widget.seal),
-                      fit: BoxFit.contain),
+                      image: AssetImage(widget.seal), fit: BoxFit.contain),
                 ),
                 alignment: Alignment.center,
               ),
