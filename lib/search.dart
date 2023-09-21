@@ -369,23 +369,25 @@ class SearchState extends State<Search>
           print("search_a,,pi_hit_time)}");
         }
         if (currentPage == 1) {
-          dynamic live_mcats =
-              json.decode(response.body)['guess']['guess']['live_mcats'];
+          if(json.decode(response.body)['guess']!=null) {
+            dynamic live_mcats =
+                json.decode(response.body)['guess']['guess']['live_mcats'];
 
-          if (live_mcats is List) {
-            pbrimage = live_mcats.isNotEmpty ? live_mcats[0]['smallimg'] : "";
-            related.clear();
-            relatedfname.clear();
+            if (live_mcats is List) {
+              pbrimage = live_mcats.isNotEmpty ? live_mcats[0]['smallimg'] : "";
+              related.clear();
+              relatedfname.clear();
 
-            for (var i = 0; i < live_mcats.length; i++) {
-              if (live_mcats[i] != null && live_mcats[i] is Map) {
-                related.add(live_mcats[i]['name']);
-                relatedfname.add(live_mcats[i]['filename']);
+              for (var i = 0; i < live_mcats.length; i++) {
+                if (live_mcats[i] != null && live_mcats[i] is Map) {
+                  related.add(live_mcats[i]['name']);
+                  relatedfname.add(live_mcats[i]['filename']);
+                }
               }
-            }
 
-            totalItemCount =
-                json.decode(response.body)['total_results_without_repetition'];
+              totalItemCount = json
+                  .decode(response.body)['total_results_without_repetition'];
+            }
           } else {
             pbrimage = "";
             related.clear();
