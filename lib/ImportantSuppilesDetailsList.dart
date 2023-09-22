@@ -1325,21 +1325,20 @@ class ProductModel {
 }
 
 class Mcatdata {
-  final String? glcatMcatName; // Added
-  final String? glcatMcatFlname; // Added
-  final String? glcatMcatImg1125X125; // Added
-
+  final String? glcatMcatName;
+  final String? glcatMcatFlname;
+  final String? glcatMcatImg1125X125;
   Mcatdata({
-    required this.glcatMcatName, // Added
-    required this.glcatMcatFlname, // Added
-    required this.glcatMcatImg1125X125, // Added
+    required this.glcatMcatName,
+    required this.glcatMcatFlname,
+    required this.glcatMcatImg1125X125,
   });
 
   factory Mcatdata.fromJson(Map<String, dynamic> json) {
     return Mcatdata(
-      glcatMcatName: json['GLCAT_MCAT_NAME'], // Added
-      glcatMcatFlname: json['GLCAT_MCAT_FLNAME'], // Added
-      glcatMcatImg1125X125: json['GLCAT_MCAT_IMG1_125X125'], // Added
+      glcatMcatName: json['GLCAT_MCAT_NAME'],
+      glcatMcatFlname: json['GLCAT_MCAT_FLNAME'],
+      glcatMcatImg1125X125: json['GLCAT_MCAT_IMG1_125X125'],
     );
   }
 }
@@ -1362,39 +1361,39 @@ class BizWiseCount {
 }
 
 class Data {
-  final String? photo_250; // Added
-  final int? custtypeWeight1; // Added
-  final String? prdName; // Added
-  final String? city; // Added
-  final String? sdaGlusrUsrLocality; // Added
-  final String? cityOrig; // Added
-  final String? prdPrice; // Added
-  final String? company; // Added
-  final String? compContct; // Added
+  final String? photo_250;
+  final int? custtypeWeight1;
+  final String? prdName;
+  final String? city;
+  final String? sdaGlusrUsrLocality;
+  final String? cityOrig;
+  final String? prdPrice;
+  final String? company;
+  final String? compContct;
 
   Data({
-    required this.photo_250, // Added
-    required this.custtypeWeight1, // Added
-    required this.prdName, // Added
-    required this.city, // Added
-    required this.sdaGlusrUsrLocality, // Added
-    required this.cityOrig, // Added
-    required this.prdPrice, // Added
-    required this.company, // Added
-    required this.compContct, // Added
+    required this.photo_250,
+    required this.custtypeWeight1,
+    required this.prdName,
+    required this.city,
+    required this.sdaGlusrUsrLocality,
+    required this.cityOrig,
+    required this.prdPrice,
+    required this.company,
+    required this.compContct,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      photo_250: json['photo_250'], // Added
-      custtypeWeight1: json['CUSTTYPE_WEIGHT1'], // Added
-      prdName: json['prd_name'], // Added
-      city: json['city'], // Added
-      sdaGlusrUsrLocality: json['SDA_GLUSR_USR_LOCALITY'], // Added
-      cityOrig: json['city_orig'], // Added
-      prdPrice: json['prd_price'], // Added
-      company: json['COMPANY'], // Added
-      compContct: json['comp_contct'], // Added
+      photo_250: json['photo_250'],
+      custtypeWeight1: json['CUSTTYPE_WEIGHT1'],
+      prdName: json['prd_name'],
+      city: json['city'],
+      sdaGlusrUsrLocality: json['SDA_GLUSR_USR_LOCALITY'],
+      cityOrig: json['city_orig'],
+      prdPrice: json['prd_price'],
+      company: json['COMPANY'],
+      compContct: json['comp_contct'],
     );
   }
 }
