@@ -1,5 +1,8 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
 
+import 'dart:developer';
+
+import 'package:flutter_tests/ApiManager.dart';
 import 'package:flutter_tests/search.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -249,14 +252,13 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
-
     var outputText = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
                   word: widget.productName,
-              cityIndex:clickedIndex,
+                  cityIndex: clickedIndex,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();
@@ -332,11 +334,25 @@ class ImportantSuppilesDetailsListState
           "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
-      var code = json.decode(response.body)['CODE'];
+      Map<String, dynamic> data = json.decode(response.body);
+      log("$data");
+      // Category categoryArray = Category.fromJson(data);
+
+      // var response = await ApiManager().getResponse(
+      //     context: context,
+      //     method: ApiManager.getMethod,
+      //     webLink: pathUrl,
+      //     showLoading: true);
+
+      // log(response.toString());
+      ProductModel productModelArray = ProductModel.fromJson(data);
+      print("required $productModelArray");
+      // print("requuired 1 $categoryArray");
+      // print("requuired${categoryArray.grp[0].img_v2}");
+      /*var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
-        if(currentPage==1)
-        EasyLoading.dismiss();
+        if (currentPage == 1) EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['data'];
         bizWiseArray = json.decode(response.body)['biz_wise_count'];
@@ -371,7 +387,7 @@ class ImportantSuppilesDetailsListState
           print(
               "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
           totalItemCount =
-          int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+              int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -426,39 +442,37 @@ class ImportantSuppilesDetailsListState
           //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
 
+        if (resultsArray.length > 0) if (currentPage > 1 &&
+            totalItemCount > 10) {
+          // if (!kIsWeb)
+          // addBannerOrAd(end, "ADEMPTY");
+          if (end > start) addBannerOrAd(items.length - 4, "PBRBANNER");
+        } else if (currentPage == 1) {
+          if (!kIsWeb && end > 7) {
+            addBannerOrAd(2, "ADEMPTY");
+            addBannerOrAd(7, "ADEMPTY");
+          }
+          print("end=$end");
+          if (end >= 9) {
+            addBannerOrAd(5, "isq_banner");
+            addBannerOrAd(10, "PBRBANNER");
+            addBannerOrAd(11, "RECENTPBRBANNER");
+          }
+        } else
+          stop = true;
 
-
-        if (resultsArray.length > 0)
-          if (currentPage > 1 && totalItemCount > 10) {
-            // if (!kIsWeb)
-            // addBannerOrAd(end, "ADEMPTY");
-            if (end > start) addBannerOrAd(items.length - 4, "PBRBANNER");
-          } else if (currentPage == 1) {
-            if (!kIsWeb && end > 7) {
-              addBannerOrAd(2, "ADEMPTY");
-              addBannerOrAd(7, "ADEMPTY");
-            }
-            print("end=$end");
-            if (end >= 9) {
-              addBannerOrAd(5, "isq_banner");
-              addBannerOrAd(10, "PBRBANNER");
-              addBannerOrAd(11, "RECENTPBRBANNER");
-            }
-          } else
-            stop = true;
-
-        print("resultsArray=${items.length} ${resultsArray?.length} start=$start end=$end ,");
-        if (currentPage == 1)
-          EasyLoading.dismiss();
+        print(
+            "resultsArray=${items.length} ${resultsArray?.length} start=$start end=$end ,");
+        if (currentPage == 1) EasyLoading.dismiss();
         DateTime now = DateTime.now();
         print("DateTime now = DateTime.now();${now.difference(then)}");
         scrolled = 1;
-      }
-
+      }*/
     } catch (e) {
       // EasyLoading.dismiss();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
+      log(e.toString());
     }
   }
 
@@ -708,16 +722,15 @@ class ImportantSuppilesDetailsListState
                 controller: _scrollController,
                 itemCount: itemCount + 1,
                 itemBuilder: (BuildContext context, int index) {
-
-                   if (index == itemCount) {
-                     print("index==$index $itemCount");
-                     return (isLoading)
-                         ? Center(child: Padding(
-                          padding:EdgeInsets.all(8),
-                          child:CircularProgressIndicator())):Text("");
-                    }
-                   else{
-
+                  if (index == itemCount) {
+                    print("index==$index $itemCount");
+                    return (isLoading)
+                        ? Center(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator()))
+                        : Text("");
+                  } else {
                     print("index==$index $itemCount");
                     if (titlesArray?[index] == "PBRBANNER") {
                       return PBRBanner(product_name: widget.productName);
@@ -1208,6 +1221,454 @@ class _DescriptionState extends State<Description> {
         ),
         const SizedBox(height: 10),
       ],
+    );
+  }
+}
+
+class Category {
+  final String cnt;
+  final List<CategoryGroup> grp;
+
+  Category({required this.cnt, required this.grp});
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    List<CategoryGroup> groups = (json['grps']['grp'] as List)
+        .map((groupJson) => CategoryGroup.fromJson(groupJson))
+        .toList();
+
+    return Category(
+      cnt: json['grps']['cnt'],
+      grp: groups,
+    );
+  }
+}
+
+class CategoryGroup {
+  final String id;
+  final String name;
+  final String fname;
+  final String type;
+  final String sm;
+  final String icon_v2;
+  final String bgc_v2;
+  final String img_v2;
+
+  CategoryGroup({
+    required this.id,
+    required this.name,
+    required this.fname,
+    required this.type,
+    required this.sm,
+    required this.icon_v2,
+    required this.bgc_v2,
+    required this.img_v2,
+  });
+
+  factory CategoryGroup.fromJson(Map<String, dynamic> json) {
+    return CategoryGroup(
+      id: json['id'],
+      name: json['name'],
+      fname: json['fname'],
+      type: json['type'],
+      sm: json['sm'],
+      icon_v2: json['icon_v2'],
+      bgc_v2: json['bgc_v2'],
+      img_v2: json['img_v2'],
+    );
+  }
+}
+
+class ProductModel {
+  final int? indexOrig;
+  final int? index;
+  final int? isGenericFlag;
+  final String? headerStatus;
+  final String? stateName;
+  final String? cityTier;
+  final dynamic isDistrict;
+  final int? supplierCountCity;
+  final String? districtName;
+  final int? ecomFilter;
+  final String? cityLatitude;
+  final String? cityLongitude;
+  final String? cityCountryIso;
+  final String? stateCode;
+  final String? datatype;
+  final String? outTotalUnqCount;
+  final String? subcatFlanme;
+  final String? isBrand;
+  final int? isBusinessType;
+  final String? priceCount;
+  final String? outTotalCount;
+  final List<dynamic>? standardProdArr;
+  final List<dynamic>? relatedSearchWords;
+  final List<Mcatdata>? mcatdata;
+  final String? mcatgenricFlag;
+  final String? mcatisgen;
+  final List<BizWiseCount>? bizWiseCount;
+  final List<Data>? data;
+
+  ProductModel({
+    required this.indexOrig,
+    required this.index,
+    required this.isGenericFlag,
+    required this.headerStatus,
+    required this.stateName,
+    required this.cityTier,
+    required this.isDistrict,
+    required this.supplierCountCity,
+    required this.districtName,
+    required this.ecomFilter,
+    required this.cityLatitude,
+    required this.cityLongitude,
+    required this.cityCountryIso,
+    required this.stateCode,
+    required this.datatype,
+    required this.outTotalUnqCount,
+    required this.subcatFlanme,
+    required this.isBrand,
+    required this.isBusinessType,
+    required this.priceCount,
+    required this.outTotalCount,
+    required this.standardProdArr,
+    required this.relatedSearchWords,
+    required this.mcatdata,
+    required this.mcatgenricFlag,
+    required this.mcatisgen,
+    required this.bizWiseCount,
+    required this.data,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    // Parse the JSON and create an instance of ProductModel
+    // You'll need to handle the list parsing for mcatdata, bizWiseCount, and data separately.
+    // I'll provide an example for mcatdata.
+    List<Mcatdata> mcatdataList = (json['mcatdata'] as List)
+        .map((item) => Mcatdata.fromJson(item))
+        .toList();
+
+    List<BizWiseCount> bizWiseCountList = (json['biz_wise_count'] as List)
+        .map((item) => BizWiseCount.fromJson(item))
+        .toList();
+
+    List<Data> dataList =
+        (json['data'] as List).map((item) => Data.fromJson(item)).toList();
+
+    return ProductModel(
+      // Assign values here
+      indexOrig: json["index_orig"],
+      index: json["index"],
+      isGenericFlag: json["is_generic_flag"],
+      headerStatus: json["header_status"],
+      stateName: json["state_name"],
+      cityTier: json["city_tier"],
+      isDistrict: json["is_district"],
+      districtName: json["supplier_count_city"],
+      supplierCountCity: json["district_name"],
+      ecomFilter: json["ecom_filter"],
+      cityLatitude: json["city_latitude"],
+      cityLongitude: json["city_longitude"],
+      mcatisgen: json["mcatisgen"],
+      mcatgenricFlag: json["mcatgenric_flag"],
+      standardProdArr: json["standard_prod_arr"],
+      stateCode: json["state_code"],
+      subcatFlanme: json["subcat_flanme"],
+      cityCountryIso: json["city_country_iso"],
+      datatype: json["datatype"],
+      outTotalUnqCount: json["out_total_unq_count"],
+      isBusinessType: json["is_business_type"],
+      isBrand: json["is_brand"],
+      priceCount: json["price_count"],
+      outTotalCount: json["out_total_count"],
+      relatedSearchWords: json["related_search_words"],
+      bizWiseCount: bizWiseCountList,
+      data: dataList,
+      mcatdata: mcatdataList,
+    );
+  }
+}
+
+class Mcatdata {
+  final int? cnt;
+  final int? glcatMcatId;
+  final String? glcatMcatName;
+  final String? glcatMcatFlname;
+  final int? glcatMcatIsGeneric;
+  final int? glcatMcatAdultFlag;
+  final int? prdSearchGlCityId;
+  final int? iilDirRelMcatCityCnt;
+  final String? glCityName;
+  final String? glcatMcatImg1125X125;
+  final int? relTypeFlag;
+  final int? pmcatId;
+  final String? pmcatName;
+  final String? pmcatFlname;
+  final int? iilDirRelMcatOfrCnt;
+  final String? pmcatImg1125X125;
+  final dynamic brandImg1125X125;
+
+  Mcatdata({
+    required this.cnt,
+    required this.glcatMcatId,
+    required this.glcatMcatName,
+    required this.glcatMcatFlname,
+    required this.glcatMcatIsGeneric,
+    required this.glcatMcatAdultFlag,
+    required this.prdSearchGlCityId,
+    required this.iilDirRelMcatCityCnt,
+    required this.glCityName,
+    required this.glcatMcatImg1125X125,
+    required this.relTypeFlag,
+    required this.pmcatId,
+    required this.pmcatName,
+    required this.pmcatFlname,
+    required this.iilDirRelMcatOfrCnt,
+    required this.pmcatImg1125X125,
+    required this.brandImg1125X125,
+  });
+
+  factory Mcatdata.fromJson(Map<String, dynamic> json) {
+    return Mcatdata(
+      cnt: json['CNT'],
+      glcatMcatId: json['GLCAT_MCAT_ID'],
+      glcatMcatName: json['GLCAT_MCAT_NAME'],
+      glcatMcatFlname: json['GLCAT_MCAT_FLNAME'],
+      glcatMcatIsGeneric: json['GLCAT_MCAT_IS_GENERIC'],
+      glcatMcatAdultFlag: json['GLCAT_MCAT_ADULT_FLAG'],
+      prdSearchGlCityId: json['PRD_SEARCH_GL_CITY_ID'],
+      iilDirRelMcatCityCnt: json['IIL_DIR_REL_MCAT_CITY_CNT'],
+      glCityName: json['GL_CITY_NAME'],
+      glcatMcatImg1125X125: json['GLCAT_MCAT_IMG1_125X125'],
+      relTypeFlag: json['REL_TYPE_FLAG'],
+      pmcatId: json['PMCAT_ID'],
+      pmcatName: json['PMCAT_NAME'],
+      pmcatFlname: json['PMCAT_FLNAME'],
+      iilDirRelMcatOfrCnt: json['IIL_DIR_REL_MCAT_OFR_CNT'],
+      pmcatImg1125X125: json['PMCAT_IMG1_125X125'],
+      brandImg1125X125: json['BRAND_IMG1_125X125'],
+    );
+  }
+}
+
+class BizWiseCount {
+  final int? bizCnt;
+  final int? prdSearchPrimaryBizId;
+
+  BizWiseCount({
+    required this.bizCnt,
+    required this.prdSearchPrimaryBizId,
+  });
+
+  factory BizWiseCount.fromJson(Map<String, dynamic> json) {
+    return BizWiseCount(
+      bizCnt: json['BIZ_CNT'],
+      prdSearchPrimaryBizId: json['PRD_SEARCH_PRIMARY_BIZ_ID'],
+    );
+  }
+}
+
+class Data {
+  final String? allPls;
+  final int? custtypeWeightOrig;
+  final int? iilMcatProdGlcatMcatId;
+  final int? primaryBizIdOrig;
+  final String? pcItemDisplayName;
+  final String? pcItemHindiName;
+  final String? pcItemSecondaryName;
+  final String? pcItemReviewFlag;
+  final int? hasFprefCountry;
+  final String? glusrCountryIso;
+  final String? cntUserProducts;
+  final int? glusrDistanceCity;
+  final String? prdSearchGlcatMcatIdList;
+  final int? myPageOrder;
+  final int? rk;
+  final int? iilMcatProdHnpdStatus;
+  final int? rn;
+  final int? sc;
+  final int? so;
+  final int? vef;
+  final int? enqCount;
+  final int? pageViews;
+  final int? callCount;
+  final String? enqCountNew;
+  final String? pageViewsNew;
+  final String? pmcatRank;
+  final String? childRankFlag;
+  final String? pnsFlag;
+  final int? dloc;
+  final String? childMcatAggr;
+  final int? custtypeWeight1;
+  final int? glId;
+  final String? prdSearchEcomUrl;
+  final String? prdSearchEcomIsActive;
+  final String? ecomSourceBuyNowLogo;
+  final int? iilDisplayFlag;
+  final String? prdName;
+  final String? city;
+  final String? sdaGlusrUsrLocality;
+  final String? district;
+  final String? cityOrig;
+  final String? fullAddress;
+  final String? pcItemUrlName;
+  final int? yearOfEstablishment;
+  final String? companyLogo;
+  final List<String>? companyVideo;
+  final String? prdPrice;
+  final String? prdCurrency;
+  final String? quantity;
+  final String? ecomStoreName;
+  final String? ecomLandingUrl;
+  final String? ecomCartUrl;
+  final String? unit;
+  final String? catFlname;
+  final String? company;
+  final String? compContctVal;
+  final String? compContct;
+  final String? standardPrice;
+  final String? searchUrl;
+  final String? tscode;
+  final String? repeat;
+  final List<String>? prdDocPath;
+  final List<String>? prdVideoPath;
+  final int? parentMcatStatus;
+  final String? companylink;
+
+  Data({
+    required this.allPls,
+    required this.custtypeWeightOrig,
+    required this.iilMcatProdGlcatMcatId,
+    required this.primaryBizIdOrig,
+    required this.pcItemDisplayName,
+    required this.pcItemHindiName,
+    required this.pcItemSecondaryName,
+    required this.pcItemReviewFlag,
+    required this.hasFprefCountry,
+    required this.glusrCountryIso,
+    required this.cntUserProducts,
+    required this.glusrDistanceCity,
+    required this.prdSearchGlcatMcatIdList,
+    required this.myPageOrder,
+    required this.rk,
+    required this.iilMcatProdHnpdStatus,
+    required this.rn,
+    required this.sc,
+    required this.so,
+    required this.vef,
+    required this.enqCount,
+    required this.pageViews,
+    required this.callCount,
+    required this.enqCountNew,
+    required this.pageViewsNew,
+    required this.pmcatRank,
+    required this.childRankFlag,
+    required this.pnsFlag,
+    required this.dloc,
+    required this.childMcatAggr,
+    required this.custtypeWeight1,
+    required this.glId,
+    required this.prdSearchEcomUrl,
+    required this.prdSearchEcomIsActive,
+    required this.ecomSourceBuyNowLogo,
+    required this.iilDisplayFlag,
+    required this.prdName,
+    required this.city,
+    required this.sdaGlusrUsrLocality,
+    required this.district,
+    required this.cityOrig,
+    required this.fullAddress,
+    required this.pcItemUrlName,
+    required this.yearOfEstablishment,
+    required this.companyLogo,
+    required this.companyVideo,
+    required this.prdPrice,
+    required this.prdCurrency,
+    required this.quantity,
+    required this.ecomStoreName,
+    required this.ecomLandingUrl,
+    required this.ecomCartUrl,
+    required this.unit,
+    required this.catFlname,
+    required this.company,
+    required this.compContctVal,
+    required this.compContct,
+    required this.standardPrice,
+    required this.searchUrl,
+    required this.tscode,
+    required this.repeat,
+    required this.prdDocPath,
+    required this.prdVideoPath,
+    required this.parentMcatStatus,
+    required this.companylink,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      allPls: json['all_pls'],
+      custtypeWeightOrig: json['custtype_weight_orig'],
+      iilMcatProdGlcatMcatId: json['iil_mcat_prod_glcat_mcat_id'],
+      primaryBizIdOrig: json['primary_biz_id_orig'],
+      pcItemDisplayName: json['pc_item_display_name'],
+      pcItemHindiName: json['pc_item_hindi_name'],
+      pcItemSecondaryName: json['pc_item_secondary_name'],
+      pcItemReviewFlag: json['pc_item_review_flag'],
+      hasFprefCountry: json['has_fpref_country'],
+      glusrCountryIso: json['glusr_country_iso'],
+      cntUserProducts: json['cnt_user_products'],
+      glusrDistanceCity: json['glusr_distance_city'],
+      prdSearchGlcatMcatIdList: json['prd_search_glcat_mcat_id_list'],
+      myPageOrder: json['my_page_order'],
+      rk: json['rk'],
+      iilMcatProdHnpdStatus: json['iil_mcat_prod_hnpd_status'],
+      rn: json['rn'],
+      sc: json['sc'],
+      so: json['so'],
+      vef: json['vef'],
+      enqCount: json['enq_count'],
+      pageViews: json['page_views'],
+      callCount: json['call_count'],
+      enqCountNew: json['enq_count_new'],
+      pageViewsNew: json['page_views_new'],
+      pmcatRank: json['PmcatRank'],
+      childRankFlag: json['ChildRankFlag'],
+      pnsFlag: json['PNSFlag'],
+      dloc: json['Dloc'],
+      childMcatAggr: json['ChildMcatAggr'],
+      custtypeWeight1: json['CUSTTYPE_WEIGHT1'],
+      glId: json['gl_id'],
+      prdSearchEcomUrl: json['PRD_SEARCH_ECOM_URL'],
+      prdSearchEcomIsActive: json['PRD_SEARCH_ECOM_IS_ACTIVE'],
+      ecomSourceBuyNowLogo: json['ECOM_SOURCE_BUY_NOW_LOGO'],
+      iilDisplayFlag: json['iil_display_flag'],
+      prdName: json['prd_name'],
+      city: json['city'],
+      sdaGlusrUsrLocality: json['SDA_GLUSR_USR_LOCALITY'],
+      district: json['district'],
+      cityOrig: json['city_orig'],
+      fullAddress: json['full_address'],
+      pcItemUrlName: json['pc_item_url_name'],
+      yearOfEstablishment: json['year_of_establishment'],
+      companyLogo: json['company_logo'],
+      companyVideo: List<String>.from(json['company_video']),
+      prdPrice: json['prd_price'],
+      prdCurrency: json['prd_currency'],
+      quantity: json['quantity'],
+      ecomStoreName: json['ecom_store_name'],
+      ecomLandingUrl: json['ecom_landing_url'],
+      ecomCartUrl: json['ecom_cart_url'],
+      unit: json['unit'],
+      catFlname: json['cat_flname'],
+      company: json['COMPANY'],
+      compContctVal: json['comp_contct_val'],
+      compContct: json['comp_contct'],
+      standardPrice: json['standardPrice'],
+      searchUrl: json['search_url'],
+      tscode: json['tscode'],
+      repeat: json['repeat'],
+      prdDocPath: List<String>.from(json['prd_doc_path']),
+      prdVideoPath: List<String>.from(json['prd_video_path']),
+      parentMcatStatus: json['PARENT_MCAT_STATUS'],
+      companylink: json['companylink'],
     );
   }
 }
