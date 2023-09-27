@@ -100,7 +100,7 @@ class SearchState extends State<Search>
   List<String> related = [];
   List<String> relatedfname = [];
 
-  bool isLoading=false;
+  bool isLoading = false;
 
   // View Did Load
   @override
@@ -258,7 +258,7 @@ class SearchState extends State<Search>
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
                   word: widget.productName,
-              cityIndex: clickedIndex,
+                  cityIndex: clickedIndex,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();
@@ -328,12 +328,10 @@ class SearchState extends State<Search>
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
-    if(currentPage==1)
-    EasyLoading.show(status: 'Loading...');
+    if (currentPage == 1) EasyLoading.show(status: 'Loading...');
     try {
       setState(() {
-        if(currentPage>1)
-          isLoading = true;
+        if (currentPage > 1) isLoading = true;
       });
       String biztype_data = "";
       if (SellerTypeData.getValueFromName(biztype) != "")
@@ -349,8 +347,7 @@ class SearchState extends State<Search>
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
-        if(currentPage==1)
-        EasyLoading.dismiss();
+        if (currentPage == 1) EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray.clear();
         print("resultsarrayafterclearing=${resultsArray.length}");
@@ -378,7 +375,7 @@ class SearchState extends State<Search>
           print("search_a,,pi_hit_time)}");
         }
         if (currentPage == 1) {
-          if(json.decode(response.body)['guess']!=null) {
+          if (json.decode(response.body)['guess'] != null) {
             dynamic live_mcats =
                 json.decode(response.body)['guess']['guess']['live_mcats'];
 
@@ -422,20 +419,19 @@ class SearchState extends State<Search>
           localityArrayM?.clear();
         }
         for (var i = 0; i < resultsArray.length; i++) {
-          List<String>? imagesArrayM=[];
-          List<String>?phoneArrayM=[];
-          List<String>?titlesArrayM=[];
-          List<String>? itemPricesArrayM=[];
-          List<String>? companyNameArrayM=[];
-          List<String>? sealArrayM=[];
-          List<String>? locationsArrayM=[];
-          List<String>? localityArrayM=[];
+          List<String>? imagesArrayM = [];
+          List<String>? phoneArrayM = [];
+          List<String>? titlesArrayM = [];
+          List<String>? itemPricesArrayM = [];
+          List<String>? companyNameArrayM = [];
+          List<String>? sealArrayM = [];
+          List<String>? locationsArrayM = [];
+          List<String>? localityArrayM = [];
           var image = resultsArray[i]['fields']['large_image'];
           imagesArrayM?.add(image);
 
           var title = resultsArray[i]['fields']['title'];
           titlesArrayM?.add(title ?? "NA");
-
 
           var phoneNo = resultsArray[i]['fields']['pns'];
           phoneArrayM?.add(phoneNo ?? "NA");
@@ -454,8 +450,8 @@ class SearchState extends State<Search>
 
           var dealsLocation = resultsArray[i]['fields']['deals_in_loc'] ?? "NA";
           locationsArrayM?.add("$dealsLocation");
-          int CUSTTYPE_WEIGHT1 = resultsArray[i]['fields']['CustTypeWt'] ??
-              "NA";
+          int CUSTTYPE_WEIGHT1 =
+              resultsArray[i]['fields']['CustTypeWt'] ?? "NA";
           var tsCode = resultsArray[i]['fields']['tscode'] ?? "NA";
           sealArrayM?.add(getSupplierType(CUSTTYPE_WEIGHT1, tsCode));
 
@@ -522,8 +518,7 @@ class SearchState extends State<Search>
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
         //   if (!kIsWeb) ;
         //   // addBannerOrAd(end, "ADEMPTY");
-        if(start<end)
-        addBannerOrAd(items.length - 4, "PBRBANNER");
+        if (start < end) addBannerOrAd(items.length - 4, "PBRBANNER");
       } else if (currentPage == 1) {
         if (!kIsWeb) {
           addBannerOrAd(2, "ADEMPTY");
@@ -536,8 +531,7 @@ class SearchState extends State<Search>
         stop = true;
 
       print("resultsArray=${items.length} ${resultsArray?.length},");
-      if(currentPage==1)
-      EasyLoading.dismiss();
+      if (currentPage == 1) EasyLoading.dismiss();
       DateTime now = DateTime.now();
       print("DateTime now = DateTime.now();${now.difference(then)}");
       scrolled = 1;
@@ -804,15 +798,20 @@ class SearchState extends State<Search>
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: itemCount+1,
+                physics: isLoading == false
+                    ? const BouncingScrollPhysics()
+                    : const ClampingScrollPhysics(),
+                itemCount: itemCount + 1,
                 itemBuilder: (BuildContext context, int index) {
                   if (index == itemCount) {
                     print("index==$index $itemCount");
-                    return (isLoading) ? Center(child: Padding(
-                        padding:EdgeInsets.all(8),
-                        child:CircularProgressIndicator())) : Text("");
-                  }
-                  else {
+                    return (isLoading)
+                        ? const Center(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator()))
+                        : const Text("");
+                  } else {
                     // var inkWell = InkWell(
                     //   onTap: () {
                     //     // Action
@@ -944,9 +943,18 @@ class SearchState extends State<Search>
                     } else if (titlesArray?[index][0] == "ADEMPTY") {
                       return AdClass();
                     } else {
-                      return
-                           Card(child: HorizontalList(currentLayout: currentLayout, localityArray: localityArray![index], imagesArray: imagesArray![index], phoneArray: phoneArray![index], titlesArray: titlesArray![index], companyNameArray: companyNameArray![index], itemPricesArray: itemPricesArray![index], locationsArray: locationsArray![index], sealArray: sealArray![index],));
-
+                      return Card(
+                          child: HorizontalList(
+                        currentLayout: currentLayout,
+                        localityArray: localityArray![index],
+                        imagesArray: imagesArray![index],
+                        phoneArray: phoneArray![index],
+                        titlesArray: titlesArray![index],
+                        companyNameArray: companyNameArray![index],
+                        itemPricesArray: itemPricesArray![index],
+                        locationsArray: locationsArray![index],
+                        sealArray: sealArray![index],
+                      ));
                     }
                   }
                 },
@@ -1087,7 +1095,8 @@ class SearchState extends State<Search>
     start = 0;
     end = 9;
   }
-  String getSupplierType( int custTypeWeight, String tsCode) {
+
+  String getSupplierType(int custTypeWeight, String tsCode) {
     if (custTypeWeight == 149 ||
         custTypeWeight == 179 ||
         (tsCode != null && tsCode.isNotEmpty && tsCode != "null") ||
@@ -1100,7 +1109,6 @@ class SearchState extends State<Search>
     }
   }
 }
-
 
 class CustomButton extends StatelessWidget {
   String phoneNo;
@@ -1117,10 +1125,7 @@ class CustomButton extends StatelessWidget {
             _makePhoneCall('$phoneNo');
           },
           child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width / 2 - 25,
+            width: MediaQuery.of(context).size.width / 2 - 25,
             alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
             decoration: BoxDecoration(
@@ -1162,14 +1167,11 @@ class CustomButton extends StatelessWidget {
       final permissionStatus = await Permission.phone.request();
       if (permissionStatus.isGranted) {
         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      }
-      else
+      } else
         await makePhoneCall(call);
-    }
-    else
+    } else
       await makePhoneCall(call);
   }
-
 
   Future makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
@@ -1233,17 +1235,16 @@ class Description extends StatefulWidget {
   String locality;
   String phone;
   String seal;
-  Description(
-      {Key? key,
-      required this.title,
-      required this.itemPrice,
-      required this.companyName,
-      required this.location,
-      required this.locality,
-      required this.phone,
-      required this.seal,
-      })
-      : super(key: key);
+  Description({
+    Key? key,
+    required this.title,
+    required this.itemPrice,
+    required this.companyName,
+    required this.location,
+    required this.locality,
+    required this.phone,
+    required this.seal,
+  }) : super(key: key);
 }
 
 class _DescriptionState extends State<Description> {
@@ -1420,6 +1421,7 @@ class _DescriptionState extends State<Description> {
     );
   }
 }
+
 class CarouselWidget extends StatelessWidget {
   var currentLayout;
   List<String>? imagesArray;
@@ -1430,8 +1432,16 @@ class CarouselWidget extends StatelessWidget {
   List<String>? titlesArray;
   List<String>? phoneArray;
   List<String>? sealArray;
-  CarouselWidget({required this.currentLayout,required this.localityArray,required this.imagesArray,required this.phoneArray,required this.titlesArray,
-  required this.companyNameArray, required this.itemPricesArray, required this.locationsArray, required this.sealArray});
+  CarouselWidget(
+      {required this.currentLayout,
+      required this.localityArray,
+      required this.imagesArray,
+      required this.phoneArray,
+      required this.titlesArray,
+      required this.companyNameArray,
+      required this.itemPricesArray,
+      required this.locationsArray,
+      required this.sealArray});
 
   @override
   Widget build(BuildContext context) {
@@ -1442,7 +1452,7 @@ class CarouselWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           width: 150,
-          margin: EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
           color: Colors.blue,
           child: Center(
             child: Column(
@@ -1463,8 +1473,7 @@ class CarouselWidget extends StatelessWidget {
                               child: Text(
                                 "No Image Available",
                                 style: TextStyle(
-                                    color: Color.fromARGB(
-                                        255, 103, 97, 97),
+                                    color: Color.fromARGB(255, 103, 97, 97),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900),
                                 textAlign: TextAlign.center,
@@ -1486,10 +1495,8 @@ class CarouselWidget extends StatelessWidget {
                       ],
                       Flexible(
                         child: Description(
-                            companyName:
-                            companyNameArray?[index] ?? "",
-                            itemPrice:
-                            itemPricesArray?[index] ?? "NA",
+                            companyName: companyNameArray?[index] ?? "",
+                            itemPrice: itemPricesArray?[index] ?? "NA",
                             locality: localityArray?[index] ?? "NA",
                             location: locationsArray?[index] ?? "NA",
                             title: titlesArray?[index] ?? "NA",
@@ -1513,8 +1520,7 @@ class CarouselWidget extends StatelessWidget {
                             child: Text(
                               "No Image Available",
                               style: TextStyle(
-                                  color: Color.fromARGB(
-                                      255, 103, 97, 97),
+                                  color: Color.fromARGB(255, 103, 97, 97),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900),
                               textAlign: TextAlign.center,
@@ -1564,7 +1570,6 @@ class CarouselWidget extends StatelessWidget {
   }
 }
 
-
 class HorizontalList extends StatefulWidget {
   var currentLayout;
   List<String>? imagesArray;
@@ -1575,8 +1580,16 @@ class HorizontalList extends StatefulWidget {
   List<String>? titlesArray;
   List<String>? phoneArray;
   List<String>? sealArray;
-  HorizontalList({required this.currentLayout,required this.localityArray,required this.imagesArray,required this.phoneArray,required this.titlesArray, required this.companyNameArray, required this.itemPricesArray, required this.locationsArray, required this.sealArray});
-
+  HorizontalList(
+      {required this.currentLayout,
+      required this.localityArray,
+      required this.imagesArray,
+      required this.phoneArray,
+      required this.titlesArray,
+      required this.companyNameArray,
+      required this.itemPricesArray,
+      required this.locationsArray,
+      required this.sealArray});
 
   @override
   State<HorizontalList> createState() => _HorizontalListState();
@@ -1595,142 +1608,145 @@ class _HorizontalListState extends State<HorizontalList> {
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return (widget.imagesArray!.isNotEmpty)
-        ?  Column(
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                  // height:  MediaQuery.of(context).size.height * 0.35,
-                  width: MediaQuery.of(context).size.width,
-                  child: ExpandablePageView.builder(
-                        controller:_pageController,
-                        itemCount: widget.imagesArray!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return  Column(
-                                  children: [
-                                    if (widget.currentLayout == ScreenLayout.details) ...[
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          if (widget.imagesArray?[index] == "") ...[
-                                            Container(
-                                                margin: const EdgeInsets.all(10),
-                                                height: 150,
-                                                width: 100,
-                                                color: Colors.grey.shade200,
-                                                alignment: Alignment.topCenter,
-                                                child: const Center(
-                                                  child: Text(
-                                                    "No Image Available",
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 103, 97, 97),
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.w900),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                )),
-                                          ] else ...[
-                                            Container(
-                                              margin: const EdgeInsets.all(10),
-                                              height: 150,
-                                              width: 100,
-                                              alignment: Alignment.topCenter,
-                                              child: Image(
-                                                image: CachedNetworkImageProvider(
-                                                    widget.imagesArray?[index] ??
-                                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-                                          ],
-                                          Flexible(
-                                            child: Description(
-                                                companyName:
-                                                    widget.companyNameArray?[index] ?? "",
-                                                itemPrice:
-                                                    widget.itemPricesArray?[index] ?? "NA",
-                                                locality: widget.localityArray?[index] ?? "NA",
-                                                location: widget.locationsArray?[index] ?? "NA",
-                                                title: widget.titlesArray?[index] ?? "NA",
-                                                phone: widget.phoneArray?[index] ?? "NA",
-                                                seal: widget.sealArray?[index] ?? "NA"),
-                                          ),
-                                        ],
-                                      ),
-                                    ] else ...[
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          if (widget.imagesArray?[index] == "") ...[
-                                            Container(
-                                              height: 150,
-                                              color: Colors.grey.shade200,
-                                              margin: const EdgeInsets.all(10),
-                                              alignment: Alignment.topCenter,
-                                              child: const Center(
-                                                child: Text(
-                                                  "No Image Available",
-                                                  style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 103, 97, 97),
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w900),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                          ] else ...[
-                                            Container(
-                                              margin: const EdgeInsets.all(10),
-                                              alignment: Alignment.topCenter,
-                                              child: Image(
-                                                image: CachedNetworkImageProvider(
-                                                    widget.imagesArray?[index] ??
-                                                        "https://ik.imagekit.io/hpapi/harry.jpg"),
-                                              ),
-                                            ),
-                                          ],
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 20),
-                                            child: Description(
-                                              companyName: widget.companyNameArray?[index] ?? "",
-                                              itemPrice: widget.itemPricesArray?[index] ?? "NA",
-                                              locality: widget.localityArray?[index] ?? "NA",
-                                              location: widget.locationsArray?[index] ?? "NA",
-                                              title: widget.titlesArray?[index] ?? "NA",
-                                              phone: widget.phoneArray?[index] ?? "NA",
-                                              seal: widget.sealArray?[index] ?? "NA",
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        CustomButton(phoneNo: widget.phoneArray![index]),
-                                        CustomButton2()
-                                      ],
+              ExpandablePageView.builder(
+                physics: const ClampingScrollPhysics(),
+                controller: _pageController,
+                itemCount: widget.imagesArray!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      if (widget.currentLayout == ScreenLayout.details) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (widget.imagesArray?[index] == "") ...[
+                              Container(
+                                  margin: const EdgeInsets.all(10),
+                                  height: 150,
+                                  width: 100,
+                                  color: Colors.grey.shade200,
+                                  alignment: Alignment.topCenter,
+                                  child: const Center(
+                                    child: Text(
+                                      "No Image Available",
+                                      style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 103, 97, 97),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ],
-                                );
-                        },
-                  ),
-
-    ),
-              widget.imagesArray!.length>1?_buildIndicators():SizedBox(height: 0),
-              SizedBox(height: 5,)
+                                  )),
+                            ] else ...[
+                              Container(
+                                margin: const EdgeInsets.all(10),
+                                height: 150,
+                                width: 100,
+                                alignment: Alignment.topCenter,
+                                child: Image(
+                                  image: CachedNetworkImageProvider(widget
+                                          .imagesArray?[index] ??
+                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ],
+                            Flexible(
+                              child: Description(
+                                  companyName:
+                                      widget.companyNameArray?[index] ?? "",
+                                  itemPrice:
+                                      widget.itemPricesArray?[index] ?? "NA",
+                                  locality:
+                                      widget.localityArray?[index] ?? "NA",
+                                  location:
+                                      widget.locationsArray?[index] ?? "NA",
+                                  title: widget.titlesArray?[index] ?? "NA",
+                                  phone: widget.phoneArray?[index] ?? "NA",
+                                  seal: widget.sealArray?[index] ?? "NA"),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (widget.imagesArray?[index] == "") ...[
+                              Container(
+                                height: 150,
+                                color: Colors.grey.shade200,
+                                margin: const EdgeInsets.all(10),
+                                alignment: Alignment.topCenter,
+                                child: const Center(
+                                  child: Text(
+                                    "No Image Available",
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 103, 97, 97),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w900),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              Container(
+                                margin: const EdgeInsets.all(10),
+                                alignment: Alignment.topCenter,
+                                child: Image(
+                                  image: CachedNetworkImageProvider(widget
+                                          .imagesArray?[index] ??
+                                      "https://ik.imagekit.io/hpapi/harry.jpg"),
+                                ),
+                              ),
+                            ],
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Description(
+                                companyName:
+                                    widget.companyNameArray?[index] ?? "",
+                                itemPrice:
+                                    widget.itemPricesArray?[index] ?? "NA",
+                                locality: widget.localityArray?[index] ?? "NA",
+                                location: widget.locationsArray?[index] ?? "NA",
+                                title: widget.titlesArray?[index] ?? "NA",
+                                phone: widget.phoneArray?[index] ?? "NA",
+                                seal: widget.sealArray?[index] ?? "NA",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CustomButton(phoneNo: widget.phoneArray![index]),
+                          CustomButton2()
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+              widget.imagesArray!.length > 1
+                  ? _buildIndicators()
+                  : const SizedBox(height: 0),
+              const SizedBox(
+                height: 5,
+              )
             ],
-
           )
-        : Text("");
+        : const Text("");
   }
 
   Widget _buildIndicators() {
@@ -1738,11 +1754,11 @@ class _HorizontalListState extends State<HorizontalList> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         widget.imagesArray!.length,
-            (index) {
+        (index) {
           return Container(
             width: 8.0,
             height: 8.0,
-            margin: EdgeInsets.symmetric(horizontal: 6.0),
+            margin: const EdgeInsets.symmetric(horizontal: 6.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: (index == _currentPage) ? Colors.teal : Colors.grey,
@@ -1753,6 +1769,3 @@ class _HorizontalListState extends State<HorizontalList> {
     );
   }
 }
-
-
-
