@@ -18,7 +18,7 @@ import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:expandable_page_view/expandable_page_view.dart';
 import 'ImportantSuppilesDetailsList.dart';
 import 'SpeechToTextConverter.dart';
 import 'adClass.dart';
@@ -945,7 +945,7 @@ class SearchState extends State<Search>
                       return AdClass();
                     } else {
                       return
-                           HorizontalList(currentLayout: currentLayout, localityArray: localityArray![index], imagesArray: imagesArray![index], phoneArray: phoneArray![index], titlesArray: titlesArray![index], companyNameArray: companyNameArray![index], itemPricesArray: itemPricesArray![index], locationsArray: locationsArray![index], sealArray: sealArray![index],);
+                           Card(child: HorizontalList(currentLayout: currentLayout, localityArray: localityArray![index], imagesArray: imagesArray![index], phoneArray: phoneArray![index], titlesArray: titlesArray![index], companyNameArray: companyNameArray![index], itemPricesArray: itemPricesArray![index], locationsArray: locationsArray![index], sealArray: sealArray![index],));
 
                     }
                   }
@@ -1603,9 +1603,9 @@ class _HorizontalListState extends State<HorizontalList> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                  height:  MediaQuery.of(context).size.height * 0.35,
+                  // height:  MediaQuery.of(context).size.height * 0.35,
                   width: MediaQuery.of(context).size.width,
-                  child: PageView.builder(
+                  child: ExpandablePageView.builder(
                         controller:_pageController,
                         itemCount: widget.imagesArray!.length,
                         itemBuilder: (BuildContext context, int index) {
