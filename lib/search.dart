@@ -18,7 +18,7 @@ import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:expandable_page_view/expandable_page_view.dart';
+import 'ExpandablePageView.dart';
 import 'ImportantSuppilesDetailsList.dart';
 import 'SpeechToTextConverter.dart';
 import 'adClass.dart';
@@ -130,7 +130,7 @@ class SearchState extends State<Search>
           start = end + 1;
           end = start + 10;
           if (end > totalItemCount) {
-            start = end - 10;
+            // start = end - 10;
             end = totalItemCount;
           }
           if (stop == false && start <= end && !isLoading) {
@@ -798,9 +798,9 @@ class SearchState extends State<Search>
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                physics: isLoading == false
-                    ? const BouncingScrollPhysics()
-                    : const ClampingScrollPhysics(),
+                // physics: isLoading == false
+                //     ? const BouncingScrollPhysics()
+                //     : const ClampingScrollPhysics(),
                 itemCount: itemCount + 1,
                 itemBuilder: (BuildContext context, int index) {
                   if (index == itemCount) {
@@ -1617,7 +1617,7 @@ class _HorizontalListState extends State<HorizontalList> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ExpandablePageView.builder(
-                physics: const ClampingScrollPhysics(),
+                // physics: const ClampingScrollPhysics(),
                 controller: _pageController,
                 itemCount: widget.imagesArray!.length,
                 itemBuilder: (BuildContext context, int index) {

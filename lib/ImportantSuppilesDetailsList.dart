@@ -127,7 +127,7 @@ class ImportantSuppilesDetailsListState
           start = end + 1;
           end = start + 10;
           if (end > totalItemCount) {
-            start = end - 10;
+            // start = end - 10;
             end = totalItemCount;
           }
           if (stop == false && start <= end && !isLoading) {
