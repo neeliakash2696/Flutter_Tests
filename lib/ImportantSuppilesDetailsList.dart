@@ -249,14 +249,13 @@ class ImportantSuppilesDetailsListState
   }
 
   showSearchController() async {
-
     var outputText = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
                   fromScreen: SearchingFromScreen.impSuppliesList,
                   word: widget.productName,
-              cityIndex:clickedIndex,
+                  cityIndex: clickedIndex,
                 )));
     if (outputText != null && outputText != "") {
       resetUI();
@@ -335,8 +334,7 @@ class ImportantSuppilesDetailsListState
       var code = json.decode(response.body)['CODE'];
       if (code == "402") {
         var msg = json.decode(response.body)['MESSAGE'];
-        if(currentPage==1)
-        EasyLoading.dismiss();
+        if (currentPage == 1) EasyLoading.dismiss();
       } else if (response.statusCode == 200) {
         resultsArray = json.decode(response.body)['data'];
         bizWiseArray = json.decode(response.body)['biz_wise_count'];
@@ -371,7 +369,7 @@ class ImportantSuppilesDetailsListState
           print(
               "pbrimage=${json.decode(response.body)['out_total_unq_count']}");
           totalItemCount =
-          int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
+              int.tryParse(json.decode(response.body)['out_total_unq_count'])!;
           imagesArray?.clear();
           phoneArray?.clear();
           titlesArray?.clear();
@@ -426,35 +424,32 @@ class ImportantSuppilesDetailsListState
           //     "items length=${items.length} $totalItemCount ${localityArray?.length}");
         });
 
+        if (resultsArray.length > 0) if (currentPage > 1 &&
+            totalItemCount > 10) {
+          // if (!kIsWeb)
+          // addBannerOrAd(end, "ADEMPTY");
+          if (end > start) addBannerOrAd(items.length - 4, "PBRBANNER");
+        } else if (currentPage == 1) {
+          if (!kIsWeb && end > 7) {
+            addBannerOrAd(2, "ADEMPTY");
+            addBannerOrAd(7, "ADEMPTY");
+          }
+          print("end=$end");
+          if (end >= 9) {
+            addBannerOrAd(5, "isq_banner");
+            addBannerOrAd(10, "PBRBANNER");
+            addBannerOrAd(11, "RECENTPBRBANNER");
+          }
+        } else
+          stop = true;
 
-
-        if (resultsArray.length > 0)
-          if (currentPage > 1 && totalItemCount > 10) {
-            // if (!kIsWeb)
-            // addBannerOrAd(end, "ADEMPTY");
-            if (end > start) addBannerOrAd(items.length - 4, "PBRBANNER");
-          } else if (currentPage == 1) {
-            if (!kIsWeb && end > 7) {
-              addBannerOrAd(2, "ADEMPTY");
-              addBannerOrAd(7, "ADEMPTY");
-            }
-            print("end=$end");
-            if (end >= 9) {
-              addBannerOrAd(5, "isq_banner");
-              addBannerOrAd(10, "PBRBANNER");
-              addBannerOrAd(11, "RECENTPBRBANNER");
-            }
-          } else
-            stop = true;
-
-        print("resultsArray=${items.length} ${resultsArray?.length} start=$start end=$end ,");
-        if (currentPage == 1)
-          EasyLoading.dismiss();
+        print(
+            "resultsArray=${items.length} ${resultsArray?.length} start=$start end=$end ,");
+        if (currentPage == 1) EasyLoading.dismiss();
         DateTime now = DateTime.now();
         print("DateTime now = DateTime.now();${now.difference(then)}");
         scrolled = 1;
       }
-
     } catch (e) {
       // EasyLoading.dismiss();
       ScaffoldMessenger.of(context)
@@ -708,16 +703,15 @@ class ImportantSuppilesDetailsListState
                 controller: _scrollController,
                 itemCount: itemCount + 1,
                 itemBuilder: (BuildContext context, int index) {
-
-                   if (index == itemCount) {
-                     print("index==$index $itemCount");
-                     return (isLoading)
-                         ? Center(child: Padding(
-                          padding:EdgeInsets.all(8),
-                          child:CircularProgressIndicator())):Text("");
-                    }
-                   else{
-
+                  if (index == itemCount) {
+                    print("index==$index $itemCount");
+                    return (isLoading)
+                        ? Center(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator()))
+                        : Text("");
+                  } else {
                     print("index==$index $itemCount");
                     if (titlesArray?[index] == "PBRBANNER") {
                       return PBRBanner(product_name: widget.productName);
@@ -767,8 +761,8 @@ class ImportantSuppilesDetailsListState
                                       Container(
                                         margin: const EdgeInsets.all(10),
                                         height: 150,
-                                        width: 100,
-                                        alignment: Alignment.topCenter,
+                                        width: 150,
+                                        alignment: Alignment.center,
                                         child: Image(
                                           image: CachedNetworkImageProvider(
                                               imagesArray?[index] ??
