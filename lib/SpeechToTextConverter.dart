@@ -22,7 +22,8 @@ enum VoiceSearchFromScreen {
   def,
   impSuppliesList,
   viewCategories,
-  categoriesDetail
+  categoriesDetail,
+  search
 }
 
 class SpeechToTextConverter extends StatefulWidget {
@@ -254,6 +255,8 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                       biztype: "",
                       city: widget.cityIndex,
                     )));
+      case VoiceSearchFromScreen.search:
+        Navigator.pop(context);
     }
   }
 

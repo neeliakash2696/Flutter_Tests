@@ -16,7 +16,8 @@ enum SearchingFromScreen {
   def,
   impSuppliesList,
   viewCategories,
-  categoriesDetail
+  categoriesDetail,
+  search
 }
 
 class SearchFieldController extends StatefulWidget {
@@ -26,7 +27,10 @@ class SearchFieldController extends StatefulWidget {
   String word;
   int cityIndex;
   SearchFieldController(
-      {Key? key, required this.fromScreen, required this.word, required this.cityIndex})
+      {Key? key,
+      required this.fromScreen,
+      required this.word,
+      required this.cityIndex})
       : super(key: key);
 }
 
@@ -78,7 +82,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Search(city: 0,
+                builder: (context) => Search(
+                      city: 0,
                       productName: searchQuery,
                       productFname: searchQuery,
                       productIndex: 0,
@@ -94,22 +99,26 @@ class SearchFieldControllerState extends State<SearchFieldController> {
             context,
             MaterialPageRoute(
                 builder: (context) => Search(
-                  city: 0,
-                    productName: searchQuery,
-                    productFname: searchQuery,
-                    productIndex: 0,
-                    biztype: "",)));
+                      city: 0,
+                      productName: searchQuery,
+                      productFname: searchQuery,
+                      productIndex: 0,
+                      biztype: "",
+                    )));
       case SearchingFromScreen.categoriesDetail:
         Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => Search(
-                  city: 0,
-                    productName: searchQuery,
-                    productFname: searchQuery,
-                    productIndex: 0,
-                    biztype: "",)));
+                      city: 0,
+                      productName: searchQuery,
+                      productFname: searchQuery,
+                      productIndex: 0,
+                      biztype: "",
+                    )));
+      case SearchingFromScreen.search:
+        Navigator.pop(context);
     }
   }
 
@@ -271,27 +280,33 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: ()async {hasText?searchBar.clear(): openVoiceToTextConverter();
-                        if(hasText)
-                        setState(() {
-                          hasText = false;
-                          searchQuery = "";
-                          getRecents(searchQuery);
-                        });},
+                        onTap: () async {
+                          hasText
+                              ? searchBar.clear()
+                              : openVoiceToTextConverter();
+                          if (hasText)
+                            setState(() {
+                              hasText = false;
+                              searchQuery = "";
+                              getRecents(searchQuery);
+                            });
+                        },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             height: 30,
                             width: 30,
-                            decoration: hasText? BoxDecoration(
-                              image: DecorationImage(
-                                  image:
-                                  AssetImage("images/cross_icon_bl_balance_strip.png"),
-                                  fit: BoxFit.cover),
-                            ): BoxDecoration(
+                            decoration: hasText
+                                ? BoxDecoration(
                                     image: DecorationImage(
-                                        image:
-                                            AssetImage("images/mic_icon_colored.png"),
+                                        image: AssetImage(
+                                            "images/cross_icon_bl_balance_strip.png"),
+                                        fit: BoxFit.cover),
+                                  )
+                                : BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            "images/mic_icon_colored.png"),
                                         fit: BoxFit.cover),
                                   ),
                             alignment: Alignment.center,
@@ -388,6 +403,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       ),
     );
   }
+
   openVoiceToTextConverter() async {
     var receivedText = await Navigator.push(
         context,
@@ -413,17 +429,19 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Search(
               city: widget.cityIndex,
-              productName:receivedText,
+              productName: receivedText,
               productFname: encodeString(receivedText),
               productIndex: 0,
               biztype: "")));
     }
   }
+
   String encodeString(String? inputString) {
     var queryParamRaw = inputString ?? "";
     var encoded = queryParamRaw.replaceAll(" ", "%20");
     return encoded;
   }
+
   TextSpan _buildTextSpan(String text, String searchText) {
     final startIndex = text.indexOf(searchText);
     if (startIndex == -1) {

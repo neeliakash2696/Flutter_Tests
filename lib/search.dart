@@ -221,7 +221,7 @@ class SearchState extends State<Search>
                 //   MediaQuery.of(context).size.width - 60,
                 //   MediaQuery.of(context).size.height - 300,
                 // ),
-                fromScreen: VoiceSearchFromScreen.impSuppliesList,
+                fromScreen: VoiceSearchFromScreen.search,
                 localeId: "en_US",
                 selectedIndex: 0,
                 cityIndex: widget.city),
@@ -256,7 +256,7 @@ class SearchState extends State<Search>
         context,
         MaterialPageRoute(
             builder: (context) => SearchFieldController(
-                  fromScreen: SearchingFromScreen.impSuppliesList,
+                  fromScreen: SearchingFromScreen.search,
                   word: widget.productName,
                   cityIndex: clickedIndex,
                 )));
@@ -1619,7 +1619,7 @@ class _HorizontalListState extends State<HorizontalList> {
               ExpandablePageView.builder(
                 // physics: const ClampingScrollPhysics(),
                 controller: _pageController,
-                itemCount: widget.imagesArray!.length,
+                itemCount: widget.imagesArray?.length ?? 0,
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                     children: [
