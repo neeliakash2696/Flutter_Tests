@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class LoginController extends StatefulWidget {
@@ -21,6 +20,7 @@ class LoginControllerState extends State<LoginController> {
   String currentFlag =
       "http://imghost.indiamart.com/country-flags/small/in_flag_s.png";
   String countryCode = "91";
+  bool isIndian = true;
 
   @override
   void initState() {
@@ -115,6 +115,11 @@ class LoginControllerState extends State<LoginController> {
                           onPressed: () {
                             currentFlag = countriesData[index]['cflag'];
                             countryCode = countriesData[index]['cncode'];
+                            if (countryCode == "91") {
+                              isIndian = true;
+                            } else {
+                              isIndian = false;
+                            }
                             Navigator.pop(context);
                             setState(() {});
                           },
@@ -235,7 +240,9 @@ class LoginControllerState extends State<LoginController> {
                               Expanded(
                                 child: TextField(
                                   textInputAction: TextInputAction.go,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: isIndian
+                                      ? TextInputType.number
+                                      : TextInputType.emailAddress,
                                   autocorrect: false,
                                   autofocus: true,
                                   onChanged: (searchingText) {},
@@ -243,7 +250,10 @@ class LoginControllerState extends State<LoginController> {
                                   onTapOutside: (event) {},
                                   onTap: () {},
                                   controller: loginTextField,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
+                                    labelText: isIndian
+                                        ? "Enter your Mobile number."
+                                        : "Please Enter your Email Address",
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.all(8),
                                   ),

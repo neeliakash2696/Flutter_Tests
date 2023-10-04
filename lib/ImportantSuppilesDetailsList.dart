@@ -101,7 +101,7 @@ class ImportantSuppilesDetailsListState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
     currentPage = 1;
