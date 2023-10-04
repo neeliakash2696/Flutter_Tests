@@ -43,8 +43,14 @@ class LoginControllerState extends State<LoginController> {
   triggerOTP(String platform, String countryId, String country,
       String countryCode, String textFieldValue) async {
     EasyLoading.show(status: 'Sending OTP...');
+    var requiredParam = "";
+    if (isIndian) {
+      requiredParam = "mobile_num";
+    } else {
+      requiredParam = "email";
+    }
     String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=OTP_Screen_$platform&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&mobile_num=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
+        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=OTP_Screen_$platform&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
     print(pathUrl);
     http.Response response = await http.get(Uri.parse(pathUrl));
     Map<String, dynamic> data = json.decode(response.body);
@@ -174,6 +180,7 @@ class LoginControllerState extends State<LoginController> {
                             countryCode = countriesData[index]['cncode'];
                             countryId = countriesData[index]['cniso'];
                             currentCountry = countriesData[index]['cnname'];
+                            loginTextField.text = "";
                             if (countryCode == "91") {
                               isIndian = true;
                             } else {
