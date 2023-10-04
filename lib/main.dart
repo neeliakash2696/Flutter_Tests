@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_tests/otp_veification.dart';
+import 'package:flutter_tests/LoginFlow/LoginController.dart';
 import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:flutter_tests/view_categories.dart';
@@ -17,7 +17,8 @@ void main() {
   MobileAds.instance.initialize();
   // runApp(MyApp());
   runApp(MaterialApp(
-    home: OTP_Verification(),
+    // home: ViewCategories(),
+    home: LoginController(),
     builder: EasyLoading.init(),
   ));
   configLoading();
