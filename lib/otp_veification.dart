@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class OTP_Verification extends StatefulWidget  {
+  String mobNo;
+  OTP_Verification({required this.mobNo});
   @override
   State<OTP_Verification> createState() => _OTP_VerificationState();
 }
@@ -43,18 +45,18 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 1,
-        title:Container(
+        title:Center(child:Container(
           height: 100,
           width: MediaQuery.of(context).size.width,
-          color: Colors.white,
+          // color: Colors.white,
           alignment: Alignment.center,
-          child: Align(
-            alignment: Alignment.center,
+          child: Center(
             child: Container(
               height: 30,
-              width: 200,
+              // width: 200,
               decoration: const BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage("images/indiamartLogo.png"),
@@ -62,7 +64,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
               ),
             ),
           ),
-        ),
+        )),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -84,11 +86,11 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("7983071546",
+                    Text("+91-${widget.mobNo}",
                     style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                     SizedBox(width: 5,),
                     Text("Not You?",
-                    style: TextStyle(color: Colors.teal[400],fontWeight: FontWeight.bold,fontSize: 15),),
+                    style: TextStyle(color: Colors.teal[400],fontSize: 15),),
 
                   ],
                 ),
@@ -322,12 +324,32 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-            child: Text("PREVIOUS",style: TextStyle(color: Colors.white,fontSize: 17),),
+            child: GestureDetector(onTap:(){
+              Navigator.of(context).pop();
+            },
+                child: Text("PREVIOUS",style: TextStyle(color: Colors.white,fontSize: 17),)),
           ),
           SizedBox(width: 10,),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-            child: Text("NEXT",style: TextStyle(color: Colors.white,fontSize: 17)),
+            child: GestureDetector(
+                onTap:(){
+                  String pathUrl =
+                      "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=6054&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.}&ScreenName=OtpVerification&app_version_no=13.2.2_T1";
+                  print(pathUrl);
+                  http.Response response = await http.get(Uri.parse(pathUrl));
+                  Map<String, dynamic> data = json.decode(response.body);
+                  loginData = LoginResponse.fromJson(data);
+                  if (loginData.response.code == "200") {
+                    // Success
+                    print(loginData);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            "${loginData.response.message}\n${loginData.response.error}")));
+                  }
+                },
+                child: Text("NEXT",style: TextStyle(color: Colors.white,fontSize: 17))),
           )
         ],
       )),

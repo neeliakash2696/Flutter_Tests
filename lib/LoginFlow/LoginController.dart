@@ -12,6 +12,8 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 
+import '../otp_veification.dart';
+
 class LoginController extends StatefulWidget {
   @override
   State<LoginController> createState() => LoginControllerState();
@@ -427,6 +429,8 @@ class LoginControllerState extends State<LoginController> {
                     onTap: () {
                       print("Next tapped");
                       validateAndSendOTP();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => OTP_Verification(mobNo:loginTextField.text)));
                     },
                     child: Container(
                       height: 50,
