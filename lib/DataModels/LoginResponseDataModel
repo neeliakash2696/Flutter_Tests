@@ -1,0 +1,48 @@
+class LoginResponse {
+  final Response response;
+  final String? otpLoginService;
+  final String? uniqueId;
+
+  LoginResponse({
+    required this.response,
+    required this.otpLoginService,
+    required this.uniqueId,
+  });
+
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      response: Response.fromJson(json['Response']),
+      otpLoginService: json['OTP_LOGIN_SERVICE'] ?? "",
+      uniqueId: json['unique_id'] ?? "",
+    );
+  }
+}
+
+class Response {
+  final String? code;
+  final String? status;
+  final String? glusrid;
+  final String? message;
+  final String? error;
+  final String? vendorErrorResponse;
+
+  Response({
+    required this.code,
+    required this.status,
+    required this.glusrid,
+    required this.message,
+    required this.error,
+    required this.vendorErrorResponse,
+  });
+
+  factory Response.fromJson(Map<String, dynamic> json) {
+    return Response(
+      code: json['Code'] ?? "",
+      status: json['Status'] ?? "",
+      glusrid: json['Glusrid'] ?? "",
+      message: json['Message'] ?? "",
+      error: json['Error'] ?? "",
+      vendorErrorResponse: json['VENDOR_ERROR_RESPONSE'] ?? "",
+    );
+  }
+}

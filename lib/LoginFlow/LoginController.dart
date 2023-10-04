@@ -1,9 +1,15 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 
 class LoginController extends StatefulWidget {
   @override
@@ -20,12 +26,63 @@ class LoginControllerState extends State<LoginController> {
   String currentFlag =
       "http://imghost.indiamart.com/country-flags/small/in_flag_s.png";
   String countryCode = "91";
+  String countryId = "IN";
+  String currentCountry = "India";
   bool isIndian = true;
+  var currentPlatform = "";
+
+  late LoginResponse loginData;
 
   @override
   void initState() {
     super.initState();
     readJson();
+    getPlatform();
+  }
+
+  triggerOTP(String platform, String countryId, String country,
+      String countryCode, String textFieldValue) async {
+    EasyLoading.show(status: 'Sending OTP...');
+    String pathUrl =
+        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=OTP_Screen_$platform&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&mobile_num=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
+    print(pathUrl);
+    http.Response response = await http.get(Uri.parse(pathUrl));
+    Map<String, dynamic> data = json.decode(response.body);
+    loginData = LoginResponse.fromJson(data);
+    if (loginData.response.code == "200") {
+      // Success
+      print(loginData);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "${loginData.response.message}\n${loginData.response.error}")));
+    }
+    EasyLoading.dismiss();
+  }
+
+  validateAndSendOTP() {
+    if (loginTextField.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please enter your Credentials")));
+    } else {
+      if (checkStatus == true) {
+        triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
+            loginTextField.text);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Please Accept Terms and Privacy Policy")));
+      }
+    }
+  }
+
+  getPlatform() {
+    if (Platform.isAndroid) {
+      currentPlatform = "ANDROID";
+    } else if (Platform.isIOS) {
+      currentPlatform = "iOS";
+    } else if (kIsWeb) {
+      currentPlatform = "WEB";
+    }
   }
 
   Future<void> readJson() async {
@@ -115,6 +172,8 @@ class LoginControllerState extends State<LoginController> {
                           onPressed: () {
                             currentFlag = countriesData[index]['cflag'];
                             countryCode = countriesData[index]['cncode'];
+                            countryId = countriesData[index]['cniso'];
+                            currentCountry = countriesData[index]['cnname'];
                             if (countryCode == "91") {
                               isIndian = true;
                             } else {
@@ -230,8 +289,8 @@ class LoginControllerState extends State<LoginController> {
                                 width: 5,
                               ),
                               Text(
-                                "+" + countryCode,
-                                style: TextStyle(fontSize: 12),
+                                "+$countryCode",
+                                style: const TextStyle(fontSize: 12),
                               ),
                               const Icon(Icons.arrow_drop_down_rounded),
                               const VerticalDivider(
@@ -255,7 +314,7 @@ class LoginControllerState extends State<LoginController> {
                                         ? "Enter your Mobile number."
                                         : "Please Enter your Email Address",
                                     border: InputBorder.none,
-                                    contentPadding: EdgeInsets.all(8),
+                                    contentPadding: const EdgeInsets.all(8),
                                   ),
                                 ),
                               ),
@@ -339,6 +398,7 @@ class LoginControllerState extends State<LoginController> {
                   InkWell(
                     onTap: () {
                       print("Next tapped");
+                      validateAndSendOTP();
                     },
                     child: Container(
                       height: 50,
