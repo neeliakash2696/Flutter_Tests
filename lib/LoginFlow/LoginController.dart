@@ -18,6 +18,9 @@ class LoginControllerState extends State<LoginController> {
   var countriesData;
   var results;
   bool searching = false;
+  String currentFlag =
+      "http://imghost.indiamart.com/country-flags/small/in_flag_s.png";
+  String countryCode = "91";
 
   @override
   void initState() {
@@ -28,7 +31,6 @@ class LoginControllerState extends State<LoginController> {
   Future<void> readJson() async {
     final String response =
         await rootBundle.loadString('assets/countrylist.json');
-    // print("response $response");
     countriesData = await json.decode(response);
   }
 
@@ -111,7 +113,10 @@ class LoginControllerState extends State<LoginController> {
                       itemBuilder: (ctx, index) {
                         return SimpleDialogOption(
                           onPressed: () {
+                            currentFlag = countriesData[index]['cflag'];
+                            countryCode = countriesData[index]['cncode'];
                             Navigator.pop(context);
+                            setState(() {});
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -212,21 +217,15 @@ class LoginControllerState extends State<LoginController> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "images/indiamartLogo.png"),
-                                      fit: BoxFit.fill),
-                                ),
+                              Image(
+                                image: NetworkImage(currentFlag),
+                                fit: BoxFit.fill,
                               ),
                               const SizedBox(
                                 width: 5,
                               ),
-                              const Text(
-                                "12345",
+                              Text(
+                                "+" + countryCode,
                                 style: TextStyle(fontSize: 12),
                               ),
                               const Icon(Icons.arrow_drop_down_rounded),
