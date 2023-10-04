@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,10 @@ class LoginControllerState extends State<LoginController> {
 
   late LoginResponse loginData;
 
+  StreamController dialogStreamController = StreamController.broadcast();
+  Stream get dialogStream => dialogStreamController.stream;
+  Function get dialogSink => dialogStreamController.sink.add;
+
   @override
   void initState() {
     super.initState();
@@ -44,13 +49,19 @@ class LoginControllerState extends State<LoginController> {
       String countryCode, String textFieldValue) async {
     EasyLoading.show(status: 'Sending OTP...');
     var requiredParam = "";
+    var process = "";
     if (isIndian) {
       requiredParam = "mobile_num";
     } else {
       requiredParam = "email";
     }
+    if (Platform.isIOS) {
+      process = "OTP_Screen_Fusion";
+    } else {
+      process = "OTP_Screen_Android";
+    }
     String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=OTP_Screen_$platform&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
+        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=$process&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
     print(pathUrl);
     http.Response response = await http.get(Uri.parse(pathUrl));
     Map<String, dynamic> data = json.decode(response.body);
@@ -85,7 +96,7 @@ class LoginControllerState extends State<LoginController> {
     if (Platform.isAndroid) {
       currentPlatform = "ANDROID";
     } else if (Platform.isIOS) {
-      currentPlatform = "iOS";
+      currentPlatform = "Ios";
     } else if (kIsWeb) {
       currentPlatform = "WEB";
     }
@@ -101,134 +112,144 @@ class LoginControllerState extends State<LoginController> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
+        return StreamBuilder(
+            initialData: countriesData,
+            stream: dialogStream,
+            builder: (context, snapshot) {
+              return SimpleDialog(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          textInputAction: TextInputAction.search,
-                          keyboardType: TextInputType.text,
-                          autocorrect: false,
-                          autofocus: false,
-                          onChanged: (searchingText) {
-                            if (searchingText.isNotEmpty) {
-                              searching = true;
-                              results = countriesData
-                                  .where((elem) =>
-                                      elem['cnname']
-                                          .toString()
-                                          .toLowerCase()
-                                          .contains(
-                                              searchingText.toLowerCase()) ||
-                                      elem['cncode']
-                                          .toString()
-                                          .toLowerCase()
-                                          .contains(
-                                              searchingText.toLowerCase()))
-                                  .toList();
-                              setState(() {});
-                              print(results);
-                            } else {
-                              searching = false;
-                            }
-                          },
-                          onEditingComplete: () {},
-                          onTapOutside: (event) {},
-                          onTap: () {},
-                          controller: countrySearchTextFiled,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.search),
-                            labelText: "Search Country",
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  width: 1, color: Colors.black),
-                              borderRadius: BorderRadius.circular(50.0),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                textInputAction: TextInputAction.search,
+                                keyboardType: TextInputType.text,
+                                autocorrect: false,
+                                autofocus: false,
+                                onChanged: (searchingText) {
+                                  if (searchingText.isNotEmpty) {
+                                    searching = true;
+                                    results = countriesData
+                                        .where((elem) =>
+                                            elem['cnname']
+                                                .toString()
+                                                .toLowerCase()
+                                                .contains(searchingText
+                                                    .toLowerCase()) ||
+                                            elem['cncode']
+                                                .toString()
+                                                .toLowerCase()
+                                                .contains(searchingText
+                                                    .toLowerCase()))
+                                        .toList();
+                                    print(results);
+                                    dialogSink(results);
+                                  } else {
+                                    searching = false;
+                                    results = countriesData;
+                                    dialogSink(results);
+                                  }
+                                },
+                                onEditingComplete: () {},
+                                onTapOutside: (event) {},
+                                onTap: () {},
+                                controller: countrySearchTextFiled,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.search),
+                                  labelText: "Search Country",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Colors.black),
+                                    borderRadius: BorderRadius.circular(50.0),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(8),
+                                  filled: true,
+                                  fillColor:
+                                      const Color.fromRGBO(233, 229, 229, 1),
+                                ),
+                              ),
                             ),
-                            contentPadding: const EdgeInsets.all(8),
-                            filled: true,
-                            fillColor: const Color.fromRGBO(233, 229, 229, 1),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                      color: Color.fromARGB(255, 13, 92, 229)),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 13, 92, 229)),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (ctx, index) {
-                        return SimpleDialogOption(
-                          onPressed: () {
-                            currentFlag = countriesData[index]['cflag'];
-                            countryCode = countriesData[index]['cncode'];
-                            countryId = countriesData[index]['cniso'];
-                            currentCountry = countriesData[index]['cnname'];
-                            loginTextField.text = "";
-                            if (countryCode == "91") {
-                              isIndian = true;
-                            } else {
-                              isIndian = false;
-                            }
-                            Navigator.pop(context);
-                            setState(() {});
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image(
-                                image: CachedNetworkImageProvider(
-                                    searching == true
-                                        ? results[index]['cflag']
-                                        : countriesData[index]['cflag']),
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Text(searching == true
-                                  ? results[index]['cnname']
-                                  : countriesData[index]['cnname']),
-                              Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      searching == true
-                                          ? results[index]['cncode']
-                                          : countriesData[index]['cncode'],
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    )),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      itemCount: searching == true
-                          ? results.length
-                          : countriesData.length),
+                        ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (ctx, index) {
+                              return SimpleDialogOption(
+                                onPressed: () {
+                                  currentFlag = snapshot.data[index]['cflag'];
+                                  countryCode = snapshot.data[index]['cncode'];
+                                  countryId = snapshot.data[index]['cniso'];
+                                  currentCountry =
+                                      snapshot.data[index]['cnname'];
+                                  loginTextField.text = "";
+                                  if (countryCode == "91") {
+                                    isIndian = true;
+                                  } else {
+                                    isIndian = false;
+                                  }
+                                  Navigator.pop(context);
+                                  setState(() {});
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image(
+                                      image: CachedNetworkImageProvider(
+                                          searching == true
+                                              ? results[index]['cflag']
+                                              : snapshot.data[index]['cflag']),
+                                      fit: BoxFit.fill,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(searching == true
+                                        ? results[index]['cnname']
+                                        : snapshot.data[index]['cnname']),
+                                    Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            searching == true
+                                                ? results[index]['cncode']
+                                                : snapshot.data[index]
+                                                    ['cncode'],
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                          )),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            itemCount: searching == true
+                                ? results.length
+                                : snapshot.data.length),
+                      ],
+                    ),
+                  )
                 ],
-              ),
-            )
-          ],
-        );
+              );
+            });
       },
     );
   }
