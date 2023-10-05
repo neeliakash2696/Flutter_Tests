@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+// ignore: camel_case_types, must_be_immutable
 class webview_class extends StatefulWidget {
   webview_classState createState() => webview_classState();
   String initialUrl;
