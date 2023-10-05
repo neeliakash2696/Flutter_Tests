@@ -22,7 +22,7 @@ class LoginController extends StatefulWidget {
 }
 
 class LoginControllerState extends State<LoginController> {
-  bool checkStatus = false;
+  bool checkStatus = true;
   TextEditingController loginTextField = TextEditingController();
   TextEditingController countrySearchTextFiled = TextEditingController();
   var countriesData;
