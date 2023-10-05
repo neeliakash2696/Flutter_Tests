@@ -20,6 +20,7 @@ void main() {
     // home: ViewCategories(),
     home: LoginController(),
     builder: EasyLoading.init(),
+    debugShowCheckedModeBanner: false,
   ));
   configLoading();
 }
