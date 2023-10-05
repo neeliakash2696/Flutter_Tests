@@ -156,7 +156,6 @@ class LoginControllerState extends State<LoginController> {
                                                 .contains(searchingText
                                                     .toLowerCase()))
                                         .toList();
-                                    print(results);
                                     dialogSink(results);
                                   } else {
                                     searching = false;
