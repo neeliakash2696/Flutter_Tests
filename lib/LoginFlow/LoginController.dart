@@ -72,12 +72,18 @@ class LoginControllerState extends State<LoginController> {
     String pathUrl =
         "https://mapi.indiamart.com/wservce/users/OTPverification/?process=$process&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
     print(pathUrl);
+
     http.Response response = await http.get(Uri.parse(pathUrl));
     Map<String, dynamic> data = json.decode(response.body);
     loginData = LoginResponse.fromJson(data);
     if (loginData.response.code == "200") {
       // Success
-      print(loginData);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => OTP_Verification(
+                mobNo: loginTextField.text,
+                glusrid: loginData.response.glusrid ?? "",
+                isIndian: isIndian,
+              )));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
@@ -457,8 +463,6 @@ class LoginControllerState extends State<LoginController> {
                     onTap: () {
                       print("Next tapped");
                       validateAndSendOTP();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => OTP_Verification(mobNo:loginTextField.text)));
                     },
                     child: Container(
                       height: 50,
