@@ -1,0 +1,75 @@
+
+class Response {
+  final int? code;
+  final Data data;
+  final String? message;
+  final String? status;
+
+
+  Response({
+    required this.code,
+    required this.data,
+    required this.message,
+    required this.status,
+  });
+
+  factory Response.fromJson(Map<String, dynamic> json) {
+    return Response(
+      code: json['Code'] ?? 0,
+      data: Data.fromJson(json['Data']),
+      message: json['Message'] ?? "",
+      status: json['Status'] ?? "",
+    );
+  }
+}
+class GeoLocationResponse {
+  final Response response;
+
+  GeoLocationResponse({required this.response});
+
+  factory GeoLocationResponse.fromJson(Map<String, dynamic> json) {
+    return GeoLocationResponse(
+      response: Response.fromJson(json['Response']),
+    );
+  }
+}
+
+class Data {
+  final int? geoipAccuracy;
+  final String? geoipCityId;
+  final String? geoipCityName;
+  final String? geoipCountryIso;
+ String? geoipCountryName;
+  final int? geoipGeonameCityId;
+  final String? geoipIpAddress;
+  final String? geoipStateIso;
+  final String? geoipStateName;
+
+  Data({
+    required this.geoipAccuracy,
+    required this.geoipCityId,
+    required this.geoipCityName,
+    required this.geoipCountryIso,
+    required this.geoipCountryName,
+    required this.geoipGeonameCityId,
+    required this.geoipIpAddress,
+    required this.geoipStateIso,
+    required this.geoipStateName,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      geoipAccuracy: json['geoip_accuracy'] ?? "",
+      geoipCityId: json['geoip_cityid'] ?? "",
+      geoipCityName: json['geoip_cityname'] ?? "",
+      geoipCountryIso: json['geoip_countryiso'] ?? "",
+      geoipCountryName: json['geoip_countryname'] ?? "",
+      geoipGeonameCityId: json['geoip_geonamecityid'] ?? "",
+      geoipIpAddress: json['geoip_ipaddress'] ?? "", 
+      geoipStateIso: json['geoip_stateiso'] ?? "", 
+      geoipStateName: json['geoip_statename'] ?? "",
+    );
+  }
+}
+
+
