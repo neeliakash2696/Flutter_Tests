@@ -232,6 +232,7 @@ class SearchState extends State<Search>
       encodedQueryParam = encodeString(receivedText);
       widget.productName = receivedText;
       items.length = 0;
+      resetUI();
       getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, false,
           currentCityId, currentCity);
     }
@@ -239,6 +240,16 @@ class SearchState extends State<Search>
 
   void resetUI() {
     setState(() {
+
+        items=[];
+        titlesArray=[];
+        localityArray=[];
+        locationsArray=[];
+        sealArray=[];
+        imagesArray=[];
+        companyNameArray=[];
+        itemPricesArray=[];
+        phoneArray=[];
       // imagesArray?.clear();
       // phoneArray?.clear();
       // titlesArray?.clear();
@@ -300,7 +311,7 @@ class SearchState extends State<Search>
     currentCity = clickedCity;
     String productName = widget.productName;
     resetUI();
-    items.clear();
+  print("items.length=${items.length}");
     startFromFirst();
     widget.productName = productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
@@ -518,7 +529,7 @@ class SearchState extends State<Search>
       if (resultsArray.length > 0) if (currentPage > 1 && totalItemCount > 10) {
         //   if (!kIsWeb) ;
         //   // addBannerOrAd(end, "ADEMPTY");
-        if (start < end) addBannerOrAd(items.length - 4, "PBRBANNER");
+        if (start < end) addBannerOrAd(titlesArray!.length - 4, "PBRBANNER");
       } else if (currentPage == 1) {
         if (!kIsWeb) {
           addBannerOrAd(2, "ADEMPTY");
@@ -798,12 +809,13 @@ class SearchState extends State<Search>
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                // physics: isLoading == false
+                // physics: isLoading? const BouncingScrollPhysics(): ClampingScrollPhysics(),
                 //     ? const BouncingScrollPhysics()
                 //     : const ClampingScrollPhysics(),
-                itemCount: itemCount + 1,
+                itemCount: titlesArray!.length + 1,
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == itemCount) {
+                  print("itemkilength=${items.length}+${titlesArray!.length}");
+                  if (index == titlesArray!.length) {
                     print("index==$index $itemCount");
                     return (isLoading)
                         ? const Center(
