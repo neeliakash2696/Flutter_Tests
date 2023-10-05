@@ -133,7 +133,10 @@ class LoginControllerState extends State<LoginController> {
                           children: [
                             Expanded(
                               child: TextField(
-                                textInputAction: TextInputAction.search,
+                                onSubmitted: (value) {
+                                  // keyboard done action
+                                  Navigator.pop(context);
+                                },
                                 keyboardType: TextInputType.text,
                                 autocorrect: false,
                                 autofocus: false,
@@ -310,6 +313,7 @@ class LoginControllerState extends State<LoginController> {
                         width: MediaQuery.of(context).size.width - 20,
                         child: InkWell(
                           onTap: () {
+                            countrySearchTextFiled.text = "";
                             showCountries();
                           },
                           child: Row(
