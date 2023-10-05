@@ -12,6 +12,7 @@ import 'dart:io';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
+import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 
 import '../otp_veification.dart';
 
@@ -36,6 +37,7 @@ class LoginControllerState extends State<LoginController> {
   var currentPlatform = "";
 
   late LoginResponse loginData;
+  late GeoLocationResponse verifyIpData;
 
   StreamController dialogStreamController = StreamController.broadcast();
   Stream get dialogStream => dialogStreamController.stream;
@@ -55,7 +57,7 @@ class LoginControllerState extends State<LoginController> {
   }
 
   triggerOTP(String platform, String countryId, String country,
-      String countryCode, String textFieldValue) async {
+      String countryCode, String textFieldValue, String userIp) async {
     EasyLoading.show(status: 'Sending OTP...');
     var requiredParam = "";
     var process = "";
@@ -70,10 +72,9 @@ class LoginControllerState extends State<LoginController> {
       process = "OTP_Screen_Android";
     }
     String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=$process&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
+        "https://mapi.indiamart.com/wservce/users/OTPverification/?process=$process&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=$userIp&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
     print(pathUrl);
-
-    http.Response response = await http.get(Uri.parse(pathUrl));
+    http.Response response = await http.post(Uri.parse(pathUrl));
     Map<String, dynamic> data = json.decode(response.body);
     loginData = LoginResponse.fromJson(data);
     if (loginData.response.code == "200") {
@@ -98,14 +99,60 @@ class LoginControllerState extends State<LoginController> {
     EasyLoading.dismiss();
   }
 
+  verifyIpCountry(String creds) async {
+    var platform = "";
+    if (Platform.isIOS) {
+      platform = "IOS";
+    } else if (Platform.isAndroid) {
+      platform = "Android";
+    } else if (kIsWeb) {
+      platform = "Web";
+    }
+    var requiredParam = "";
+    if (isIndian) {
+      requiredParam = "mobile_num";
+    } else {
+      requiredParam = "email";
+    }
+    String pathUrl =
+        "http://geoip.imimg.com/api/location.php?modid=$platform&token=imobile@15061981&AK&app_version_no=13.2.2_T1&VALIDATION_GLID&APP_MODID=$platform&isGuestUser=0&$requiredParam=$creds&VALIDATION_USER_IP&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID&APP_ACCURACY=0.0";
+    print(pathUrl);
+    try {
+      http.Response response = await http.post(Uri.parse(pathUrl));
+      Map<String, dynamic> data = json.decode(response.body);
+      verifyIpData = GeoLocationResponse.fromJson(data);
+      print(verifyIpData.response.data.geoipCountryName);
+      if (verifyIpData.response.code == 200) {
+        if (isIndian &&
+            verifyIpData.response.data.geoipCountryName == "India") {
+          triggerOTP(
+              currentPlatform,
+              countryId,
+              currentCountry,
+              countryCode,
+              loginTextField.text,
+              verifyIpData.response.data.geoipIpAddress.toString());
+        } else {
+          showAlert();
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "${verifyIpData.response.status}\n${verifyIpData.response.message}")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
   validateAndSendOTP() {
     if (loginTextField.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please enter your Credentials")));
     } else {
       if (checkStatus == true) {
-        triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
-            loginTextField.text);
+        verifyIpCountry(loginTextField.text);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Please Accept Terms and Privacy Policy")));
@@ -127,6 +174,27 @@ class LoginControllerState extends State<LoginController> {
     final String response =
         await rootBundle.loadString('assets/countrylist.json');
     countriesData = await json.decode(response);
+  }
+
+  showAlert() {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+                title: const Text('Alert'),
+                content: const Text(
+                    'It seems you are outside India.\nPress Ok to get OTP on email'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('OK'),
+                  ),
+                ]));
   }
 
   showCountries() async {
@@ -315,8 +383,9 @@ class LoginControllerState extends State<LoginController> {
                       const SizedBox(
                         height: 20,
                       ),
-                      const Text(
-                          "Please enter your 10 digit mobile number to begin"),
+                      Text(isIndian == true
+                          ? "Please enter your 10 digit mobile number to begin"
+                          : "Enter your e-mail address to help us begin"),
                       const SizedBox(
                         height: 10,
                       ),
@@ -327,15 +396,21 @@ class LoginControllerState extends State<LoginController> {
                         child: InkWell(
                           onTap: () {
                             countrySearchTextFiled.text = "";
+                            searching = false;
+                            results = countriesData;
+                            dialogSink(results);
                             showCountries();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Image(
-                                image: NetworkImage(currentFlag),
-                                fit: BoxFit.fill,
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: Image(
+                                  image: NetworkImage(currentFlag),
+                                  fit: BoxFit.fill,
+                                ),
                               ),
                               const SizedBox(
                                 width: 5,
