@@ -83,6 +83,12 @@ class LoginControllerState extends State<LoginController> {
                 mobNo: loginTextField.text,
                 glusrid: loginData.response.glusrid ?? "",
                 isIndian: isIndian,
+            country: country,
+            countryCode: countryCode,
+            countryId: countryId,
+            platform: platform,
+            process: process,
+            requiredParam: requiredParam,
               )));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
