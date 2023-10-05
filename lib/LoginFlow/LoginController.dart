@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_tests/InAppWebView.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -43,6 +44,12 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
+  }
+
+  @override
+  void dispose() {
+    dialogStreamController.close();
+    super.dispose();
   }
 
   triggerOTP(String platform, String countryId, String country,
@@ -389,7 +396,16 @@ class LoginControllerState extends State<LoginController> {
                             const Text("I accept all the "),
                             InkWell(
                               onTap: () {
-                                print("Show terms");
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => webview_class(
+                                        title: "",
+                                        initialUrl:
+                                            "https://m.indiamart.com/terms-of-use.html",
+                                        navMode: '1',
+                                      ),
+                                    ));
                               },
                               child: Text(
                                 "Terms",
@@ -405,7 +421,16 @@ class LoginControllerState extends State<LoginController> {
                             const Text(" and "),
                             InkWell(
                               onTap: () {
-                                print("Show Privacy policy");
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => webview_class(
+                                        title: "",
+                                        initialUrl:
+                                            "https://m.indiamart.com/privacy-policy.html",
+                                        navMode: '1',
+                                      ),
+                                    ));
                               },
                               child: Text(
                                 "Privacy Policy",
