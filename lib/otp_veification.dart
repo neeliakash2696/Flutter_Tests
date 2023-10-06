@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
@@ -419,6 +420,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   }
 
   void apiCall(String pathUrl) async {
+    EasyLoading.show(status: "Verifying OTP...");
     print("pathUrl=$pathUrl");
     http.Response response = await http.get(Uri.parse(pathUrl));
     print("response=$response");
@@ -426,11 +428,13 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     loginData = LoginResponse.fromJson(data);
     if (pathUrl.contains("flag=OTPVer")) if (loginData.response.code == "200") {
       // Success
+      EasyLoading.dismiss();
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Verification Successful")));
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => DetailsRequest()));
     } else {
+      EasyLoading.dismiss();
       showDialog(
         context: context,
         builder: (BuildContext context) {

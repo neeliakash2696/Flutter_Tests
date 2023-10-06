@@ -83,7 +83,7 @@ class LoginControllerState extends State<LoginController> {
     if (loginData.response.code == "200") {
       // Success
       FocusScope.of(context).unfocus();
-      Navigator.of(context).push(MaterialPageRoute(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => OTP_Verification(
                 mobNo: loginTextField.text,
                 glusrid: loginData.response.glusrid ?? "",
