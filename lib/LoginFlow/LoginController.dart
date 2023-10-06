@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/InAppWebView.dart';
+import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -53,6 +54,8 @@ class LoginControllerState extends State<LoginController> {
   @override
   void dispose() {
     dialogStreamController.close();
+    loginTextField.dispose();
+    countrySearchTextFiled.dispose();
     super.dispose();
   }
 
@@ -79,17 +82,18 @@ class LoginControllerState extends State<LoginController> {
     loginData = LoginResponse.fromJson(data);
     if (loginData.response.code == "200") {
       // Success
+      FocusScope.of(context).unfocus();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => OTP_Verification(
                 mobNo: loginTextField.text,
                 glusrid: loginData.response.glusrid ?? "",
                 isIndian: isIndian,
-            country: country,
-            countryCode: countryCode,
-            countryId: countryId,
-            platform: platform,
-            process: process,
-            requiredParam: requiredParam,
+                country: country,
+                countryCode: countryCode,
+                countryId: countryId,
+                platform: platform,
+                process: process,
+                requiredParam: requiredParam,
               )));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -543,7 +547,11 @@ class LoginControllerState extends State<LoginController> {
                   InkWell(
                     onTap: () {
                       print("Next tapped");
-                      validateAndSendOTP();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailsRequest()));
+                      // validateAndSendOTP();
                     },
                     child: Container(
                       height: 50,
