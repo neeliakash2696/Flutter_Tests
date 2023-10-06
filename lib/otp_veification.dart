@@ -9,6 +9,8 @@ import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
+import 'DataModels/VerifyOTPDataModel.dart';
+
 class OTP_Verification extends StatefulWidget {
   String mobNo;
   String glusrid;
@@ -31,7 +33,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late FocusNode otp2;
   late FocusNode otp3;
   late FocusNode otp4;
-  late LoginResponse loginData;
+  late VerifyOTP loginData;
 
   String authkey="";
 
@@ -376,11 +378,12 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     http.Response response =
         await http.get(Uri.parse(pathUrl));
     print("response=$response");
-    Map<String, dynamic> data =
-    json.decode(response.body);
-    loginData = LoginResponse.fromJson(data);
+    Map<String, dynamic> data = json.decode(response.body);
+    print("response.body${response.body}");
+    loginData = VerifyOTP.fromJson(data);
     if(pathUrl.contains("flag=OTPVer"))
     if (loginData.response.code == "200" ) {
+      print("ak check${loginData.response.loginData.imIss.t}");
       // Success
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
