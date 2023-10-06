@@ -1,9 +1,10 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/LoginFlow/LoginController.dart';
@@ -11,14 +12,13 @@ import 'package:flutter_tests/section.dart';
 import 'package:flutter_tests/ImportantSuppilesDetailsList.dart';
 import 'package:flutter_tests/view_categories.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  // runApp(MyApp());
   runApp(MaterialApp(
-    // home: ViewCategories(),
-    home: LoginController(),
+    home: MyApp(),
     builder: EasyLoading.init(),
     debugShowCheckedModeBanner: false,
   ));
@@ -41,7 +41,28 @@ void configLoading() {
   EasyLoadingToastPosition.bottom;
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('AK');
+      if (token == null) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => LoginController()));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => ViewCategories()));
+      }
+    });
+  }
+
   final List<Section> sections = [
     Section(title: 'Oxygen Supplies', items: [
       "Oxygen Cylinder",
@@ -95,24 +116,26 @@ class MyApp extends StatelessWidget {
       "Suction Machine"
     ])
   ];
+
   @override
   Widget build(BuildContext context) {
     // sections.insert(2, Section(title:"PBR BANNER", items:[]));
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
-        body: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: sections.length,
-          itemBuilder: (context, index) {
-            {
-              print(sections[2].title);
-              return SectionWidget(section: sections[index]);
-            }
-          },
-          // separatorBuilder: (context, index) {
-          //   return Divider(); // Add a divider between sections
-          // },
-        ),
+        body: null,
+        // body: ListView.builder(
+        //   physics: const AlwaysScrollableScrollPhysics(),
+        //   itemCount: sections.length,
+        //   itemBuilder: (context, index) {
+        //     {
+        //       print(sections[2].title);
+        //       return SectionWidget(section: sections[index]);
+        //     }
+        //   },
+        //   // separatorBuilder: (context, index) {
+        //   //   return Divider(); // Add a divider between sections
+        //   // },
+        // ),
       ),
       debugShowCheckedModeBanner: false,
       // builder: EasyLoading.init(),
@@ -145,7 +168,7 @@ class SectionWidget extends StatelessWidget {
               elevation: 1,
               child: ListTile(
                   title: Text(section.items[index]),
-                  trailing: Icon(
+                  trailing: const Icon(
                     Icons.keyboard_arrow_right,
                     color: Colors.teal,
                     size: 30,
