@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
+import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
@@ -369,45 +370,48 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                 ),
               ),
             ),
-            bottomNavigationBar: Container(
-                height: 50,
-                color: Colors.teal[400],
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            "PREVIOUS",
-                            style: TextStyle(color: Colors.white, fontSize: 17),
-                          )),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-                      child: GestureDetector(
-                          onTap: () async {
-                            if (authkey.length == 4)
-                              apiCall(
-                                  "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
-                            else
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Enter a valid OTP")));
-                          },
-                          child: const Text("NEXT",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 17))),
-                    )
-                  ],
-                )),
+            bottomNavigationBar: SafeArea(
+              child: Container(
+                  height: 50,
+                  color: Colors.teal[400],
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+                        child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "PREVIOUS",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 17),
+                            )),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+                        child: GestureDetector(
+                            onTap: () async {
+                              if (authkey.length == 4)
+                                apiCall(
+                                    "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                              else
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Enter a valid OTP")));
+                            },
+                            child: const Text("NEXT",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17))),
+                      )
+                    ],
+                  )),
+            ),
           ));
 
   void hideWidet() {
@@ -424,6 +428,8 @@ class _OTP_VerificationState extends State<OTP_Verification> {
       // Success
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Verification Successful")));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => DetailsRequest()));
     } else {
       showDialog(
         context: context,

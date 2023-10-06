@@ -547,11 +547,7 @@ class LoginControllerState extends State<LoginController> {
                   InkWell(
                     onTap: () {
                       print("Next tapped");
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailsRequest()));
-                      // validateAndSendOTP();
+                      validateAndSendOTP();
                     },
                     child: Container(
                       height: 50,
