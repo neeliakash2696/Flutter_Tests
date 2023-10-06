@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:http/http.dart' as http;
@@ -11,18 +13,27 @@ class OTP_Verification extends StatefulWidget {
   String mobNo;
   String glusrid;
   bool isIndian;
+  String process;
+  String countryId;
+  String country;
+  String platform;
+  String requiredParam;
+  String countryCode;
   OTP_Verification(
-      {required this.mobNo, required this.glusrid, required this.isIndian});
+      {required this.mobNo, required this.glusrid, required this.isIndian,required this.platform, required this.process, required this.country, required this.countryId, required this.requiredParam, required this.countryCode});
   @override
   State<OTP_Verification> createState() => _OTP_VerificationState();
 }
 
 class _OTP_VerificationState extends State<OTP_Verification> {
+  bool _isVisible = true;
   late FocusNode otp1;
   late FocusNode otp2;
   late FocusNode otp3;
   late FocusNode otp4;
   late LoginResponse loginData;
+
+  String authkey="";
 
   @override
   void initState() {
@@ -42,14 +53,6 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     super.dispose();
   }
 
-  void nextField(var value, FocusNode focus) {
-    if (value != null || value != "") otp1.requestFocus();
-  }
-
-  void prevField(var value, FocusNode focus) {
-    // if(value=="")
-    otp1.requestFocus();
-  }
 
   @override
   Widget build(BuildContext context) => KeyboardDismisser(
@@ -93,8 +96,13 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                       thickness: 10,
                     ),
                     Center(
-                      child: Text(
+                      child: widget.isIndian?Text(
                         "You will receive an OTP (One Time Password) on your mobile number",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 15),
+                      ):
+                      Text(
+                        "You will receive an OTP (One Time Password) on your e-mail address",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 15),
                       ),
@@ -107,257 +115,214 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          widget.isIndian?Text(
                             "+91-${widget.mobNo}",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
+                          ):Text(
+                    "${widget.mobNo}",
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
                           SizedBox(
                             width: 5,
                           ),
-                          Text(
-                            "Not You?",
-                            style: TextStyle(
-                                color: Colors.teal[400], fontSize: 15),
+                          GestureDetector(
+                            onTap: (){Navigator.of(context).pop();},
+                            child: Text(
+                              "Not You?",
+                              style: TextStyle(
+                                  color: Colors.teal[400], fontSize: 15),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    // Center(
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Container(
-                    //         width: 40,
-                    //         height: 40,
-                    //         margin: EdgeInsets.only(top: 24, bottom: 8),
-                    //         child: TextField(
-                    //           autofocus: true,
-                    //           textAlign: TextAlign.center,
-                    //           keyboardType: TextInputType.number,
-                    //           inputFormatters: <TextInputFormatter>[
-                    //             FilteringTextInputFormatter.digitsOnly,
-                    //             LengthLimitingTextInputFormatter(1),
-                    //           ],
-                    //           decoration: InputDecoration(
-                    //             border: InputBorder.none,
-                    //           ),
-                    //           onChanged:(value){
-                    //             nextField(value,otp2);
-                    //           },
-                    //         ),
-                    //         decoration: BoxDecoration(
-                    //           border: Border(bottom: BorderSide(
-                    //             color: Colors.teal,
-                    //             width: 2
-                    //           )),
-                    //         ),
-                    //       ),
-                    //       SizedBox(width: 5,),
-                    //       Container(
-                    //         width: 40,
-                    //         height: 40,
-                    //         margin: EdgeInsets.only(top: 24, bottom: 8),
-                    //         child: TextField(
-                    //           focusNode: otp2,
-                    //           textAlign: TextAlign.center,
-                    //           keyboardType: TextInputType.number,
-                    //           inputFormatters: <TextInputFormatter>[
-                    //             FilteringTextInputFormatter.digitsOnly,
-                    //             LengthLimitingTextInputFormatter(1),
-                    //           ],
-                    //           decoration: InputDecoration(
-                    //             border: InputBorder.none,
-                    //           ),
-                    //           onChanged: (value){
-                    //             nextField(value,otp3);}
-                    //         ),
-                    //         decoration: BoxDecoration(
-                    //           border: Border(bottom: BorderSide(
-                    //               color: Colors.teal,
-                    //               width: 2
-                    //           )),
-                    //         ),
-                    //       ),
-                    //       SizedBox(width: 5,),
-                    //       Container(
-                    //         width: 40,
-                    //         height: 40,
-                    //         margin: EdgeInsets.only(top: 24, bottom: 8),
-                    //         decoration: BoxDecoration(
-                    //           border: Border(bottom: BorderSide(
-                    //               color: Colors.teal,
-                    //               width: 2
-                    //           )),
-                    //         ),
-                    //         child: TextField(
-                    //           focusNode: otp3,
-                    //           textAlign: TextAlign.center,
-                    //           keyboardType: TextInputType.number,
-                    //           inputFormatters: <TextInputFormatter>[
-                    //             FilteringTextInputFormatter.digitsOnly,
-                    //             LengthLimitingTextInputFormatter(1),
-                    //           ],
-                    //           decoration: InputDecoration(
-                    //             border: InputBorder.none,
-                    //           ),
-                    //           onChanged: (value){nextField(value,otp4);},
-                    //         ),
-                    //       ),
-                    //       SizedBox(width: 5,),
-                    //       Container(
-                    //         width: 40,
-                    //         height: 40,
-                    //         margin: EdgeInsets.only(top: 24, bottom: 8),
-                    //         child: TextField(
-                    //           focusNode: otp4,
-                    //           textAlign: TextAlign.center,
-                    //           keyboardType: TextInputType.number,
-                    //           inputFormatters: <TextInputFormatter>[
-                    //             FilteringTextInputFormatter.digitsOnly,
-                    //             LengthLimitingTextInputFormatter(1),
-                    //           ],
-                    //           decoration: InputDecoration(
-                    //             border: InputBorder.none,
-                    //           ),
-                    //         ),
-                    //         decoration: BoxDecoration(
-                    //           border: Border(bottom: BorderSide(
-                    //               color: Colors.teal,
-                    //               width: 2
-                    //           )),
-                    //         ),
-                    //       ),
-                    //     ]
-                    //   ),
-                    // ),
                     SizedBox(height: 16),
                     Center(
-                      child: OtpInputFields(),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "The OTP will expire in ",
-                            style: TextStyle(),
-                          ),
-                          TweenAnimationBuilder(
-                            tween: Tween(begin: 60.0, end: 0),
-                            duration: Duration(seconds: 60),
-                            builder: (context, value, child) =>
-                                Text("${value.toInt()} seconds"),
-                            onEnd: () {
-                              SizedBox(height: 16);
-                              Center(
-                                child: Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(
-                                      "Request OTP again",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  decoration:
-                                      BoxDecoration(color: Colors.orange[300]),
-                                ),
-                              );
-                            },
-                          )
-                        ],
+                      child: OtpTextField(
+                        numberOfFields: 4,
+                        showFieldAsBox: false,
+                        focusedBorderColor: Colors.teal,
+                        enabledBorderColor:Colors.teal,
+                        cursorColor:Colors.teal,
+                          inputFormatters:<TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                        //runs when every textfield is filled
+                        onSubmit: (String verificationCode) {
+                            print("code=$verificationCode");
+                            authkey=verificationCode;
+                        },
                       ),
                     ),
                     SizedBox(
                       height: 10,
                     ),
-
-                    Stack(
-                      children: <Widget>[
-                        Image.asset(
-                          'images/otp_verification_auto_fetching_image.png',
-                          // width: 150,
-                          height: 300,
-                          fit: BoxFit.cover,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(80, 130, 0, 0),
-                          child: Column(
+                    TweenAnimationBuilder(
+                      tween: widget.isIndian?Tween(begin: 60.0, end: 0):Tween(begin: 150.0, end: 0),
+                      duration: widget.isIndian?Duration(seconds: 60):Duration(seconds: 150),
+                      builder: (context, value, child){
+                        if(value>1)
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                  width: 140,
-                                  // height: 40,
-                                  // color: Colors.black.withOpacity(0.5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[400],
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  // / Semi-transparent black color
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 15, 10, 15),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Fetching',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15),
-                                          ),
-                                          SizedBox(
-                                            width: 2,
-                                          ),
-                                          SpinKitPulse(
-                                            color: Colors
-                                                .white, // Adjust the color
-                                            size: 10.0, // Adjust the size
-                                            duration: Duration(seconds: 1),
-                                          ),
-                                          SizedBox(
-                                            width: 2,
-                                          ),
-                                          SpinKitPulse(
-                                            color: Colors
-                                                .white, // Adjust the color
-                                            size: 16.0, // Adjust the size
-                                            duration: Duration(seconds: 1),
-                                          ),
-                                          SizedBox(
-                                            width: 2,
-                                          ),
-                                          SpinKitPulse(
-                                            color: Colors
-                                                .white, // Adjust the color
-                                            size: 20.0,
-                                            duration: Duration(
-                                                seconds: 1), // Adjust the size
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                              Container(
-                                height: 15,
-                                child: Image.asset(
-                                  'images/triangle_otp_verification.png',
-                                  // width: 150,
-                                  height: 100,
-                                  fit: BoxFit.cover,
+                              Center(
+                                child: Text(
+                                  "The OTP will expire in ${value.toInt()} seconds",
+                                  style: TextStyle(),
                                 ),
                               ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Stack(
+                                children: <Widget>[
+                                  Image.asset(
+                                    'images/otp_verification_auto_fetching_image.png',
+                                    // width: 150,
+                                    height: 300,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(80, 130, 0, 0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                            width: 140,
+                                            // height: 40,
+                                            // color: Colors.black.withOpacity(0.5),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[400],
+                                              borderRadius: BorderRadius.circular(50),
+                                            ),
+                                            // / Semi-transparent black color
+                                            child: Center(
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(
+                                                    10, 15, 10, 15),
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'Fetching',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 15),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    SpinKitPulse(
+                                                      color: Colors
+                                                          .white, // Adjust the color
+                                                      size: 10.0, // Adjust the size
+                                                      duration: Duration(seconds: 1),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    SpinKitPulse(
+                                                      color: Colors
+                                                          .white, // Adjust the color
+                                                      size: 16.0, // Adjust the size
+                                                      duration: Duration(seconds: 1),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    SpinKitPulse(
+                                                      color: Colors
+                                                          .white, // Adjust the color
+                                                      size: 20.0,
+                                                      duration: Duration(
+                                                          seconds: 1), // Adjust the size
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )),
+                                        Container(
+                                          height: 15,
+                                          child: Image.asset(
+                                            'images/triangle_otp_verification.png',
+                                            // width: 150,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ],
-                          ),
-                        )
-                      ],
+                          );
+                        else {
+                          return Column(
+                            children: [
+                              SizedBox(height: 16),
+                              Center(
+                                child: GestureDetector(
+                                  onTap:(){
+                                    setState(() {
+                                      _isVisible = false; // Toggle visibility on tap
+                                    });
+                                  },
+                                  child: _isVisible?Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          apiCall("https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                                          setState(() {
+                                            hideWidet();
+                                          });
+
+                                          print("visibility=$_isVisible");
+                                        },
+                                        child: Text(
+                                          "Request OTP again",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    decoration:
+                                    BoxDecoration(color: Colors.orange[300]),
+                                  ): TweenAnimationBuilder(
+                                      tween: widget.isIndian?Tween(begin: 60.0, end: 0):Tween(begin: 150.0, end: 0),
+                                      duration: widget.isIndian?Duration(seconds: 60):Duration(seconds: 150),
+                                      builder: (context, value, child) {
+                                        if (value > 1) {
+                                          return
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                    "Auto Fetching the OTP"),
+                                                SizedBox(width: 5,),
+                                                Container(
+                                                  height:15,
+                                                  width:15,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.teal,),
+                                                )
+                                              ],
+                                            );
+                                        }
+                                        else
+                                          return Text("");
+                                      }),
+                                ),
+                              )
+                            ],
+                          );
+                        };
+                      } ,
                     ),
-                    // Add other UI components like Image, Text, etc.
-                    // ...
-                    // ...
                   ],
                 ),
               ),
@@ -387,23 +352,13 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
                       child: GestureDetector(
                           onTap: () async {
-                            String pathUrl =
-                                "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=6054&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1";
-                            print(pathUrl);
-                            http.Response response =
-                                await http.get(Uri.parse(pathUrl));
-                            Map<String, dynamic> data =
-                                json.decode(response.body);
-                            loginData = LoginResponse.fromJson(data);
-                            if (loginData.response.code == "200") {
-                              // Success
-                              print(loginData);
-                            } else {
+                            if(authkey.length==4)
+                              apiCall("https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                            else
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Text(
-                                      "${loginData.response.message}\n${loginData.response.error}")));
-                            }
-                          },
+                                      "Enter a valid OTP")));
+                            },
                           child: Text("NEXT",
                               style: TextStyle(
                                   color: Colors.white, fontSize: 17))),
@@ -411,6 +366,49 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                   ],
                 )),
           ));
+
+  void hideWidet() {
+    _isVisible=false;
+  }
+  void apiCall(String pathUrl) async
+  {
+    print("pathUrl=$pathUrl");
+    http.Response response =
+        await http.get(Uri.parse(pathUrl));
+    print("response=$response");
+    Map<String, dynamic> data =
+    json.decode(response.body);
+    loginData = LoginResponse.fromJson(data);
+    if(pathUrl.contains("flag=OTPVer"))
+    if (loginData.response.code == "200" ) {
+      // Success
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "Verification Successful")));
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            content:Text('Please enter correct OTP', textAlign: TextAlign.center,style: TextStyle(fontSize: 16,color: Colors.black87),) ,
+            title: Text('OTP Verification failed\n',style: TextStyle(color: Colors.teal,fontSize: 18,fontWeight: FontWeight.bold),),
+            actions: [
+              CupertinoDialogAction(child: Text('RESEND',style: TextStyle(color: Colors.teal,fontSize: 15,fontWeight: FontWeight.bold),), onPressed: (){
+                apiCall("https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                Navigator.of(context).pop();
+              }),
+              CupertinoDialogAction(child: Text('OK',style: TextStyle(color: Colors.teal,fontSize: 15,fontWeight: FontWeight.bold),), onPressed: (){
+                Navigator.of(context).pop();
+              }),
+            ],
+          );
+        },
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "${loginData.response.message}\n${loginData.response.error}")));
+    }
+  }
 }
 
 class OtpInputFields extends StatefulWidget {
@@ -472,7 +470,6 @@ class _OtpInputFieldsState extends State<OtpInputFields> {
                 textAlign: TextAlign.center,
                 onChanged: (value) {
                   if (value.isNotEmpty && index < _otpLength - 1) {
-                    print("object");
                     FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
                   }
                 },
