@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:account_picker/account_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,11 +12,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:flutter_tests/DataModels/UserDetailSyncModel.dart';
+import 'package:flutter_tests/view_categories.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 import 'DataModels/VerifyOTPDataModel.dart';
 import 'DataModels/UserDetailSyncModel.dart';
+import 'GlobalUtilities/GlobalConstants.dart';
 
 class OTP_Verification extends StatefulWidget {
   String mobNo;
@@ -403,6 +406,10 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
                         child: GestureDetector(
                             onTap: () async {
+                              final String? phone = await AccountPicker.phoneHint();
+                              setState(() {
+                                print("phone=$phone");
+                              });
                               if (authkey.length == 4)
                                 apiCall(
                                     "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
@@ -431,15 +438,16 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     print("response=$response");
     Map<String, dynamic> data = json.decode(response.body);
     print("response.body${response.body}");
+    EasyLoading.dismiss();
     if(pathUrl.contains("flag=OTPVer")) {
       loginData = VerifyOTP.fromJson(data);
       if (loginData.response.code == "200") {
-        print("ak check${loginData.response.loginData.imIss.AK}");
+        print("ak check${loginData.response.loginData?.imIss.AK}");
         // Success
         apiCall(
-            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData.response.loginData.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
+            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData.response.loginData?.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
       } else {
-      EasyLoading.dismiss();
+      // EasyLoading.dismiss();
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -494,8 +502,23 @@ class _OTP_VerificationState extends State<OTP_Verification> {
       uds=UDS.fromJson(data);
       if(!checkIfCodeExists(uds.code)){
         print("name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Verification Successful Welcome ${uds.firstName}")));
+        if(uds.firstName==""||uds.lastName==""||uds.email1==""||uds.city=="")
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => DetailsRequest(
+                fname:uds.firstName,
+                lname: uds.lastName,
+                email: uds.email1,
+                city: uds.city,
+              )));
+        else {
+          AK=loginData.response.loginData!.imIss.AK;
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ViewCategories(
+              )));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text("Verification Successful Welcome ${uds.firstName}")));
+        }
       }
     }
   }

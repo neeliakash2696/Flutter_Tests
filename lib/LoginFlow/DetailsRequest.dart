@@ -7,6 +7,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class DetailsRequest extends StatefulWidget {
+  String fname;
+  String lname;
+  String email;
+  String city;
+  DetailsRequest({required this.fname, required this.lname, required this.email, required this.city});
   @override
   State<DetailsRequest> createState() => DetailsRequestState();
 }

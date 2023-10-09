@@ -27,7 +27,7 @@ class Response {
   final String glusrid;
   final String message;
   final String error;
-  final LoginData loginData;
+  final LoginData? loginData;
 
   Response({
     required this.code,
@@ -39,13 +39,17 @@ class Response {
   });
 
   factory Response.fromJson(Map<String, dynamic> json) {
+    var loginDataJson = json['LOGIN_DATA'];
+    print("loginDataJson=$loginDataJson");
     return Response(
       code: json['Code'],
       status: json['Status'],
       glusrid: json['Glusrid'],
       message: json['Message'],
       error: json['Error'],
-      loginData: LoginData.fromJson(json['LOGIN_DATA']),
+      loginData: loginDataJson != []
+          ? LoginData.fromJson(loginDataJson)
+          : null,
     );
   }
 }
@@ -72,9 +76,9 @@ class LoginData {
       dataCookie: DataCookie.fromJson(json['DataCookie']),
       loginCookie: LoginCookie.fromJson(json['LoginCookie']),
       imIss: ImIss.fromJson(json['im_iss']),
-      glid: json['glid'],
-      access: json['access'],
-      time: json['time'],
+      glid: json['glid']??'',
+      access: json['access']??'',
+      time: json['time']??'',
     );
   }
 }
@@ -116,21 +120,21 @@ class DataCookie {
 
   factory DataCookie.fromJson(Map<String, dynamic> json) {
     return DataCookie(
-      fn: json['fn'],
-      em: json['em'],
-      phcc: json['phcc'],
-      iso: json['iso'],
-      mb1: json['mb1'],
-      ctid: json['ctid'],
-      glid: json['glid'],
-      cd: json['cd'],
-      cmid: json['cmid'],
-      utyp: json['utyp'],
-      ev: json['ev'],
-      uv: json['uv'],
-      usts: json['usts'],
-      admln: json['admln'],
-      admsales: json['admsales'],
+      fn: json['fn']??'',
+      em: json['em']??'',
+      phcc: json['phcc']??'',
+      iso: json['iso']??'',
+      mb1: json['mb1']??'',
+      ctid: json['ctid']??'',
+      glid: json['glid']??'',
+      cd: json['cd']??'',
+      cmid: json['cmid']??'',
+      utyp: json['utyp']??'',
+      ev: json['ev']??'',
+      uv: json['uv']??'',
+      usts: json['usts']??'',
+      admln: json['admln']??'',
+      admsales: json['admsales']??'',
     );
   }
 }
@@ -152,11 +156,11 @@ class LoginCookie {
 
   factory LoginCookie.fromJson(Map<String, dynamic> json) {
     return LoginCookie(
-      id: json['id'],
-      admln: json['admln'],
-      admsales: json['admsales'],
-      au: json['au'],
-      vcd: json['vcd'],
+      id: json['id']??'',
+      admln: json['admln']??'',
+      admsales: json['admsales']??0,
+      au: json['au']??'',
+      vcd: json['vcd']??'',
     );
   }
 }
@@ -170,7 +174,7 @@ class ImIss {
 
   factory ImIss.fromJson(Map<String, dynamic> json) {
     return ImIss(
-      AK: json['t'],
+      AK: json['t']??'',
     );
   }
 }

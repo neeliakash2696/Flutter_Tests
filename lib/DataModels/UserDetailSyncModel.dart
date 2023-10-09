@@ -9,7 +9,7 @@ class UDS {
   String ceoSalute;
   String city;
   String cityStateZip;
-  int cityId;
+  var cityId;
   String companyName;
   String contactAddress;
   String country;
@@ -23,9 +23,9 @@ class UDS {
   String emailVerified;
   String fax1;
   String fax2;
-  int fcpFlag;
+  var fcpFlag;
   String firstName;
-  int fkGlLegalStatusId;
+  var fkGlLegalStatusId;
   String fkGlusrBizIds;
   String fkGlusrNoofEmpId;
   String fkGlusrTurnoverId;
@@ -37,9 +37,9 @@ class UDS {
   String glusrUsrAltMobileCountry;
   String glusrUsrApprov;
   String glusrUsrCompanyDesc;
-  int glusrUsrCusttypeId;
+  var glusrUsrCusttypeId;
   String glusrUsrCusttypeName;
-  int glusrUsrCusttypeWeight;
+  var glusrUsrCusttypeWeight;
   String glusrUsrDistrict;
   String glusrUsrFax2Area;
   String glusrUsrFax2Country;
@@ -50,7 +50,7 @@ class UDS {
   String glusrUsrLatitude;
   String glusrUsrListingStatus;
   String glusrUsrLongitude;
-  int glusrUsrMembersince;
+  var glusrUsrMembersince;
   String glusrUsrMobileCountry;
   String glusrUsrPh2Area;
   String glusrUsrPh2Country;
@@ -65,12 +65,12 @@ class UDS {
   String iilPerfEncryptGlusid;
   String image;
   String imageStatus;
-  int isCatalog;
+  var isCatalog;
   String isPaid;
   String landmark;
   String lastName;
   String locality;
-  int locationPreference;
+  var locationPreference;
   String locationSetby;
   String locationSetdate;
   String locationUpdateddate;
@@ -85,14 +85,14 @@ class UDS {
   String salute;
   String showPscFlag;
   String state;
-  int stateId;
+  var stateId;
   String telephone1;
   String telephone2;
   String telephone3;
   String telephone4;
   String turnover;
   String uniqueId;
-  int verifiedBusinessBuyerFlag;
+  var verifiedBusinessBuyerFlag;
   String website;
   String zip;
 
@@ -206,7 +206,7 @@ class UDS {
         ceoSalute : json['ceo_salute'] ?? '',
         city : json['city'] ?? '',
         cityStateZip : json['city_state_zip'] ?? '',
-        cityId : json['cityid'] ?? 0,
+        cityId: json['cityid'],
         companyName : json['company_name'] ?? '',
         contactAddress : json['contact_address'] ?? '',
         country : json['country'] ?? '',
@@ -220,9 +220,9 @@ class UDS {
         emailVerified : json['email_verified'] ?? '',
         fax1 : json['fax1'] ?? '',
         fax2 : json['fax2'] ?? '',
-        fcpFlag : json['fcp_flag'] ?? 0,
+        fcpFlag : json['fcp_flag'] ,
         firstName: json['first_name'] ?? '',
-  fkGlLegalStatusId: json['fk_gl_legal_status_id'] ?? 0,
+        fkGlLegalStatusId: json['fk_gl_legal_status_id'] ,
         fkGlusrBizIds: json['fk_glusr_biz_ids'] ?? '',
         fkGlusrNoofEmpId: json['fk_glusr_noof_emp_id'] ?? '',
         fkGlusrTurnoverId: json['fk_glusr_turnover_id'] ?? '',
@@ -234,9 +234,9 @@ class UDS {
         glusrUsrAltMobileCountry: json['glusr_usr_alt_mobile_country'] ?? '',
         glusrUsrApprov: json['glusr_usr_approv'] ?? '',
         glusrUsrCompanyDesc: json['glusr_usr_company_desc'] ?? '',
-        glusrUsrCusttypeId: json['glusr_usr_custtype_id'] ?? 0,
+        glusrUsrCusttypeId: json['glusr_usr_custtype_id'],
         glusrUsrCusttypeName: json['glusr_usr_custtype_name'] ?? '',
-        glusrUsrCusttypeWeight: json['glusr_usr_custtype_weight'] ?? 0,
+        glusrUsrCusttypeWeight: json['glusr_usr_custtype_weight'],
         glusrUsrDistrict: json['glusr_usr_district'] ?? '',
         glusrUsrFax2Area: json['glusr_usr_fax2_area'] ?? '',
         glusrUsrFax2Country: json['glusr_usr_fax2_country'] ?? '',
@@ -247,7 +247,7 @@ class UDS {
         glusrUsrLatitude: json['glusr_usr_latitude'] ,
         glusrUsrListingStatus: json['glusr_usr_listing_status'] ?? '',
         glusrUsrLongitude: json['glusr_usr_longitude'] ,
-        glusrUsrMembersince: json['glusr_usr_membersince'] ?? 0,
+        glusrUsrMembersince: json['glusr_usr_membersince'],
         glusrUsrMobileCountry: json['glusr_usr_mobile_country'] ?? '',
         glusrUsrPh2Area: json['glusr_usr_ph2_area'] ?? '',
         glusrUsrPh2Country: json['glusr_usr_ph2_country'] ?? '',
@@ -262,12 +262,12 @@ class UDS {
         iilPerfEncryptGlusid: json['iil_perf_encrypt_glusid'] ?? '',
         image: json['image'] ?? '',
         imageStatus: json['image_status'] ?? '',
-        isCatalog: json['is_catalog'] ?? 0,
+        isCatalog: json['is_catalog'],
         isPaid: json['is_paid'] ?? '',
         landmark: json['landmark'] ?? '',
         lastName: json['last_name'] ?? '',
         locality: json['locality'] ?? '',
-        locationPreference: json['location_preference'] ?? 0,
+        locationPreference: json['location_preference'] ,
         locationSetby: json['location_setby'] ?? '',
         locationSetdate: json['location_setdate'] ?? '',
         locationUpdateddate: json['location_updateddate'] ?? '',
@@ -282,14 +282,14 @@ class UDS {
         salute: json['salute'] ?? '',
         showPscFlag: json['show_psc_flag'] ?? '',
         state: json['state'] ?? '',
-        stateId: json['stateid'] ?? 0,
+        stateId: json['stateid'],
         telephone1: json['telephone1'] ?? '',
         telephone2: json['telephone2'] ?? '',
         telephone3: json['telephone3'] ?? '',
         telephone4: json['telephone4'] ?? '',
         turnover: json['turnover'] ?? '',
         uniqueId: json['unique_id'] ?? '',
-        verifiedBusinessBuyerFlag: json['verified_business_buyer_flag'] ?? 0,
+        verifiedBusinessBuyerFlag: json['verified_business_buyer_flag'] ,
         website: json['website'] ?? '',
         zip: json['zip'] ?? '',);
     
