@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
+import 'package:flutter_tests/DataModels/UserDetailSyncModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 import 'DataModels/VerifyOTPDataModel.dart';
+import 'DataModels/UserDetailSyncModel.dart';
 
 class OTP_Verification extends StatefulWidget {
   String mobNo;
@@ -34,6 +36,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late FocusNode otp3;
   late FocusNode otp4;
   late VerifyOTP loginData;
+  late UDS uds;
 
   String authkey="";
 
@@ -380,38 +383,86 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     print("response=$response");
     Map<String, dynamic> data = json.decode(response.body);
     print("response.body${response.body}");
-    loginData = VerifyOTP.fromJson(data);
-    if(pathUrl.contains("flag=OTPVer"))
-    if (loginData.response.code == "200" ) {
-      print("ak check${loginData.response.loginData.imIss.t}");
-      // Success
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "Verification Successful")));
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            content:Text('Please enter correct OTP', textAlign: TextAlign.center,style: TextStyle(fontSize: 16,color: Colors.black87),) ,
-            title: Text('OTP Verification failed\n',style: TextStyle(color: Colors.teal,fontSize: 18,fontWeight: FontWeight.bold),),
-            actions: [
-              CupertinoDialogAction(child: Text('RESEND',style: TextStyle(color: Colors.teal,fontSize: 15,fontWeight: FontWeight.bold),), onPressed: (){
-                apiCall("https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
-                Navigator.of(context).pop();
-              }),
-              CupertinoDialogAction(child: Text('OK',style: TextStyle(color: Colors.teal,fontSize: 15,fontWeight: FontWeight.bold),), onPressed: (){
-                Navigator.of(context).pop();
-              }),
-            ],
-          );
-        },
-      );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "${loginData.response.message}\n${loginData.response.error}")));
+    if(pathUrl.contains("flag=OTPVer")) {
+      loginData = VerifyOTP.fromJson(data);
+      if (loginData.response.code == "200") {
+        print("ak check${loginData.response.loginData.imIss.AK}");
+        // Success
+        apiCall(
+            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData.response.loginData.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              content: Text(
+                'Please enter correct OTP',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+              title: Text(
+                'OTP Verification failed\n',
+                style: TextStyle(
+                    color: Colors.teal,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+              actions: [
+                CupertinoDialogAction(
+                    child: Text(
+                      'RESEND',
+                      style: TextStyle(
+                          color: Colors.teal,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: () {
+                      apiCall(
+                          "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                      Navigator.of(context).pop();
+                    }),
+                CupertinoDialogAction(
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                          color: Colors.teal,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }),
+              ],
+            );
+          },
+        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "${loginData.response.message}\n${loginData.response.error}")));
+      }
+    } else if(pathUrl.contains("users/detail/")){
+      uds=UDS.fromJson(data);
+      if(!checkIfCodeExists(uds.code)){
+        print("name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Verification Successful Welcome ${uds.firstName}")));
+      }
     }
   }
+  bool checkIfCodeExists(String code) {
+    String codeArray = "403,412,204,400";
+
+    try {
+      List<String> codeList = codeArray.split(',');
+      if (codeList.contains(code)) {
+        return true;
+      }
+    } catch (e) {
+      print('Exception in retrieving codes: $e');
+    }
+    return false;
+  }
+
 }
 
 class OtpInputFields extends StatefulWidget {
