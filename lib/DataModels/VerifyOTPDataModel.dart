@@ -40,6 +40,7 @@ class Response {
 
   factory Response.fromJson(Map<String, dynamic> json) {
     var loginDataJson = json['LOGIN_DATA'];
+    var codeCheck=json['Code'];
     print("loginDataJson=$loginDataJson");
     return Response(
       code: json['Code'],
@@ -47,7 +48,7 @@ class Response {
       glusrid: json['Glusrid'],
       message: json['Message'],
       error: json['Error'],
-      loginData: loginDataJson != []
+      loginData: codeCheck==200
           ? LoginData.fromJson(loginDataJson)
           : null,
     );

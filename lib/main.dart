@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       String? token = prefs.getString('AK');
       if (token == null) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => LoginController()));
+            MaterialPageRoute(builder: (context) => LoginController(mobNo: "")));
       } else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ViewCategories()));

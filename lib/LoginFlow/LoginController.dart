@@ -19,6 +19,8 @@ import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 import '../otp_veification.dart';
 
 class LoginController extends StatefulWidget {
+  String mobNo;
+  LoginController({required this.mobNo});
   @override
   State<LoginController> createState() => LoginControllerState();
 }
@@ -27,6 +29,7 @@ class LoginControllerState extends State<LoginController> {
   String _phoneNumber="";
   bool checkStatus = true;
   TextEditingController loginTextField = TextEditingController();
+  FocusNode _focusNode = FocusNode();
   TextEditingController countrySearchTextFiled = TextEditingController();
   var countriesData;
   var results;
@@ -51,12 +54,15 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
+    if(widget.mobNo!="");
+    loginTextField.text=widget.mobNo;
     hint_picker() ;
   }
 
   @override
   void dispose() {
     dialogStreamController.close();
+    widget.mobNo="";
     loginTextField.dispose();
     countrySearchTextFiled.dispose();
     super.dispose();
@@ -86,6 +92,7 @@ class LoginControllerState extends State<LoginController> {
     if (loginData.response.code == "200") {
       // Success
       FocusScope.of(context).unfocus();
+      Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>  OTP_Verification(
                 mobNo: loginTextField.text,
@@ -462,7 +469,8 @@ class LoginControllerState extends State<LoginController> {
                                       ? TextInputType.number
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
-                                  autofocus: true,
+                                  focusNode: _focusNode,
+                                  autofocus: false,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},
@@ -602,11 +610,17 @@ class LoginControllerState extends State<LoginController> {
    void hint_picker()async {
     final String? phone = await AccountPicker.phoneHint();
     setState(() {
-      if(phone!=null) {
+      if(phone!=null && phone!="") {
         _phoneNumber = phone;
         loginTextField.text = _phoneNumber.replaceFirst('+91', '');
+        loginTextField.selection = TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
       }
+      else
+        setState(() {
+          loginTextField.text=widget.mobNo;
+          _focusNode.requestFocus();
+        });
     });
     print("phonenumber=$_phoneNumber");
   }

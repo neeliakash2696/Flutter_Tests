@@ -12,6 +12,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:flutter_tests/DataModels/UserDetailSyncModel.dart';
+import 'package:flutter_tests/LoginFlow/LoginController.dart';
 import 'package:flutter_tests/view_categories.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -104,278 +105,288 @@ class _OTP_VerificationState extends State<OTP_Verification> {
               )),
             ),
             backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const VerticalDivider(
-                      width: 10,
-                      thickness: 10,
-                    ),
-                    Center(
-                      child: widget.isIndian
-                          ? const Text(
-                              "You will receive an OTP (One Time Password) on your mobile number",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 15),
-                            )
-                          : const Text(
-                              "You will receive an OTP (One Time Password) on your e-mail address",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 15),
-                            ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          widget.isIndian
-                              ? Text(
-                                  "+91-${widget.mobNo}",
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : Text(
-                                  "${widget.mobNo}",
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              "Not You?",
-                              style: TextStyle(
-                                  color: Colors.teal[400], fontSize: 15),
-                            ),
-                          ),
-                        ],
+            body: WillPopScope(
+              onWillPop: ()async {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LoginController(
+                    mobNo:widget.mobNo
+                  )));
+                return true;},
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const VerticalDivider(
+                        width: 10,
+                        thickness: 10,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: OtpTextField(
-                        numberOfFields: 4,
-                        showFieldAsBox: false,
-                        focusedBorderColor: Colors.teal,
-                        enabledBorderColor: Colors.teal,
-                        cursorColor: Colors.teal,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(1),
-                        ],
-                        //runs when every textfield is filled
-                        onSubmit: (String verificationCode) {
-                          print("code=$verificationCode");
-                          authkey = verificationCode;
-                        },
+                      Center(
+                        child: widget.isIndian
+                            ? const Text(
+                                "You will receive an OTP (One Time Password) on your mobile number",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 15),
+                              )
+                            : const Text(
+                                "You will receive an OTP (One Time Password) on your e-mail address",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 15),
+                              ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TweenAnimationBuilder(
-                      tween: widget.isIndian
-                          ? Tween(begin: 60.0, end: 0)
-                          : Tween(begin: 150.0, end: 0),
-                      duration: widget.isIndian
-                          ? const Duration(seconds: 60)
-                          : const Duration(seconds: 150),
-                      builder: (context, value, child) {
-                        if (value > 1)
-                          // ignore: curly_braces_in_flow_control_structures
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: Text(
-                                  "The OTP will expire in ${value.toInt()} seconds",
-                                  style: const TextStyle(),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Stack(
-                                children: <Widget>[
-                                  Image.asset(
-                                    'images/otp_verification_auto_fetching_image.png',
-                                    // width: 150,
-                                    height: 300,
-                                    fit: BoxFit.cover,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            widget.isIndian
+                                ? Text(
+                                    "+91-${widget.mobNo}",
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                : Text(
+                                    "${widget.mobNo}",
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        80, 130, 0, 0),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            width: 140,
-                                            // height: 40,
-                                            // color: Colors.black.withOpacity(0.5),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[400],
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                "Not You?",
+                                style: TextStyle(
+                                    color: Colors.teal[400], fontSize: 15),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: OtpTextField(
+                          autoFocus: true,
+                          numberOfFields: 4,
+                          showFieldAsBox: false,
+                          focusedBorderColor: Colors.teal,
+                          enabledBorderColor: Colors.teal,
+                          cursorColor: Colors.teal,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          //runs when every textfield is filled
+                          onSubmit: (String verificationCode) {
+                            print("code=$verificationCode");
+                            authkey = verificationCode;
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TweenAnimationBuilder(
+                        tween: widget.isIndian
+                            ? Tween(begin: 60.0, end: 0)
+                            : Tween(begin: 150.0, end: 0),
+                        duration: widget.isIndian
+                            ? const Duration(seconds: 60)
+                            : const Duration(seconds: 150),
+                        builder: (context, value, child) {
+                          if (value > 1)
+                            // ignore: curly_braces_in_flow_control_structures
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    "The OTP will expire in ${value.toInt()} seconds",
+                                    style: const TextStyle(),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Stack(
+                                  children: <Widget>[
+                                    Image.asset(
+                                      'images/otp_verification_auto_fetching_image.png',
+                                      // width: 150,
+                                      height: 300,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          80, 130, 0, 0),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                              width: 140,
+                                              // height: 40,
+                                              // color: Colors.black.withOpacity(0.5),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[400],
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                              ),
+                                              // / Semi-transparent black color
+                                              child: const Center(
+                                                child: Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      10, 15, 10, 15),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        'Fetching',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 15),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 2,
+                                                      ),
+                                                      SpinKitPulse(
+                                                        color: Colors
+                                                            .white, // Adjust the color
+                                                        size:
+                                                            10.0, // Adjust the size
+                                                        duration:
+                                                            Duration(seconds: 1),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 2,
+                                                      ),
+                                                      SpinKitPulse(
+                                                        color: Colors
+                                                            .white, // Adjust the color
+                                                        size:
+                                                            16.0, // Adjust the size
+                                                        duration:
+                                                            Duration(seconds: 1),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 2,
+                                                      ),
+                                                      SpinKitPulse(
+                                                        color: Colors
+                                                            .white, // Adjust the color
+                                                        size: 20.0,
+                                                        duration: Duration(
+                                                            seconds:
+                                                                1), // Adjust the size
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )),
+                                          Container(
+                                            height: 15,
+                                            child: Image.asset(
+                                              'images/triangle_otp_verification.png',
+                                              // width: 150,
+                                              height: 100,
+                                              fit: BoxFit.cover,
                                             ),
-                                            // / Semi-transparent black color
-                                            child: const Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    10, 15, 10, 15),
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      'Fetching',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 15),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 2,
-                                                    ),
-                                                    SpinKitPulse(
-                                                      color: Colors
-                                                          .white, // Adjust the color
-                                                      size:
-                                                          10.0, // Adjust the size
-                                                      duration:
-                                                          Duration(seconds: 1),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 2,
-                                                    ),
-                                                    SpinKitPulse(
-                                                      color: Colors
-                                                          .white, // Adjust the color
-                                                      size:
-                                                          16.0, // Adjust the size
-                                                      duration:
-                                                          Duration(seconds: 1),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 2,
-                                                    ),
-                                                    SpinKitPulse(
-                                                      color: Colors
-                                                          .white, // Adjust the color
-                                                      size: 20.0,
-                                                      duration: Duration(
-                                                          seconds:
-                                                              1), // Adjust the size
-                                                    ),
-                                                  ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            );
+                          else {
+                            return Column(
+                              children: [
+                                const SizedBox(height: 16),
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _isVisible =
+                                            false; // Toggle visibility on tap
+                                      });
+                                    },
+                                    child: _isVisible
+                                        ? Container(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10.0),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  apiCall(
+                                                      "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                                                  setState(() {
+                                                    hideWidet();
+                                                  });
+
+                                                  print("visibility=$_isVisible");
+                                                },
+                                                child: const Text(
+                                                  "Request OTP again",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
-                                            )),
-                                        Container(
-                                          height: 15,
-                                          child: Image.asset(
-                                            'images/triangle_otp_verification.png',
-                                            // width: 150,
-                                            height: 100,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          );
-                        else {
-                          return Column(
-                            children: [
-                              const SizedBox(height: 16),
-                              Center(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _isVisible =
-                                          false; // Toggle visibility on tap
-                                    });
-                                  },
-                                  child: _isVisible
-                                      ? Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                apiCall(
-                                                    "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
-                                                setState(() {
-                                                  hideWidet();
-                                                });
-
-                                                print("visibility=$_isVisible");
-                                              },
-                                              child: const Text(
-                                                "Request OTP again",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
                                             ),
-                                          ),
-                                          decoration: BoxDecoration(
-                                              color: Colors.orange[300]),
-                                        )
-                                      : TweenAnimationBuilder(
-                                          tween: widget.isIndian
-                                              ? Tween(begin: 60.0, end: 0)
-                                              : Tween(begin: 150.0, end: 0),
-                                          duration: widget.isIndian
-                                              ? const Duration(seconds: 60)
-                                              : const Duration(seconds: 150),
-                                          builder: (context, value, child) {
-                                            if (value > 1) {
-                                              return Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  const Text(
-                                                      "Auto Fetching the OTP"),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Container(
-                                                    height: 15,
-                                                    width: 15,
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: Colors.teal,
+                                            decoration: BoxDecoration(
+                                                color: Colors.orange[300]),
+                                          )
+                                        : TweenAnimationBuilder(
+                                            tween: widget.isIndian
+                                                ? Tween(begin: 60.0, end: 0)
+                                                : Tween(begin: 150.0, end: 0),
+                                            duration: widget.isIndian
+                                                ? const Duration(seconds: 60)
+                                                : const Duration(seconds: 150),
+                                            builder: (context, value, child) {
+                                              if (value > 1) {
+                                                return Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const Text(
+                                                        "Auto Fetching the OTP"),
+                                                    const SizedBox(
+                                                      width: 5,
                                                     ),
-                                                  )
-                                                ],
-                                              );
-                                            } else
-                                              return const Text("");
-                                          }),
-                                ),
-                              )
-                            ],
-                          );
-                        }
-                        ;
-                      },
-                    ),
-                  ],
+                                                    Container(
+                                                      height: 15,
+                                                      width: 15,
+                                                      child:
+                                                          const CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                        color: Colors.teal,
+                                                      ),
+                                                    )
+                                                  ],
+                                                );
+                                              } else
+                                                return const Text("");
+                                            }),
+                                  ),
+                                )
+                              ],
+                            );
+                          }
+                          ;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -392,6 +403,10 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                         child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).pop();
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => LoginController(
+                                      mobNo:widget.mobNo
+                                  )));
                             },
                             child: const Text(
                               "PREVIOUS",
@@ -406,10 +421,6 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
                         child: GestureDetector(
                             onTap: () async {
-                              final String? phone = await AccountPicker.phoneHint();
-                              setState(() {
-                                print("phone=$phone");
-                              });
                               if (authkey.length == 4)
                                 apiCall(
                                     "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
