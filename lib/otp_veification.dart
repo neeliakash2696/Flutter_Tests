@@ -51,10 +51,12 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late FocusNode otp2;
   late FocusNode otp3;
   late FocusNode otp4;
-  late VerifyOTP loginData;
+  late VerifyOTP loginData1;
   late UDS uds;
 
   String authkey = "";
+
+  bool clear=false;
 
   @override
   void initState() {
@@ -163,6 +165,10 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => LoginController(
+                                        mobNo:widget.mobNo
+                                    )));
                               },
                               child: Text(
                                 "Not You?",
@@ -191,6 +197,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                             print("code=$verificationCode");
                             authkey = verificationCode;
                           },
+                          clearText:clear==true?true:false ,
                         ),
                       ),
                       const SizedBox(
@@ -328,6 +335,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                                   apiCall(
                                                       "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                                                   setState(() {
+                                                    clear=true;
                                                     hideWidet();
                                                   });
 
@@ -352,6 +360,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                                 : const Duration(seconds: 150),
                                             builder: (context, value, child) {
                                               if (value > 1) {
+                                                  clear=false;
                                                 return Row(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
@@ -451,12 +460,12 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     print("response.body${response.body}");
     EasyLoading.dismiss();
     if(pathUrl.contains("flag=OTPVer")) {
-      loginData = VerifyOTP.fromJson(data);
-      if (loginData.response.code == "200") {
-        print("ak check${loginData.response.loginData?.imIss.AK}");
+      loginData1 = VerifyOTP.fromJson(data);
+      if (loginData1.response.code == "200") {
+        print("ak check${loginData1.response.loginData?.imIss.AK}");
         // Success
         apiCall(
-            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData.response.loginData?.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
+            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData1.response.loginData?.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
       } else {
       // EasyLoading.dismiss();
         showDialog(
@@ -507,7 +516,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         );
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
-                "${loginData.response.message}\n${loginData.response.error}")));
+                "${loginData1.response.message}\n${loginData1.response.error}")));
       }
     } else if(pathUrl.contains("users/detail/")){
       uds=UDS.fromJson(data);
@@ -522,7 +531,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                 city: uds.city,
               )));
         else {
-          AK=loginData.response.loginData!.imIss.AK;
+          AK=loginData1.response.loginData!.imIss.AK;
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => ViewCategories(
               )));

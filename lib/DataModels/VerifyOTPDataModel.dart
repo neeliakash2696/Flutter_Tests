@@ -41,14 +41,14 @@ class Response {
   factory Response.fromJson(Map<String, dynamic> json) {
     var loginDataJson = json['LOGIN_DATA'];
     var codeCheck=json['Code'];
-    print("loginDataJson=$loginDataJson");
+    print("loginDataJson=$codeCheck");
     return Response(
       code: json['Code'],
       status: json['Status'],
       glusrid: json['Glusrid'],
       message: json['Message'],
       error: json['Error'],
-      loginData: codeCheck==200
+      loginData: codeCheck=="200"
           ? LoginData.fromJson(loginDataJson)
           : null,
     );
@@ -73,6 +73,7 @@ class LoginData {
   });
 
   factory LoginData.fromJson(Map<String, dynamic> json) {
+    print("imss=${ImIss.fromJson(json['im_iss'])}");
     return LoginData(
       dataCookie: DataCookie.fromJson(json['DataCookie']),
       loginCookie: LoginCookie.fromJson(json['LoginCookie']),

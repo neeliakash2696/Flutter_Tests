@@ -165,7 +165,7 @@ class LoginControllerState extends State<LoginController> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please enter your mobile number")));
     }
-    else if(loginTextField.text.length<10){
+    else if(loginTextField.text.length<10 || loginTextField.text.startsWith("0")||loginTextField.text.startsWith("2")||loginTextField.text.startsWith("3")||loginTextField.text.startsWith("5")){
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Enter a valid mobile number")));
     } else {
@@ -619,7 +619,7 @@ class LoginControllerState extends State<LoginController> {
       else
         setState(() {
           loginTextField.text=widget.mobNo;
-          _focusNode.requestFocus();
+          // _focusNode.requestFocus();
         });
     });
     print("phonenumber=$_phoneNumber");
