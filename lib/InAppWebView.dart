@@ -65,16 +65,16 @@ class webview_classState extends State<webview_class> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          centerTitle: true,
+          elevation: 0,
+          // centerTitle: true,
           title: Text(
             widget.title,
-            textAlign: TextAlign.center,
+            // textAlign: TextAlign.center,
             style: const TextStyle(
-                color: Color(0xff432B40),
-                fontSize: 16,
-                fontFamily: 'HVD Fonts'),
+                color: Colors.white,
+                fontSize: 17,),
           ),
-          backgroundColor: Colors.white.withOpacity(0.9),
+          backgroundColor: Colors.teal[400],
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               color: const Color(0xff432B40),

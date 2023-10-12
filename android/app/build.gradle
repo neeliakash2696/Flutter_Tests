@@ -77,4 +77,5 @@ flutter {
 dependencies {
     implementation 'com.google.android.gms:play-services-ads:22.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.work:work-runtime:2.7.0-alpha05'
 }

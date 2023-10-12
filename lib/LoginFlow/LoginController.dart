@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:account_picker/account_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,13 +19,17 @@ import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 import '../otp_veification.dart';
 
 class LoginController extends StatefulWidget {
+  String mobNo;
+  LoginController({required this.mobNo});
   @override
   State<LoginController> createState() => LoginControllerState();
 }
 
 class LoginControllerState extends State<LoginController> {
+  String _phoneNumber="";
   bool checkStatus = true;
   TextEditingController loginTextField = TextEditingController();
+  FocusNode _focusNode = FocusNode();
   TextEditingController countrySearchTextFiled = TextEditingController();
   var countriesData;
   var results;
@@ -49,11 +54,15 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
+    if(widget.mobNo!="");
+    loginTextField.text=widget.mobNo;
+    hint_picker() ;
   }
 
   @override
   void dispose() {
     dialogStreamController.close();
+    widget.mobNo="";
     loginTextField.dispose();
     countrySearchTextFiled.dispose();
     super.dispose();
@@ -159,7 +168,11 @@ class LoginControllerState extends State<LoginController> {
   validateAndSendOTP() {
     if (loginTextField.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please enter your Credentials")));
+          const SnackBar(content: Text("Please enter your mobile number")));
+    }
+    else if(loginTextField.text.length<10 || loginTextField.text.startsWith("0")||loginTextField.text.startsWith("2")||loginTextField.text.startsWith("3")||loginTextField.text.startsWith("5")){
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Enter a valid mobile number")));
     } else {
       if (checkStatus == true) {
         verifyIpCountry(loginTextField.text);
@@ -363,47 +376,67 @@ class LoginControllerState extends State<LoginController> {
           ],
           child: Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.teal,
-              toolbarHeight: 1,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.white,
+              elevation: 1,
+              title: Center(
+                  child: Container(
+                    height: 100,
+                    width: MediaQuery.of(context).size.width,
+                    // color: Colors.white,
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: Container(
+                        height: 30,
+                        // width: 200,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("images/indiamartLogo.png"),
+                              fit: BoxFit.contain),
+                        ),
+                      ),
+                    ),
+                  )),
             ),
+            backgroundColor: Colors.white,
             body: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     children: <Widget>[
-                      Container(
-                        height: 100,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.black12,
-                        alignment: Alignment.center,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            height: 60,
-                            width: 200,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage("images/indiamartLogo.png"),
-                                  fit: BoxFit.contain),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   height: 100,
+                      //   width: MediaQuery.of(context).size.width,
+                      //   color: Colors.black12,
+                      //   alignment: Alignment.center,
+                      //   child: Align(
+                      //     alignment: Alignment.center,
+                      //     child: Container(
+                      //       height: 60,
+                      //       width: 200,
+                      //       decoration: const BoxDecoration(
+                      //         image: DecorationImage(
+                      //             image: AssetImage("images/indiamartLogo.png"),
+                      //             fit: BoxFit.contain),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       const SizedBox(
                         height: 20,
                       ),
                       Text(isIndian == true
                           ? "Please enter your 10 digit mobile number to begin"
-                          : "Enter your e-mail address to help us begin"),
+                          : "Enter your e-mail address to help us begin",style: TextStyle(fontSize: 12),),
                       const SizedBox(
                         height: 10,
                       ),
                       Container(
                         decoration: BoxDecoration(border: Border.all()),
-                        height: 70,
+                        height: 60,
                         width: MediaQuery.of(context).size.width - 20,
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () {
                             countrySearchTextFiled.text = "";
                             searching = false;
@@ -427,7 +460,7 @@ class LoginControllerState extends State<LoginController> {
                               ),
                               Text(
                                 "+$countryCode",
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(fontSize: 15),
                               ),
                               const Icon(Icons.arrow_drop_down_rounded),
                               const VerticalDivider(
@@ -436,22 +469,25 @@ class LoginControllerState extends State<LoginController> {
                               Expanded(
                                 child: TextField(
                                   textInputAction: TextInputAction.go,
+                                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
                                   keyboardType: isIndian
                                       ? TextInputType.number
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
-                                  autofocus: true,
+                                  focusNode: _focusNode,
+                                  autofocus: false,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},
-                                  onTap: () {},
+                                  onTap: () {
+                                  },
                                   controller: loginTextField,
                                   decoration: InputDecoration(
-                                    labelText: isIndian
-                                        ? "Enter your Mobile number."
-                                        : "Please Enter your Email Address",
+                                    // labelText: isIndian
+                                    //     ? "Enter your Mobile number."
+                                    //     : "Please Enter your Email Address",
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.all(8),
+                                    // contentPadding: const EdgeInsets.all(8),
                                   ),
                                 ),
                               ),
@@ -467,7 +503,7 @@ class LoginControllerState extends State<LoginController> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                              "Don't worry! Your details are safe with us."),
+                              "Don't worry! Your details are safe with us.",style: TextStyle(fontSize: 12),),
                           const SizedBox(
                             width: 10,
                           ),
@@ -495,7 +531,7 @@ class LoginControllerState extends State<LoginController> {
                                     checkStatus = value ?? false;
                                   });
                                 }),
-                            const Text("I accept all the "),
+                            const Text("I accept all the ",style: TextStyle(fontSize: 12),),
                             InkWell(
                               onTap: () {
                                 Navigator.push(
@@ -510,13 +546,14 @@ class LoginControllerState extends State<LoginController> {
                                     ));
                               },
                               child: Text(
-                                "Terms",
+                                "terms",
                                 style: TextStyle(
-                                  color: Colors.blue[900],
+                                  color: Colors.teal[400],
                                   decoration: TextDecoration.underline,
                                   decorationColor: Colors.grey,
                                   decorationThickness: 1,
-                                  decorationStyle: TextDecorationStyle.dashed,
+                                  // decorationStyle: TextDecorationStyle.dashed,
+                                  fontSize: 12
                                 ),
                               ),
                             ),
@@ -527,7 +564,7 @@ class LoginControllerState extends State<LoginController> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => webview_class(
-                                        title: "",
+                                        title: "Privacy Policy",
                                         initialUrl:
                                             "https://m.indiamart.com/privacy-policy.html",
                                         navMode: '1',
@@ -535,13 +572,14 @@ class LoginControllerState extends State<LoginController> {
                                     ));
                               },
                               child: Text(
-                                "Privacy Policy",
+                                "privacy policy",
                                 style: TextStyle(
-                                  color: Colors.blue[900],
+                                  color: Colors.teal[400],
                                   decoration: TextDecoration.underline,
                                   decorationColor: Colors.grey,
                                   decorationThickness: 1,
-                                  decorationStyle: TextDecorationStyle.dashed,
+                                  // decorationStyle: TextDecorationStyle.dashed,
+                                  fontSize: 12
                                 ),
                               ),
                             )
@@ -573,4 +611,22 @@ class LoginControllerState extends State<LoginController> {
               ),
             ),
           ));
+
+   void hint_picker()async {
+    final String? phone = await AccountPicker.phoneHint();
+    setState(() {
+      if(phone!=null && phone!="") {
+        _phoneNumber = phone;
+        loginTextField.text = _phoneNumber.replaceFirst('+91', '');
+        loginTextField.selection = TextSelection.collapsed(offset: loginTextField.text.length);
+        validateAndSendOTP();
+      }
+      else
+        setState(() {
+          loginTextField.text=widget.mobNo;
+          // _focusNode.requestFocus();
+        });
+    });
+    print("phonenumber=$_phoneNumber");
+  }
 }
