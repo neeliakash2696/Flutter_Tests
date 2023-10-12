@@ -42,7 +42,9 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   List<String> dataArray = [];
   String searchQuery = "";
   int maxCount = 5;
-
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
   // View Did Load
   @override
   void initState() {
@@ -50,6 +52,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     focus.requestFocus();
     getRecents(widget.word);
     formattedEndDate();
+    fetchSavedData();
     if (widget.word != null && widget.word != "") {
       hasText = true;
       // getRecents(widget.word);
@@ -149,10 +152,10 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       if (query.isEmpty) {
         var logtime = formattedEndDate();
         pathUrl =
-            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&count=15&AK=${FlutterTests.AK}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
+            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Default-Seller&count=15&AK=${FlutterTests.ak}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
       } else
         pathUrl =
-            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.AK}&VALIDATION_GLID=136484661&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=7983071546&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
+            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.ak}&VALIDATION_GLID=${FlutterTests.glid}&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=${FlutterTests.mobNo}&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
       print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -478,5 +481,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       // Handle any exceptions here.
       return ""; // Or return a default value.
     }
+  }
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }

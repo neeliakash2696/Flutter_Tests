@@ -4,6 +4,7 @@ as FlutterTests;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LimitedChipsList extends StatefulWidget {
   @override
@@ -12,10 +13,13 @@ class LimitedChipsList extends StatefulWidget {
 
 class _LimitedChipsListState extends State<LimitedChipsList> {
   List<String> dataArray = [];
-
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     getRecents();
   }
 
@@ -57,7 +61,7 @@ class _LimitedChipsListState extends State<LimitedChipsList> {
     try {
       var logtime = formattedEndDate();
       String pathUrl =
-        "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&count=10&AK=${FlutterTests.AK}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
+        "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Default-Seller&count=10&AK=${FlutterTests.ak}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
            print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -90,5 +94,14 @@ class _LimitedChipsListState extends State<LimitedChipsList> {
       // Handle any exceptions here.
       return ""; // Or return a default value.
     }
+  }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }

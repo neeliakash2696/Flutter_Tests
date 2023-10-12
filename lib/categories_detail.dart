@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/SpeechToTextConverter.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'ImportantSuppilesDetailsList.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
     as FlutterTests;
@@ -32,10 +33,13 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
   List<String> fnameArray = [];
   List<String> imagesArray = [];
   List<String> idsArray = [];
-
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     getCategories();
   }
 
@@ -188,7 +192,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                         id: idsArray[index],
                                         name: nameArray[index],
                                         api:
-                                            "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=${FlutterTests.AK}&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
+                                            "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=${FlutterTests.ak}&modid=ANDROID&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}",
                                         pageNo: (widget.pageNo) + 1,
                                       )));
                         }
@@ -292,5 +296,14 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                 cityIndex: 0),
             opaque: false,
             fullscreenDialog: true));
+  }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }

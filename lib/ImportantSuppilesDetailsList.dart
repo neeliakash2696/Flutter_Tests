@@ -2,6 +2,7 @@
 
 import 'package:flutter_tests/search.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -96,11 +97,14 @@ class ImportantSuppilesDetailsListState
   // String locale = 'en_US';
   List<String> related = [];
   List<String> relatedfname = [];
-
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
   // View Did Load
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     WidgetsBinding.instance.addObserver(this);
     encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
@@ -326,9 +330,9 @@ class ImportantSuppilesDetailsListState
         biztype_data = SellerTypeData.getValueFromName(biztype);
       // print("biztype_data=$biztype_data");
       String pathUrl = "";
-      print("api=$cityId");
+      print("apizzz=${FlutterTests.ak}");
       pathUrl =
-          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=136484661&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.AK}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=136484661&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=${FlutterTests.glid}&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.ak}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -892,6 +896,15 @@ class ImportantSuppilesDetailsListState
     } else {
       return 'images/company_icon.png';
     }
+  }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }
 

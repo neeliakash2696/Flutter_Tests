@@ -39,7 +39,9 @@ class DetailsRequestState extends State<DetailsRequest> {
 
   @override
   void initState() {
+    if (Platform.isAndroid) {
     _getEmails();
+    }
     super.initState();
   }
   Future<void> _getEmails() async {
@@ -225,7 +227,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
                             child: TextField(
-                              textInputAction: TextInputAction.unspecified,
+                              textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.name,
                               autocorrect: false,
                               autofocus: true,
@@ -267,13 +269,14 @@ class DetailsRequestState extends State<DetailsRequest> {
                               child: Column(
                                 children: <Widget>[
                                   TextField(
+                                    focusNode: emailTextFieldFocus,
                                     textInputAction: TextInputAction.unspecified,
                                     keyboardType: TextInputType.name,
                                     autocorrect: false,
                                     autofocus: true,
                                     onSubmitted: (value) {
                                       // keyboard done action
-                                      emailTextFieldFocus.requestFocus();
+                                      FocusScope.of(context).unfocus();
                                     },
                                     onChanged: (searchingText) {},
                                     onEditingComplete: () {},
@@ -345,8 +348,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
+                            child: Row(children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: TextButton.icon(
@@ -416,76 +418,15 @@ class DetailsRequestState extends State<DetailsRequest> {
                                         hintText: "Enter Pincode",
                                         contentPadding: EdgeInsets.only(left:8),
                                         border: OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(width: 1, color: Colors.grey),
-                                        ),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Colors.grey),
                                       ),
                                     ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 10, 100, 20),
-                            child: TextField(
-                              focusNode: pinCodeTextFieldFocus,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.number,
-                              autocorrect: false,
-                              onSubmitted: (value) {
-                                // keyboard done action
-                                FocusScope.of(context).unfocus();
-                                proceedToHome();
-                              },
-                              onChanged: (searchingText) {},
-                              onEditingComplete: () {},
-                              onTapOutside: (event) {},
-                              onTap: () {},
-                              controller: pincodeTextField,
-                              decoration: const InputDecoration(
-                                labelText: "Enter Pincode",
-                                contentPadding: EdgeInsets.all(8),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 1, color: Colors.grey),
                                 ),
-                              ],
                             ),
-                          ),
-                          // Row(
-                          //   children: [
-                          //     Padding(
-                          //       padding:
-                          //           const EdgeInsets.only(left: 120, top: 10),
-                          //       child: Text(
-                          //         "or",
-                          //         style: TextStyle(fontSize: 16),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(20, 10, 100, 20),
-                          //   child: TextField(
-                          //     focusNode: pinCodeTextFieldFocus,
-                          //     textInputAction: TextInputAction.done,
-                          //     keyboardType: TextInputType.number,
-                          //     autocorrect: false,
-                          //     onSubmitted: (value) {
-                          //       // keyboard done action
-                          //     },
-                          //     onChanged: (searchingText) {},
-                          //     onEditingComplete: () {},
-                          //     onTapOutside: (event) {},
-                          //     onTap: () {},
-                          //     controller: pincodeTextField,
-                          //     decoration: const InputDecoration(
-                          //       labelText: "Enter Pincode",
-                          //       contentPadding: EdgeInsets.all(8),
-                          //       enabledBorder: OutlineInputBorder(
-                          //         borderSide:
-                          //             BorderSide(width: 1, color: Colors.grey),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+                            ]),
+                          )
                         ],
                       ),
                     ),

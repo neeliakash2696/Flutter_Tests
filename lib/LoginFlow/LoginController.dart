@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 
-import '../otp_veification.dart';
+import 'otp_veification.dart';
 
 class LoginController extends StatefulWidget {
   String mobNo;
@@ -475,7 +475,7 @@ class LoginControllerState extends State<LoginController> {
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
                                   focusNode: _focusNode,
-                                  autofocus: false,
+                                  autofocus: true,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},

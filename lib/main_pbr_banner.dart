@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
 as FlutterTests;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPBRBanner extends StatefulWidget {
   @override
@@ -20,9 +21,14 @@ class MainPBRBanner extends StatefulWidget {
 class _MainPBRBannerState extends State<MainPBRBanner> {
   List<String> optionList = [];
   String selectedValue = 'Option 1'; // Initialize with the first option
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
+
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     getUnits();
   }
 
@@ -183,7 +189,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
 
   getUnits() async {
     try {
-      String pathUrl = "https://mapi.indiamart.com//wservce/buyleads/getISQ/?encode=1&VALIDATION_GLID=136484661&generic_flag=1&APP_SCREEN_NAME=Pbr Isq Screen&format=1&AK=${FlutterTests.AK}&modid=ANDROID&prod_name=${widget.productName}&token=imobile@15061981&APP_USER_ID=136484661&glid=136484661&APP_MODID=ANDROID&APP_ACCURACY=0.0&cat_type=3&APP_LATITUDE=0.0&fixed_attr=1&APP_LONGITUDE=0.0&VALIDATION_USER_IP=49.36.220.222&isq_format=1&app_version_no=13.2.0&country_iso=IN&VALIDATION_USERCONTACT=1511122233";
+      String pathUrl = "https://mapi.indiamart.com//wservce/buyleads/getISQ/?encode=1&VALIDATION_GLID=${FlutterTests.glid}&generic_flag=1&APP_SCREEN_NAME=Pbr Isq Screen&format=1&AK=${FlutterTests.ak}&modid=ANDROID&prod_name=${widget.productName}&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&glid=${FlutterTests.glid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&cat_type=3&APP_LATITUDE=0.0&fixed_attr=1&APP_LONGITUDE=0.0&VALIDATION_USER_IP=49.36.220.222&isq_format=1&app_version_no=13.2.0&country_iso=IN&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
       print("pathuurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -212,6 +218,15 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }
 
