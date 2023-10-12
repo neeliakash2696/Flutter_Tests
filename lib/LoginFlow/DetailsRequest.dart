@@ -16,7 +16,11 @@ class DetailsRequest extends StatefulWidget {
   String lname;
   String email;
   String city;
-  DetailsRequest({required this.fname, required this.lname, required this.email, required this.city});
+  DetailsRequest(
+      {required this.fname,
+      required this.lname,
+      required this.email,
+      required this.city});
   @override
   State<DetailsRequest> createState() => DetailsRequestState();
 }
@@ -28,30 +32,31 @@ class DetailsRequestState extends State<DetailsRequest> {
   FocusNode emailTextFieldFocus = FocusNode();
   FocusNode pinCodeTextFieldFocus = FocusNode();
 
-
   String? currentAddress;
   Position? currentPosition;
   static const platform = const MethodChannel('samples.flutter.dev/battery');
   List<dynamic> emailList = <dynamic>[];
-  bool showDropdown=false;
+  bool showDropdown = false;
 
   // List<String> items=["kkk","kjjj"];
 
   @override
   void initState() {
-    _getEmails();
+    if (Platform.isAndroid) {
+      _getEmails();
+    }
     super.initState();
   }
+
   Future<void> _getEmails() async {
     final permissionStatus = await Permission.contacts.request();
-    if (!(permissionStatus.isGranted))
-      return;
+    if (!(permissionStatus.isGranted)) return;
     try {
       var list = await platform.invokeMethod('getEmailList');
       if (list != null && mounted) {
         setState(() {
           emailList = list;
-          emailTextField.text=emailList[0];
+          emailTextField.text = emailList[0];
           print("emaillist=$emailList");
         });
       }
@@ -59,6 +64,7 @@ class DetailsRequestState extends State<DetailsRequest> {
       print(e.message);
     }
   }
+
   @override
   void dispose() {
     nameTextField.dispose();
@@ -165,22 +171,22 @@ class DetailsRequestState extends State<DetailsRequest> {
               elevation: 1,
               title: Center(
                   child: Container(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    // color: Colors.white,
-                    alignment: Alignment.center,
-                    child: Center(
-                      child: Container(
-                        height: 30,
-                        // width: 200,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage("images/indiamartLogo.png"),
-                              fit: BoxFit.contain),
-                        ),
-                      ),
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                // color: Colors.white,
+                alignment: Alignment.center,
+                child: Center(
+                  child: Container(
+                    height: 30,
+                    // width: 200,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("images/indiamartLogo.png"),
+                          fit: BoxFit.contain),
                     ),
-                  )),
+                  ),
+                ),
+              )),
             ),
             body: SafeArea(
               child: Column(
@@ -225,7 +231,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
                             child: TextField(
-                              textInputAction: TextInputAction.unspecified,
+                              textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.name,
                               autocorrect: false,
                               autofocus: true,
@@ -238,9 +244,9 @@ class DetailsRequestState extends State<DetailsRequest> {
                               onTapOutside: (event) {},
                               onTap: () {
                                 setState(() {
-                                  showDropdown=false;
+                                  showDropdown = false;
                                 });
-                                },
+                              },
                               controller: nameTextField,
                               decoration: const InputDecoration(
                                 hintText: "Contact Name",
@@ -255,32 +261,36 @@ class DetailsRequestState extends State<DetailsRequest> {
                           WillPopScope(
                             onWillPop: () async {
                               if (showDropdown) {
-                              setState(() {
-                              showDropdown = false;
-                              });
-                              return false;
+                                setState(() {
+                                  showDropdown = false;
+                                });
+                                return false;
                               }
                               return true;
-                              },
+                            },
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 10, 20, 20),
                               child: Column(
                                 children: <Widget>[
                                   TextField(
-                                    textInputAction: TextInputAction.unspecified,
+                                    focusNode: emailTextFieldFocus,
+                                    textInputAction:
+                                        TextInputAction.unspecified,
                                     keyboardType: TextInputType.name,
                                     autocorrect: false,
                                     autofocus: true,
                                     onSubmitted: (value) {
                                       // keyboard done action
-                                      emailTextFieldFocus.requestFocus();
+                                      FocusScope.of(context).unfocus();
                                     },
                                     onChanged: (searchingText) {},
                                     onEditingComplete: () {},
-                                    scrollPhysics: NeverScrollableScrollPhysics(),
-                                    controller:emailTextField ,
-                                    onTapOutside: (event){
-                                      showDropdown =false;
+                                    scrollPhysics:
+                                        NeverScrollableScrollPhysics(),
+                                    controller: emailTextField,
+                                    onTapOutside: (event) {
+                                      showDropdown = false;
                                     },
                                     onTap: () {
                                       setState(() {
@@ -304,26 +314,36 @@ class DetailsRequestState extends State<DetailsRequest> {
                                               (item) => Column(
                                                 children: [
                                                   ListTile(
-                                            title: Text(item),
-                                            onTap: () {
-                                                  // Handle item selection
-                                                  print('Selected: $item');
-                                                  setState(() {
-                                                    emailTextField.text=item;
-                                                    emailTextField.selection = TextSelection.collapsed(offset: emailTextField.text.length);
-                                                    showDropdown = false;
-                                                  });
-                                                  },
-                                                ),
-                                                  if(item!=emailList[emailList.length-1])
-                                                  Divider(  // Divider to separate items
-                                                    color: Colors.grey[300],
-                                                    height: 1,
-                                                    thickness: 1,
+                                                    title: Text(item),
+                                                    onTap: () {
+                                                      // Handle item selection
+                                                      print('Selected: $item');
+                                                      setState(() {
+                                                        emailTextField.text =
+                                                            item;
+                                                        emailTextField
+                                                                .selection =
+                                                            TextSelection.collapsed(
+                                                                offset:
+                                                                    emailTextField
+                                                                        .text
+                                                                        .length);
+                                                        showDropdown = false;
+                                                      });
+                                                    },
                                                   ),
+                                                  if (item !=
+                                                      emailList[
+                                                          emailList.length - 1])
+                                                    Divider(
+                                                      // Divider to separate items
+                                                      color: Colors.grey[300],
+                                                      height: 1,
+                                                      thickness: 1,
+                                                    ),
                                                 ],
                                               ),
-                                        )
+                                            )
                                             .toList(),
                                       ),
                                     ),
@@ -345,147 +365,88 @@ class DetailsRequestState extends State<DetailsRequest> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: TextButton.icon(
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all(
-                                          Colors.transparent),
-                                      shape: MaterialStateProperty.all<
-                                          OutlinedBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          side: BorderSide(
-                                            color: Colors.teal, // Border color
-                                            width: 1.0, // Border width
-                                          ),
+                            child: Row(children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: TextButton.icon(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.transparent),
+                                    shape: MaterialStateProperty.all<
+                                        OutlinedBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        side: BorderSide(
+                                          color: Colors.teal, // Border color
+                                          width: 1.0, // Border width
                                         ),
                                       ),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        showDropdown=false;
-                                      });
-                                      // get Location
-                                      FocusScope.of(context).unfocus();
-                                      getCurrentPosition();
-                                    },
-                                    icon: Icon(
-                                      Icons.gps_fixed,
-                                      color: Colors.teal,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      showDropdown = false;
+                                    });
+                                    // get Location
+                                    FocusScope.of(context).unfocus();
+                                    getCurrentPosition();
+                                  },
+                                  icon: Icon(
+                                    Icons.gps_fixed,
+                                    color: Colors.teal,
+                                  ),
+                                  label: Text(
+                                    'Use current location',
+                                    style: TextStyle(
+                                      color: Colors.teal[300],
+                                      fontSize: 15,
+                                      // fontWeight: FontWeight.bold,
                                     ),
-                                    label: Text(
-                                      'Use current location',
-                                      style: TextStyle(
-                                        color: Colors.teal[300],
-                                        fontSize: 15,
-                                        // fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(
+                                  "or",
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width - 253,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 5),
+                                  child: TextField(
+                                    focusNode: pinCodeTextFieldFocus,
+                                    textInputAction: TextInputAction.done,
+                                    keyboardType: TextInputType.number,
+                                    autocorrect: false,
+                                    onSubmitted: (value) {
+                                      // keyboard done action
+                                    },
+                                    onChanged: (searchingText) {},
+                                    onEditingComplete: () {},
+                                    onTapOutside: (event) {},
+                                    onTap: () {
+                                      setState(() {
+                                        showDropdown = false;
+                                      });
+                                    },
+                                    controller: pincodeTextField,
+                                    decoration: const InputDecoration(
+                                      hintText: "Enter Pincode",
+                                      contentPadding: EdgeInsets.only(left: 8),
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1, color: Colors.grey),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left:5.0),
-                                  child: Text("or",style: TextStyle(color: Colors.grey[400]),),
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width - 253,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: TextField(
-                                      focusNode: pinCodeTextFieldFocus,
-                                      textInputAction: TextInputAction.done,
-                                      keyboardType: TextInputType.number,
-                                      autocorrect: false,
-                                      onSubmitted: (value) {
-                                        // keyboard done action
-                                      },
-                                      onChanged: (searchingText) {},
-                                      onEditingComplete: () {},
-                                      onTapOutside: (event) {},
-                                      onTap: () {
-                                        setState(() {
-                                          showDropdown=false;
-                                        });
-                                      },
-                                      controller: pincodeTextField,
-                                      decoration: const InputDecoration(
-                                        hintText: "Enter Pincode",
-                                        contentPadding: EdgeInsets.only(left:8),
-                                        border: OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(width: 1, color: Colors.grey),
-                                        ),
-                                      ),
-                                    ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 10, 100, 20),
-                            child: TextField(
-                              focusNode: pinCodeTextFieldFocus,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.number,
-                              autocorrect: false,
-                              onSubmitted: (value) {
-                                // keyboard done action
-                                FocusScope.of(context).unfocus();
-                                proceedToHome();
-                              },
-                              onChanged: (searchingText) {},
-                              onEditingComplete: () {},
-                              onTapOutside: (event) {},
-                              onTap: () {},
-                              controller: pincodeTextField,
-                              decoration: const InputDecoration(
-                                labelText: "Enter Pincode",
-                                contentPadding: EdgeInsets.all(8),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 1, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Row(
-                          //   children: [
-                          //     Padding(
-                          //       padding:
-                          //           const EdgeInsets.only(left: 120, top: 10),
-                          //       child: Text(
-                          //         "or",
-                          //         style: TextStyle(fontSize: 16),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(20, 10, 100, 20),
-                          //   child: TextField(
-                          //     focusNode: pinCodeTextFieldFocus,
-                          //     textInputAction: TextInputAction.done,
-                          //     keyboardType: TextInputType.number,
-                          //     autocorrect: false,
-                          //     onSubmitted: (value) {
-                          //       // keyboard done action
-                          //     },
-                          //     onChanged: (searchingText) {},
-                          //     onEditingComplete: () {},
-                          //     onTapOutside: (event) {},
-                          //     onTap: () {},
-                          //     controller: pincodeTextField,
-                          //     decoration: const InputDecoration(
-                          //       labelText: "Enter Pincode",
-                          //       contentPadding: EdgeInsets.all(8),
-                          //       enabledBorder: OutlineInputBorder(
-                          //         borderSide:
-                          //             BorderSide(width: 1, color: Colors.grey),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+                              ),
+                            ]),
+                          )
                         ],
                       ),
                     ),
