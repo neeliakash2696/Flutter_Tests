@@ -39,7 +39,7 @@ class Data {
   final String? geoipCityId;
   final String? geoipCityName;
   final String? geoipCountryIso;
- String? geoipCountryName;
+  final String? geoipCountryName;
   final int? geoipGeonameCityId;
   final String? geoipIpAddress;
   final String? geoipStateIso;
