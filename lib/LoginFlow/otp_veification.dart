@@ -70,8 +70,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
     otp3 = FocusNode();
     otp4 = FocusNode();
     String? appSignature;
-    if(Platform.isAndroid)
-    listenForCode();
+    if (Platform.isAndroid) listenForCode();
 
     SmsAutoFill().getAppSignature.then((signature) {
       setState(() {
@@ -368,8 +367,8 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                                         clear = true;
                                                         hideWidet();
                                                       });
-                                                      if(Platform.isAndroid)
-                                                      listenOtp();
+                                                      if (Platform.isAndroid)
+                                                        listenOtp();
                                                       print(
                                                           "visibility=$_isVisible");
                                                     },
@@ -531,7 +530,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                     child: Text(
                       'RESEND',
                       style: TextStyle(
-                          color: Colors.teal
+                          color: Colors.teal,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
