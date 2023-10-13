@@ -14,6 +14,9 @@ import 'package:flutter_tests/categories_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
     as FlutterTests;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'GlobalUtilities/GlobalConstants.dart';
 
 class ViewCategories extends StatefulWidget {
   @override
@@ -28,9 +31,14 @@ class _ViewCategoriesState extends State<ViewCategories> {
   List<String> imagesArray = [];
   List<String> idsArray = [];
 
+  // String? mobNo="";
+  // String? glid="";
+  // String? ak="";
+
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     getCategories();
   }
 
@@ -150,7 +158,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                     id: idsArray[index],
                                     name: nameArray[index],
                                     api:
-                                        "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${idsArray[index]}&AK=${FlutterTests.AK}&modid=ANDROID&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233",
+                                        "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${idsArray[index]}&AK=${FlutterTests.ak}&modid=ANDROID&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}",
                                     pageNo: 2,
                                   )));
                     },
@@ -198,8 +206,8 @@ class _ViewCategoriesState extends State<ViewCategories> {
 
   Future<void> getCategories() async {
     String path =
-        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=136484661&APP_SCREEN_NAME=Default-Seller&AK=${FlutterTests.AK}&token=immenu%407851&APP_USER_ID=136484661&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=136484661&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-    print("api=${FlutterTests.AK}");
+        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Default-Seller&AK=${FlutterTests.ak}&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+    print("api=$path");
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
     if (code == "402") {
@@ -251,4 +259,15 @@ class _ViewCategoriesState extends State<ViewCategories> {
             opaque: false,
             fullscreenDialog: true));
   }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact')??"";
+      glid=sharedPreferences.getString('glid')??"";
+      ak=sharedPreferences.getString('AK')??"";
+    });
+  }
 }
+
+

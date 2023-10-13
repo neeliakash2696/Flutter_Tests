@@ -496,7 +496,7 @@ class LoginControllerState extends State<LoginController> {
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
                                   focusNode: _focusNode,
-                                  autofocus: false,
+                                  autofocus: true,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},

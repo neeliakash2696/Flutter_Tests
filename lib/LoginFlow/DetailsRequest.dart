@@ -55,7 +55,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   @override
   void initState() {
     if (Platform.isAndroid) {
-      _getEmails();
+    _getEmails();
     }
     super.initState();
   }

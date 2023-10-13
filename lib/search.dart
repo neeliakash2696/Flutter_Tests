@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -17,6 +18,7 @@ import 'package:flutter_tests/recent_search_banner.dart';
 import 'package:flutter_tests/sellerType.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'ExpandablePageView.dart';
 import 'ImportantSuppilesDetailsList.dart';
@@ -99,13 +101,16 @@ class SearchState extends State<Search>
   int currentPage = 0;
   List<String> related = [];
   List<String> relatedfname = [];
-
+  String? mobNo="";
+  String? glid="";
+  String? ak="";
   bool isLoading = false;
 
   // View Did Load
   @override
   void initState() {
     super.initState();
+    fetchSavedData();
     WidgetsBinding.instance?.addObserver(this);
     encodedQueryParam = encodeString(widget.productFname);
     print(encodedQueryParam);
@@ -349,10 +354,9 @@ class SearchState extends State<Search>
         biztype_data = SellerTypeData.getValueFromName(biztype);
       String pathUrl = "";
       if (cityName == "All India") cityName = "";
-      print("api=$cityName");
       pathUrl =
-          // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.AK}&source=android.search&token=imartenquiryprovider&APP_USER_ID=136484661&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=1511122233";
+          // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.ak}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.ak}&source=android.search&token=imartenquiryprovider&APP_USER_ID=${FlutterTests.glid}&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -1119,6 +1123,16 @@ class SearchState extends State<Search>
     } else {
       return 'images/company_icon.png';
     }
+  }
+
+  void fetchSavedData() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      mobNo=sharedPreferences.getString('UserContact');
+      print("mobNo$mobNo");
+      glid=sharedPreferences.getString('glid');
+      ak=sharedPreferences.getString('AK');
+    });
   }
 }
 
