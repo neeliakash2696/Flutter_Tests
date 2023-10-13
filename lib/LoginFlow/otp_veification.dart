@@ -1,6 +1,8 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, use_build_context_synchronously, sort_child_properties_last
 
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:account_picker/account_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,7 +69,15 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
     otp2 = FocusNode();
     otp3 = FocusNode();
     otp4 = FocusNode();
-    listenOtp();
+    String? appSignature;
+    if(Platform.isAndroid)
+    listenForCode();
+
+    SmsAutoFill().getAppSignature.then((signature) {
+      setState(() {
+        appSignature = signature;
+      });
+    });
     super.initState();
   }
 
@@ -354,6 +364,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                                         clear = true;
                                                         hideWidet();
                                                       });
+                                                      if(Platform.isAndroid)
                                                       listenOtp();
                                                       print(
                                                           "visibility=$_isVisible");
@@ -458,7 +469,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                   onTap: () async {
                                     if (authkey.length == 4)
                                       apiCall(
-                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=${widget.platform}%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=${widget.countryId}&APP_SCREEN_NAME=Default-Buyer&verify_screen=${widget.platform}%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
                                     else
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
@@ -525,7 +536,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                         clearText: true,
                       );
                       apiCall(
-                          "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=${widget.ipAddress}&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                          "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.ipAddress}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryCode}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=${widget.ipAddress}&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                       Navigator.of(context).pop();
                     }),
                 CupertinoDialogAction(
@@ -626,15 +637,17 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
   }
 
   void listenOtp() async {
-    await SmsAutoFill().unregisterListener();
-    listenForCode();
+    // await SmsAutoFill().unregisterListener();
+    // listenForCode();
     await SmsAutoFill().listenForCode;
     print("OTP listen Called");
   }
 
   @override
   void codeUpdated() {
-
+    setState(() {
+      // otpCode = code!;
+    });
   }
 
 
