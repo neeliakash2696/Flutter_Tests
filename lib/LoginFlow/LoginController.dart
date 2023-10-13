@@ -14,6 +14,8 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
+import 'package:sms_autofill/sms_autofill.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'otp_veification.dart';
 
@@ -153,6 +155,14 @@ class LoginControllerState extends State<LoginController> {
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
+          if(Platform.isAndroid) {
+            var appSignatureID = await SmsAutoFill().getAppSignature;
+            Map sendOtpData = {
+              "mobile_number": loginTextField.text,
+              "app_signature_id": appSignatureID
+            };
+            print(sendOtpData);
+          }
           triggerOTP(
               currentPlatform,
               countryId,

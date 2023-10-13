@@ -47,7 +47,7 @@ class OTP_Verification extends StatefulWidget {
   State<OTP_Verification> createState() => _OTP_VerificationState();
 }
 
-class _OTP_VerificationState extends State<OTP_Verification> {
+class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
   bool _isVisible = true;
   late FocusNode otp1;
   late FocusNode otp2;
@@ -59,14 +59,15 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   String authkey = "";
   bool clear = false;
 
+  String codeValue = "";
+
   @override
   void initState() {
-    Future<String> signature=getSignature();
-    print("signature=$signature");
     otp1 = FocusNode();
     otp2 = FocusNode();
     otp3 = FocusNode();
     otp4 = FocusNode();
+    listenOtp();
     super.initState();
   }
 
@@ -183,26 +184,32 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                 ),
                               ],
                             ),
+
                           ),
                           const SizedBox(height: 16),
                           Center(
-                            child: OtpTextField(
-                              autoFocus: true,
-                              numberOfFields: 4,
-                              showFieldAsBox: false,
-                              focusedBorderColor: Colors.teal,
-                              enabledBorderColor: Colors.teal,
-                              cursorColor: Colors.teal,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(1),
-                              ],
-                              //runs when every textfield is filled
-                              onSubmit: (String verificationCode) {
-                                print("code=$verificationCode");
-                                authkey = verificationCode;
-                              },
-                              clearText: clear == true ? true : false,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(80,0,80,0),
+                              child: PinFieldAutoFill(
+                                cursor:Cursor(color: Colors.teal,width: 2,height: 25,enabled: true) ,
+                                currentCode: codeValue,
+                                decoration: UnderlineDecoration(
+                                  gapSpace: 5,
+                                  textStyle: const TextStyle(fontSize: 20, color: Colors.black),
+                                  colorBuilder: FixedColorBuilder(Colors.teal),
+                                ),
+                                codeLength: 4,
+                                onCodeChanged: (code) {
+                                  print("onCodeChanged $code");
+                                  setState(() {
+                                    codeValue = code.toString();
+                                    authkey=code??"";
+                                  });
+                                },
+                                onCodeSubmitted: (val) {
+                                  print("onCodeSubmitted $val");
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(
@@ -347,7 +354,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                                         clear = true;
                                                         hideWidet();
                                                       });
-
+                                                      listenOtp();
                                                       print(
                                                           "visibility=$_isVisible");
                                                     },
@@ -451,7 +458,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                   onTap: () async {
                                     if (authkey.length == 4)
                                       apiCall(
-                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=${widget.platform}%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
                                     else
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
@@ -618,10 +625,19 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     sharedPreferences.setString('DISTRICT', uds.glusrUsrDistrict);
   }
 
-  Future<String> getSignature() async {
-    String? signature = await SmsAutoFill().getAppSignature;
-    return signature;
+  void listenOtp() async {
+    await SmsAutoFill().unregisterListener();
+    listenForCode();
+    await SmsAutoFill().listenForCode;
+    print("OTP listen Called");
   }
+
+  @override
+  void codeUpdated() {
+
+  }
+
+
 
 }
 
@@ -659,6 +675,7 @@ class _OtpInputFieldsState extends State<OtpInputFields> {
       _focusNodes[i].dispose();
       _controllers[i].dispose();
     }
+    SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
