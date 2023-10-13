@@ -66,6 +66,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   @override
   void initState() {
     Future<String> signature=getSignature();
+    print("signature=$signature");
     otp1 = FocusNode();
     otp2 = FocusNode();
     otp3 = FocusNode();
@@ -454,7 +455,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                   onTap: () async {
                                     if (authkey.length == 4)
                                       apiCall(
-                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
                                     else
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
@@ -489,7 +490,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         print("ak check${loginData1.response.loginData?.imIss.AK}");
         // Success
         apiCall(
-            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData1.response.loginData?.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
+            "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData1.response.loginData?.imIss.AK}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=${widget.platform}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=${widget.ipAddress}&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
       } else {
         showDialog(
           context: context,
@@ -521,7 +522,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                         clearText: true,
                       );
                       apiCall(
-                          "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
+                          "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=${widget.ipAddress}&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                       Navigator.of(context).pop();
                     }),
                 CupertinoDialogAction(
@@ -556,7 +557,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
             uds.lastName == "" ||
             uds.email1 == "" ||
             uds.city == "")
-          Navigator.of(context).push(MaterialPageRoute(
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => DetailsRequest(
                     fname: uds.firstName,
                     lname: uds.lastName,

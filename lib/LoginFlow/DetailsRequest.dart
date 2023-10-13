@@ -225,306 +225,315 @@ class DetailsRequestState extends State<DetailsRequest> {
                 ),
               )),
             ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: <Widget>[
-                          // Container(
-                          //   height: 100,
-                          //   width: MediaQuery.of(context).size.width,
-                          //   color: Colors.black12,
-                          //   alignment: Alignment.center,
-                          //   child: Align(
-                          //     alignment: Alignment.center,
-                          //     child: Container(
-                          //       height: 60,
-                          //       width: 200,
-                          //       decoration: const BoxDecoration(
-                          //         image: DecorationImage(
-                          //             image: AssetImage(
-                          //                 "images/indiamartLogo.png"),
-                          //             fit: BoxFit.contain),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 20, right: 10),
-                            child: Text(
-                              "Please confirm your Contact Name and E-mail address",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(fontSize: 15),
+            body: WillPopScope(
+              onWillPop: () async {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => ViewCategories()));
+                return true;
+              },
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            // Container(
+                            //   height: 100,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   color: Colors.black12,
+                            //   alignment: Alignment.center,
+                            //   child: Align(
+                            //     alignment: Alignment.center,
+                            //     child: Container(
+                            //       height: 60,
+                            //       width: 200,
+                            //       decoration: const BoxDecoration(
+                            //         image: DecorationImage(
+                            //             image: AssetImage(
+                            //                 "images/indiamartLogo.png"),
+                            //             fit: BoxFit.contain),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+                            const SizedBox(
+                              height: 20,
                             ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
-                            child: TextField(
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.name,
-                              autocorrect: false,
-                              autofocus: true,
-                              onSubmitted: (value) {
-                                // keyboard done action
-                                emailTextFieldFocus.requestFocus();
-                              },
-                              onChanged: (searchingText) {},
-                              onEditingComplete: () {},
-                              onTapOutside: (event) {},
-                              onTap: () {
-                                setState(() {
-                                  showDropdown = false;
-                                });
-                              },
-                              controller: nameTextField,
-                              decoration: const InputDecoration(
-                                hintText: "Contact Name",
-                                contentPadding: EdgeInsets.all(8),
-                                border: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 1, color: Colors.grey),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 20, right: 10),
+                              child: Text(
+                                "Please confirm your Contact Name and E-mail address",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
+                              child: TextField(
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.name,
+                                autocorrect: false,
+                                autofocus: true,
+                                onSubmitted: (value) {
+                                  // keyboard done action
+                                  emailTextFieldFocus.requestFocus();
+                                },
+                                onChanged: (searchingText) {},
+                                onEditingComplete: () {},
+                                onTapOutside: (event) {},
+                                onTap: () {
+                                  setState(() {
+                                    showDropdown = false;
+                                  });
+                                },
+                                controller: nameTextField,
+                                decoration: const InputDecoration(
+                                  hintText: "Contact Name",
+                                  contentPadding: EdgeInsets.all(8),
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(width: 1, color: Colors.grey),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          WillPopScope(
-                            onWillPop: () async {
-                              if (showDropdown) {
-                                setState(() {
-                                  showDropdown = false;
-                                });
-                                return false;
-                              }
-                              return true;
-                            },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                              child: Column(
-                                children: <Widget>[
-                                  TextField(
-                                    focusNode: emailTextFieldFocus,
-                                    textInputAction:
-                                        TextInputAction.unspecified,
-                                    keyboardType: widget.isIndian == true
-                                        ? TextInputType.emailAddress
-                                        : TextInputType.number,
-                                    autocorrect: false,
-                                    autofocus: true,
-                                    onSubmitted: (value) {
-                                      // keyboard done action
-                                      FocusScope.of(context).unfocus();
-                                    },
-                                    onChanged: (searchText) {
-                                      setState(() {
-                                        isChanged=true;
-                                      });
-                                      filterList(searchText);
-                                    },
-                                    onEditingComplete: () {},
-                                    scrollPhysics:
-                                        NeverScrollableScrollPhysics(),
-                                    controller: emailTextField,
-                                    onTapOutside: (event) {
-                                      showDropdown = false;
-                                    },
-                                    onTap: () {
-                                      setState(() {
-                                        showDropdown = true;
-                                        if(isChanged==false)
-                                        filterList("");
-                                      });
-                                    },
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.all(8),
-                                      hintText: widget.isIndian == true
-                                          ? "Email"
-                                          : "Contact Number",
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                  if (showDropdown)
-                                    Container(
-                                      color: Colors.white,
-                                      child: ListView(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true, // This is important
-                                        children: filteredEmailList
-                                            .map(
-                                              (item) => Column(
-                                                children: [
-                                                  ListTile(
-                                                    title: Text(item),
-                                                    onTap: () {
-                                                      // Handle item selection
-                                                      print('Selected: $item');
-                                                      setState(() {
-                                                        emailTextField.text =
-                                                            item;
-                                                        emailTextField
-                                                                .selection =
-                                                            TextSelection.collapsed(
-                                                                offset:
-                                                                    emailTextField
-                                                                        .text
-                                                                        .length);
-                                                        showDropdown = false;
-                                                      });
-                                                    },
-                                                  ),
-                                                  if (item !=
-                                                      emailList[
-                                                          emailList.length - 1])
-                                                    Divider(
-                                                      // Divider to separate items
-                                                      color: Colors.grey[300],
-                                                      height: 1,
-                                                      thickness: 1,
-                                                    ),
-                                                ],
-                                              ),
-                                            )
-                                            .toList(),
+                            WillPopScope(
+                              onWillPop: () async {
+                                if (showDropdown) {
+                                  setState(() {
+                                    showDropdown = false;
+                                  });
+                                  return false;
+                                }
+                                return true;
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                                child: Column(
+                                  children: <Widget>[
+                                    TextField(
+                                      focusNode: emailTextFieldFocus,
+                                      textInputAction:
+                                          TextInputAction.unspecified,
+                                      keyboardType: widget.isIndian == true
+                                          ? TextInputType.emailAddress
+                                          : TextInputType.number,
+                                      autocorrect: false,
+                                      autofocus: true,
+                                      onSubmitted: (value) {
+                                        // keyboard done action
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      onChanged: (searchText) {
+                                        print("changed=$searchText");
+                                        setState(() {
+                                          isChanged=true;
+                                          showDropdown = true;
+                                        });
+                                        filterList(searchText);
+                                      },
+                                      onEditingComplete: () {},
+                                      scrollPhysics:
+                                          NeverScrollableScrollPhysics(),
+                                      controller: emailTextField,
+                                      onTapOutside: (event) {
+                                        showDropdown = false;
+                                      },
+                                      onTap: () {
+                                        setState(() {
+                                          showDropdown = true;
+                                          if(isChanged==false)
+                                          filterList("");
+                                        });
+                                      },
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.all(8),
+                                        hintText: widget.isIndian == true
+                                            ? "Email"
+                                            : "Contact Number",
+                                        border: OutlineInputBorder(),
                                       ),
                                     ),
-                                ],
+                                    if (showDropdown)
+                                      Container(
+                                        color: Colors.white,
+                                        child: ListView(
+                                          physics: NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true, // This is important
+                                          children: filteredEmailList
+                                              .map(
+                                                (item) => Column(
+                                                  children: [
+                                                    ListTile(
+                                                      title: Text(item),
+                                                      onTap: () {
+                                                        // Handle item selection
+                                                        print('Selected: $item');
+                                                        setState(() {
+                                                          emailTextField.text =
+                                                              item;
+                                                          emailTextField
+                                                                  .selection =
+                                                              TextSelection.collapsed(
+                                                                  offset:
+                                                                      emailTextField
+                                                                          .text
+                                                                          .length);
+                                                          showDropdown = false;
+                                                        });
+                                                      },
+                                                    ),
+                                                    if (item !=
+                                                        emailList[
+                                                            emailList.length - 1])
+                                                      Divider(
+                                                        // Divider to separate items
+                                                        color: Colors.grey[300],
+                                                        height: 1,
+                                                        thickness: 1,
+                                                      ),
+                                                  ],
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          if (widget.isIndian == true) ...{
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Select your Location",
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(fontSize: 15),
+                            if (widget.isIndian == true) ...{
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Select your Location",
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: TextButton.icon(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.transparent),
+                                        shape: MaterialStateProperty.all<
+                                            OutlinedBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            side: BorderSide(
+                                              color: Colors.teal, // Border color
+                                              width: 1.0, // Border width
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          showDropdown = false;
+                                        });
+                                        // get Location
+                                        FocusScope.of(context).unfocus();
+                                        getCurrentPosition();
+                                      },
+                                      icon: Icon(
+                                        Icons.gps_fixed,
+                                        color: Colors.teal,
+                                      ),
+                                      label: Text(
+                                        'Use current location',
+                                        style: TextStyle(
+                                          color: Colors.teal[300],
+                                          fontSize: 15,
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: TextButton.icon(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
-                                      shape: MaterialStateProperty.all<
-                                          OutlinedBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          side: BorderSide(
-                                            color: Colors.teal, // Border color
-                                            width: 1.0, // Border width
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5.0),
+                                    child: Text(
+                                      "or",
+                                      style: TextStyle(color: Colors.grey[400]),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width - 253,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: TextField(
+                                        focusNode: pinCodeTextFieldFocus,
+                                        textInputAction: TextInputAction.done,
+                                        keyboardType: TextInputType.number,
+                                        autocorrect: false,
+                                        onSubmitted: (value) {
+                                          // keyboard done action
+                                        },
+                                        onChanged: (searchingText) {},
+                                        onEditingComplete: () {},
+                                        onTapOutside: (event) {},
+                                        onTap: () {
+                                          setState(() {
+                                            showDropdown = false;
+                                          });
+                                        },
+                                        controller: pincodeTextField,
+                                        decoration: const InputDecoration(
+                                          hintText: "Enter Pincode",
+                                          contentPadding:
+                                              EdgeInsets.only(left: 8),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1, color: Colors.grey),
                                           ),
                                         ),
                                       ),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        showDropdown = false;
-                                      });
-                                      // get Location
-                                      FocusScope.of(context).unfocus();
-                                      getCurrentPosition();
-                                    },
-                                    icon: Icon(
-                                      Icons.gps_fixed,
-                                      color: Colors.teal,
-                                    ),
-                                    label: Text(
-                                      'Use current location',
-                                      style: TextStyle(
-                                        color: Colors.teal[300],
-                                        fontSize: 15,
-                                        // fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5.0),
-                                  child: Text(
-                                    "or",
-                                    style: TextStyle(color: Colors.grey[400]),
-                                  ),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width - 253,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: TextField(
-                                      focusNode: pinCodeTextFieldFocus,
-                                      textInputAction: TextInputAction.done,
-                                      keyboardType: TextInputType.number,
-                                      autocorrect: false,
-                                      onSubmitted: (value) {
-                                        // keyboard done action
-                                      },
-                                      onChanged: (searchingText) {},
-                                      onEditingComplete: () {},
-                                      onTapOutside: (event) {},
-                                      onTap: () {
-                                        setState(() {
-                                          showDropdown = false;
-                                        });
-                                      },
-                                      controller: pincodeTextField,
-                                      decoration: const InputDecoration(
-                                        hintText: "Enter Pincode",
-                                        contentPadding:
-                                            EdgeInsets.only(left: 8),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1, color: Colors.grey),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                            ),
-                          },
-                        ],
+                                ]),
+                              ),
+                            },
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      print("Next tapped");
-                      proceedToHome();
-                    },
-                    child: Container(
-                      height: 50,
-                      alignment: Alignment.bottomCenter,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.teal,
-                      child: const Center(
-                          child: Text(
-                        "NEXT",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w600),
-                      )),
-                    ),
-                  )
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        print("Next tapped");
+                        proceedToHome();
+                      },
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.bottomCenter,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.teal,
+                        child: const Center(
+                            child: Text(
+                          "NEXT",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600),
+                        )),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ));
