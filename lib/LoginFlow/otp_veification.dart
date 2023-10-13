@@ -554,7 +554,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
             uds.lastName == "" ||
             uds.email1 == "" ||
             uds.city == "")
-          Navigator.of(context).push(MaterialPageRoute(
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => DetailsRequest(
                     fname: uds.firstName,
                     lname: uds.lastName,
