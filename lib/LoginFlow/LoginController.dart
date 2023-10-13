@@ -8,14 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tests/InAppWebView.dart';
-import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'otp_veification.dart';
 
 class LoginController extends StatefulWidget {
@@ -125,6 +124,7 @@ class LoginControllerState extends State<LoginController> {
   }
 
   verifyIpCountry(String creds) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var platform = "";
     if (Platform.isIOS) {
       platform = "IOS";
@@ -149,6 +149,7 @@ class LoginControllerState extends State<LoginController> {
       print(verifyIpData.response.data.geoipCountryName);
       ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
       ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
+      prefs.setString("ipAddress", ipAddress);
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
@@ -199,13 +200,17 @@ class LoginControllerState extends State<LoginController> {
     }
   }
 
-  getPlatform() {
+  getPlatform() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (Platform.isAndroid) {
       currentPlatform = "ANDROID";
+      prefs.setString("platform", "ANDROID");
     } else if (Platform.isIOS) {
       currentPlatform = "Ios";
+      prefs.setString("platform", "iOS");
     } else if (kIsWeb) {
       currentPlatform = "WEB";
+      prefs.setString("platform", "WEB");
     }
   }
 

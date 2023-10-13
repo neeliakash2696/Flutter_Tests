@@ -1,17 +1,5 @@
 library FlutterTests;
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-late String ak;
-late String mobNo;
-late String glid;
-// void fetchSavedData() async{
-//   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-//     mobNo=sharedPreferences.getString('UserContact')!;
-//     glid=sharedPreferences.getString('glid')!;
-//     ak=sharedPreferences.getString('AK')!;
-// }
-// List<String> localSearchArray = [];
 final List<String> citiesArray = [
   "All India",
   "Ahmedabad",

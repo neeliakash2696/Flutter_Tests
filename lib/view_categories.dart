@@ -1,22 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:flutter_tests/LocationSelector.dart';
-
 import 'package:flutter_tests/SearchFieldController.dart';
 import 'package:flutter_tests/SpeechToTextConverter.dart';
 import 'package:flutter_tests/categories_detail.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
-    as FlutterTests;
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'GlobalUtilities/GlobalConstants.dart';
 
 class ViewCategories extends StatefulWidget {
   @override
@@ -31,14 +22,9 @@ class _ViewCategoriesState extends State<ViewCategories> {
   List<String> imagesArray = [];
   List<String> idsArray = [];
 
-  // String? mobNo="";
-  // String? glid="";
-  // String? ak="";
-
   @override
   void initState() {
     super.initState();
-    // fetchSavedData();
     getCategories();
   }
 
@@ -149,7 +135,14 @@ class _ViewCategoriesState extends State<ViewCategories> {
                 itemCount: resultsArray.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var glid = prefs.getString("glid");
+                      var ak = prefs.getString("AK");
+                      var currentPlatform = prefs.getString("platform");
+                      var ipAddress = prefs.getString("ipAddress");
+                      var mobile = prefs.getString("Mobile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -158,7 +151,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
                                     id: idsArray[index],
                                     name: nameArray[index],
                                     api:
-                                        "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${idsArray[index]}&AK=${FlutterTests.ak}&modid=ANDROID&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}",
+                                        "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=$glid&APP_SCREEN_NAME=SUBCAT-plant-machinery-34&mid=${idsArray[index]}&AK=$ak&modid=$currentPlatform&token=immenu%407851&APP_USER_ID=$glid&APP_MODID=$currentPlatform&mtype=grp&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=$mobile",
                                     pageNo: 2,
                                   )));
                     },
@@ -265,14 +258,5 @@ class _ViewCategoriesState extends State<ViewCategories> {
                 cityIndex: 0),
             opaque: false,
             fullscreenDialog: true));
-  }
-
-  void fetchSavedData() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    setState(() {
-      mobNo = sharedPreferences.getString('UserContact') ?? "";
-      glid = sharedPreferences.getString('glid') ?? "";
-      ak = sharedPreferences.getString('AK') ?? "";
-    });
   }
 }
