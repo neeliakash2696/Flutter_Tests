@@ -97,9 +97,9 @@ class ImportantSuppilesDetailsListState
   // String locale = 'en_US';
   List<String> related = [];
   List<String> relatedfname = [];
-  String? mobNo="";
-  String? glid="";
-  String? ak="";
+  String? mobNo = "";
+  String? glid = "";
+  String? ak = "";
   // View Did Load
   @override
   void initState() {
@@ -316,6 +316,12 @@ class ImportantSuppilesDetailsListState
       bool shouldUpdateSellerTypeList,
       String cityId,
       String cityName) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var glid = prefs.getString("glid");
+    var ak = prefs.getString("AK");
+    var currentPlatform = prefs.getString("platform");
+    var ipAddress = prefs.getString("ipAddress");
+    var mobile = prefs.getString("Mobile");
     DateTime then = DateTime.now();
     if (currentPage == 1) EasyLoading.show(status: 'Loading...');
     // print("cateory=$category");
@@ -328,11 +334,9 @@ class ImportantSuppilesDetailsListState
       String biztype_data = "";
       if (SellerTypeData.getValueFromName(biztype) != "")
         biztype_data = SellerTypeData.getValueFromName(biztype);
-      // print("biztype_data=$biztype_data");
       String pathUrl = "";
-      print("apizzz=${FlutterTests.ak}");
       pathUrl =
-          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=${FlutterTests.glid}&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.ak}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=$glid&flname=$category&APP_SCREEN_NAME=IMPCat%20Listing&start=$start&AK=$ak&cityid=$cityId&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=$glid&APP_MODID=$currentPlatform&in_country_iso=0&biz_filter=$biztype_data&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&end=$end&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=$mobile";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -898,12 +902,12 @@ class ImportantSuppilesDetailsListState
     }
   }
 
-  void fetchSavedData() async{
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact');
-      glid=sharedPreferences.getString('glid');
-      ak=sharedPreferences.getString('AK');
+      mobNo = sharedPreferences.getString('UserContact');
+      glid = sharedPreferences.getString('glid');
+      ak = sharedPreferences.getString('AK');
     });
   }
 }

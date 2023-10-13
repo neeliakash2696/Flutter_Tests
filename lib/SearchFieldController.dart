@@ -5,11 +5,8 @@ import 'package:flutter_tests/search.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
-    as FlutterTests;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-
 import 'SpeechToTextConverter.dart';
 
 enum SearchingFromScreen {
@@ -42,9 +39,9 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   List<String> dataArray = [];
   String searchQuery = "";
   int maxCount = 5;
-  String? mobNo="";
-  String? glid="";
-  String? ak="";
+  String? mobNo = "";
+  String? glid = "";
+  String? ak = "";
   // View Did Load
   @override
   void initState() {
@@ -146,16 +143,23 @@ class SearchFieldControllerState extends State<SearchFieldController> {
   // }
 
   getRecents(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var glid = prefs.getString("glid");
+    var ak = prefs.getString("AK");
+    var currentPlatform = prefs.getString("platform");
+    var ipAddress = prefs.getString("ipAddress");
+    var mobile = prefs.getString("Mobile");
     EasyLoading.show(status: 'Loading...');
     try {
       String pathUrl = "";
       if (query.isEmpty) {
         var logtime = formattedEndDate();
         pathUrl =
-            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Default-Seller&count=15&AK=${FlutterTests.ak}&source=Search Products On Scroll&type=2&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=49.36.220.222&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
-      } else
+            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=$glid&APP_SCREEN_NAME=Default-Seller&count=15&AK=$ak&source=Search Products On Scroll&type=2&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=$glid&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=$mobile";
+      } else {
         pathUrl =
-            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=ANDROID&AK=${FlutterTests.ak}&VALIDATION_GLID=${FlutterTests.glid}&VALIDATION_USER_IP=117.244.8.184&VALIDATION_USERCONTACT=${FlutterTests.mobNo}&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=145754117&APP_SCREEN_NAME=Default-Seller";
+            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=$currentPlatform&AK=$ak&VALIDATION_GLID=$glid&VALIDATION_USER_IP=$ipAddress&VALIDATION_USERCONTACT=$mobile&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=$glid&APP_SCREEN_NAME=Default-Seller";
+      }
       print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -287,12 +291,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                           hasText
                               ? searchBar.clear()
                               : openVoiceToTextConverter();
-                          if (hasText)
+                          if (hasText) {
                             setState(() {
                               hasText = false;
                               searchQuery = "";
                               getRecents(searchQuery);
                             });
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -482,12 +487,13 @@ class SearchFieldControllerState extends State<SearchFieldController> {
       return ""; // Or return a default value.
     }
   }
-  void fetchSavedData() async{
+
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact');
-      glid=sharedPreferences.getString('glid');
-      ak=sharedPreferences.getString('AK');
+      mobNo = sharedPreferences.getString('UserContact');
+      glid = sharedPreferences.getString('glid');
+      ak = sharedPreferences.getString('AK');
     });
   }
 }

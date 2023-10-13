@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously, curly_braces_in_flow_control_structures
 
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -101,9 +103,9 @@ class SearchState extends State<Search>
   int currentPage = 0;
   List<String> related = [];
   List<String> relatedfname = [];
-  String? mobNo="";
-  String? glid="";
-  String? ak="";
+  String? mobNo = "";
+  String? glid = "";
+  String? ak = "";
   bool isLoading = false;
 
   // View Did Load
@@ -245,16 +247,15 @@ class SearchState extends State<Search>
 
   void resetUI() {
     setState(() {
-
-        items=[];
-        titlesArray=[];
-        localityArray=[];
-        locationsArray=[];
-        sealArray=[];
-        imagesArray=[];
-        companyNameArray=[];
-        itemPricesArray=[];
-        phoneArray=[];
+      items = [];
+      titlesArray = [];
+      localityArray = [];
+      locationsArray = [];
+      sealArray = [];
+      imagesArray = [];
+      companyNameArray = [];
+      itemPricesArray = [];
+      phoneArray = [];
       // imagesArray?.clear();
       // phoneArray?.clear();
       // titlesArray?.clear();
@@ -316,7 +317,7 @@ class SearchState extends State<Search>
     currentCity = clickedCity;
     String productName = widget.productName;
     resetUI();
-  print("items.length=${items.length}");
+    print("items.length=${items.length}");
     startFromFirst();
     widget.productName = productName;
     getMoreDetails(encodedQueryParam, widget.biztype, 0, 9, 1, true,
@@ -344,6 +345,20 @@ class SearchState extends State<Search>
       String cityId,
       String cityName) async {
     DateTime then = DateTime.now();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var glid = prefs.getString("glid");
+    var ak = prefs.getString("AK");
+    var currentPlatform = prefs.getString("platform");
+    var ipAddress = prefs.getString("ipAddress");
+    var mobile = prefs.getString("Mobile");
+    var source = "";
+    if (Platform.isAndroid) {
+      source = "android.search";
+    } else if (Platform.isIOS) {
+      source = "ios.search";
+    } else {
+      source = "web.search";
+    }
     if (currentPage == 1) EasyLoading.show(status: 'Loading...');
     try {
       setState(() {
@@ -355,8 +370,7 @@ class SearchState extends State<Search>
       String pathUrl = "";
       if (cityName == "All India") cityName = "";
       pathUrl =
-          // "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=136484661&APP_SCREEN_NAME=Search%20Products&options_start=${start}&options_end=${end}&AK=${FlutterTests.ak}&source=android.search&implicit_info_latlong=&token=imartenquiryprovider&implicit_info_cityid_data=Delhi&APP_USER_ID=136484661&implicit_info_city_data=&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=0.0&prdsrc=0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=1511122233";
-          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=${biztype_data}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=${start}&options_end=${end}&AK=${FlutterTests.ak}&source=android.search&token=imartenquiryprovider&APP_USER_ID=${FlutterTests.glid}&implicit_info_city_data=${cityName}&APP_MODID=ANDROID&q=${category}&modeId=android.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=117.244.8.217&app_version_no=13.2.0&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+          "https://mapi.indiamart.com/wservce/im/search/?biztype_data=$biztype_data&VALIDATION_GLID=$glid&APP_SCREEN_NAME=Search%20Products&src=as-popular:pos=5:cat=-2:mcat=-2&options_start=$start&options_end=$end&AK=$ak&source=$source&token=imartenquiryprovider&APP_USER_ID=$glid&implicit_info_city_data=$cityName&APP_MODID=$currentPlatform&q=$category&modeId=$currentPlatform.search&APP_ACCURACY=33.543&prdsrc=1&APP_LATITUDE=&APP_LONGITUDE=&VALIDATION_USER_IP=$ipAddress&app_version_no=13.2.0&VALIDATION_USERCONTACT=$mobile";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -1125,13 +1139,13 @@ class SearchState extends State<Search>
     }
   }
 
-  void fetchSavedData() async{
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact');
+      mobNo = sharedPreferences.getString('UserContact');
       print("mobNo$mobNo");
-      glid=sharedPreferences.getString('glid');
-      ak=sharedPreferences.getString('AK');
+      glid = sharedPreferences.getString('glid');
+      ak = sharedPreferences.getString('AK');
     });
   }
 }
