@@ -1,6 +1,8 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, use_build_context_synchronously, sort_child_properties_last
 
 import 'dart:convert';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:account_picker/account_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,12 +55,14 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late FocusNode otp4;
   late VerifyOTP loginData1;
   late UDS uds;
-
+  String _code="";
   String authkey = "";
   bool clear = false;
 
   @override
   void initState() {
+    Future<String> signature=getSignature();
+    print("signature=$signature");
     otp1 = FocusNode();
     otp2 = FocusNode();
     otp3 = FocusNode();
@@ -447,7 +451,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                                   onTap: () async {
                                     if (authkey.length == 4)
                                       apiCall(
-                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=49.36.221.59&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=IN&APP_SCREEN_NAME=Default-Buyer&verify_screen=ANDROID%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=ANDROID&token=imobile@15061981&APP_USER_ID=&APP_MODID=ANDROID&user_mobile_country_code=91&mobile_num=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
                                     else
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
@@ -613,6 +617,12 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     sharedPreferences.setString('CONTACT_ADDRESS', uds.contactAddress);
     sharedPreferences.setString('DISTRICT', uds.glusrUsrDistrict);
   }
+
+  Future<String> getSignature() async {
+    String? signature = await SmsAutoFill().getAppSignature;
+    return signature;
+  }
+
 }
 
 class OtpInputFields extends StatefulWidget {

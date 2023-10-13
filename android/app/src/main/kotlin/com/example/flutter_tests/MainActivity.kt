@@ -20,11 +20,11 @@ class MainActivity: FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
                 call, result ->
             if (call.method == "getEmailList") {
-                val batteryLevel = getBatteryLevel()
-                if (batteryLevel != "") {
-                    result.success(batteryLevel)
+                val emailList = getEmailList()
+                if (emailList != "") {
+                    result.success(emailList)
                 } else {
-                    result.error("UNAVAILABLE", "Battery level not available.", null)
+                    result.error("UNAVAILABLE", "Email List not available.", null)
                 }
             } else {
                 result.notImplemented()
@@ -32,7 +32,7 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun getBatteryLevel(): Any {
+    private fun getEmailList(): Any {
         val emailList = mutableListOf<String>()
         val manager = AccountManager.get(applicationContext)
         val accounts = manager.getAccountsByType("com.google")
