@@ -55,7 +55,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   @override
   void initState() {
     if (Platform.isAndroid) {
-    _getEmails();
+      _getEmails();
     }
     super.initState();
   }
@@ -114,8 +114,9 @@ class DetailsRequestState extends State<DetailsRequest> {
   }
 
   proceedToHome() {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => ViewCategories()));
+    updateDetails();
+    // Navigator.of(context).pushReplacement(
+    //     MaterialPageRoute(builder: (context) => ViewCategories()));
   }
 
   Future<bool> handleLocationPermission() async {

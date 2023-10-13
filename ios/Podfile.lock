@@ -78,6 +78,8 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - sms_autofill (0.0.1):
+    - Flutter
   - speech_to_text (0.0.1):
     - Flutter
     - Try
@@ -101,6 +103,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sms_autofill (from `.symlinks/plugins/sms_autofill/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -139,6 +142,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sms_autofill:
+    :path: ".symlinks/plugins/sms_autofill/ios"
   speech_to_text:
     :path: ".symlinks/plugins/speech_to_text/ios"
   sqflite:
@@ -167,6 +172,7 @@ SPEC CHECKSUMS:
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  sms_autofill: c461043483362c3f1709ee76eaae6eb570b31686
   speech_to_text: b43a7d99aef037bd758ed8e45d79bbac035d2dfe
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
