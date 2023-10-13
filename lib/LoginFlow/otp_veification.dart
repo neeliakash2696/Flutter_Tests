@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:flutter_tests/DataModels/UserDetailSyncModel.dart';
 import 'package:flutter_tests/LoginFlow/LoginController.dart';
@@ -17,10 +16,7 @@ import 'package:flutter_tests/view_categories.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../DataModels/VerifyOTPDataModel.dart';
-import '../DataModels/UserDetailSyncModel.dart';
-import '../GlobalUtilities/GlobalConstants.dart';
 
 class OTP_Verification extends StatefulWidget {
   String mobNo;
@@ -557,7 +553,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
         print(
             "name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
         FocusScope.of(context).unfocus();
-        ak = loginData1.response.loginData?.imIss.AK ?? "";
+        String ak = loginData1.response.loginData?.imIss.AK ?? "";
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("AK", ak);
         // saveDetails(uds, ak);

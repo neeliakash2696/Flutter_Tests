@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tests/GlobalUtilities/GlobalConstants.dart'
-as FlutterTests;
+    as FlutterTests;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,9 +21,9 @@ class MainPBRBanner extends StatefulWidget {
 class _MainPBRBannerState extends State<MainPBRBanner> {
   List<String> optionList = [];
   String selectedValue = 'Option 1'; // Initialize with the first option
-  String? mobNo="";
-  String? glid="";
-  String? ak="";
+  String? mobNo = "";
+  String? glid = "";
+  String? ak = "";
 
   @override
   void initState() {
@@ -50,10 +50,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
                       padding: const EdgeInsets.fromLTRB(20, 10, 10, 0),
                       child: Container(
                         height: 100,
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width / 4,
+                        width: MediaQuery.of(context).size.width / 4,
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: NetworkImage(widget.img),
@@ -63,10 +60,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
                   ],
                 ),
                 Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width / 2,
+                  width: MediaQuery.of(context).size.width / 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,10 +114,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
                   ),
                   child: Container(
                     height: 40,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width - 120,
+                    width: MediaQuery.of(context).size.width - 120,
                     child: Row(
                       children: [
                         Expanded(
@@ -188,8 +179,15 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
   }
 
   getUnits() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var glid = prefs.getString("glid");
+    var ak = prefs.getString("AK");
+    var currentPlatform = prefs.getString("platform");
+    var ipAddress = prefs.getString("ipAddress");
+    var mobile = prefs.getString("Mobile");
     try {
-      String pathUrl = "https://mapi.indiamart.com//wservce/buyleads/getISQ/?encode=1&VALIDATION_GLID=${FlutterTests.glid}&generic_flag=1&APP_SCREEN_NAME=Pbr Isq Screen&format=1&AK=${FlutterTests.ak}&modid=ANDROID&prod_name=${widget.productName}&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&glid=${FlutterTests.glid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&cat_type=3&APP_LATITUDE=0.0&fixed_attr=1&APP_LONGITUDE=0.0&VALIDATION_USER_IP=49.36.220.222&isq_format=1&app_version_no=13.2.0&country_iso=IN&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+      String pathUrl =
+          "https://mapi.indiamart.com//wservce/buyleads/getISQ/?encode=1&VALIDATION_GLID=$glid&generic_flag=1&APP_SCREEN_NAME=Pbr%20Isq%20Screen&format=1&AK=$ak&modid=$currentPlatform&prod_name=${widget.productName}&token=imobile@15061981&APP_USER_ID=$glid&glid=glid&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&cat_type=3&APP_LATITUDE=0.0&fixed_attr=1&APP_LONGITUDE=0.0&VALIDATION_USER_IP=$ipAddress&isq_format=1&app_version_no=13.2.0&country_iso=IN&VALIDATION_USERCONTACT=$mobile";
       print("pathuurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
@@ -198,7 +196,7 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
       } else if (response.statusCode == 200) {
         dynamic resultsArray = json.decode(response.body)['DATA'][0];
         print("hashMapViewData=${resultsArray.length}");
-        if(resultsArray.length==2) {
+        if (resultsArray.length == 2) {
           resultsArray = resultsArray[1];
           print("hashMapViewData=${resultsArray[1]}");
         }
@@ -207,12 +205,14 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
         // print("hashMapViewData=$hashMapViewData");
         // Ensure unique values in optionList
         List<String> uniqueOptionList = getSpinnerAdapter(
-            context, resultsArray['IM_SPEC_OPTIONS_DESC'],resultsArray['IM_SPEC_MASTER_DESC']);
+            context,
+            resultsArray['IM_SPEC_OPTIONS_DESC'],
+            resultsArray['IM_SPEC_MASTER_DESC']);
 
         setState(() {
           optionList = uniqueOptionList;
           selectedValue =
-          optionList.isNotEmpty ? optionList[0] : ''; // Set selected value
+              optionList.isNotEmpty ? optionList[0] : ''; // Set selected value
         });
       }
     } catch (e) {
@@ -220,12 +220,12 @@ class _MainPBRBannerState extends State<MainPBRBanner> {
     }
   }
 
-  void fetchSavedData() async{
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact');
-      glid=sharedPreferences.getString('glid');
-      ak=sharedPreferences.getString('AK');
+      mobNo = sharedPreferences.getString('UserContact');
+      glid = sharedPreferences.getString('glid');
+      ak = sharedPreferences.getString('AK');
     });
   }
 }
@@ -235,7 +235,8 @@ class SpinnerAdapter {
 
   SpinnerAdapter(this.items);
 
-  DropdownButton<String> buildDropdownButton(String value, void Function(String?) onChanged) {
+  DropdownButton<String> buildDropdownButton(
+      String value, void Function(String?) onChanged) {
     return DropdownButton<String>(
       value: value,
       items: items,
@@ -244,42 +245,38 @@ class SpinnerAdapter {
   }
 }
 
-  List<String> getSpinnerAdapter(BuildContext context, String hashmap,String ques) {
+List<String> getSpinnerAdapter(
+    BuildContext context, String hashmap, String ques) {
+  if (context == null || hashmap == null) return ["null"];
 
-    if (context == null || hashmap==null)
-      return ["null"];
+  final List<String> optionList =
+      hashmap.contains('##') ? hashmap.split('##') : hashmap.split(',');
 
-    final List<String> optionList = hashmap.contains('##')
-        ? hashmap.split('##')
-        : hashmap.split(',');
+  // final List<dynamic>? optionListId = hashmap['optionsId']!.contains('##')
+  //     ? hashmap['optionsId']?.split('##')
+  //     : hashmap['optionsId']?.split(',');
 
-    // final List<dynamic>? optionListId = hashmap['optionsId']!.contains('##')
-    //     ? hashmap['optionsId']?.split('##')
-    //     : hashmap['optionsId']?.split(',');
+  String? ques1 = (ques == "Quantity Unit") ? "Select Unit" : ques;
 
-    String? ques1 = (ques=="Quantity Unit")
-        ? "Select Unit"
-        : ques;
+  optionList?.insert(0, '$ques1');
+  print("optionList=${optionList}");
+  // optionListId?.insert(0, '');
+  // optionListId?.insert(0, '');
 
-
-    optionList?.insert(0, '$ques1');
-    print("optionList=${optionList}");
-    // optionListId?.insert(0, '');
-    // optionListId?.insert(0, '');
-
-    // final List<DropdownMenuItem<String>>? dropdownItems = optionList
-    //     ?.asMap()
-    //     .entries
-    //     .map<DropdownMenuItem<String>>(
-    //       (entry) => DropdownMenuItem<String>(
-    //     value: optionListId?[entry.key],
-    //     child: Text(entry.value),
-    //   ),
-    // )
-    //     .toList();
-    //
-    return optionList;
+  // final List<DropdownMenuItem<String>>? dropdownItems = optionList
+  //     ?.asMap()
+  //     .entries
+  //     .map<DropdownMenuItem<String>>(
+  //       (entry) => DropdownMenuItem<String>(
+  //     value: optionListId?[entry.key],
+  //     child: Text(entry.value),
+  //   ),
+  // )
+  //     .toList();
+  //
+  return optionList;
 }
+
 class Constants {
   static const String TYPE = "type";
   static const String QUES = "ques";
@@ -289,6 +286,7 @@ class Constants {
   static const String ISCHECKED = "isChecked";
   static const String PREFILLED_DATA = "prefilledData";
 }
+
 Map<String, String> getMapViewData(dynamic jsonObject) {
   Map<String, String> map = {
     // Constants.TYPE: jsonObject['IM_SPEC_MASTER_TYPE'].toString(),
@@ -302,5 +300,3 @@ Map<String, String> getMapViewData(dynamic jsonObject) {
 
   return map;
 }
-
-

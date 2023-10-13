@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,9 +35,9 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
   List<String> fnameArray = [];
   List<String> imagesArray = [];
   List<String> idsArray = [];
-  String? mobNo="";
-  String? glid="";
-  String? ak="";
+  String? mobNo = "";
+  String? glid = "";
+  String? ak = "";
   @override
   void initState() {
     super.initState();
@@ -169,9 +171,16 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                     double gridTileWidth = constraints.maxWidth;
                     double gridTileHeight = constraints.maxHeight;
                     return GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         print("pageno");
                         print(widget.pageNo);
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        var glid = prefs.getString("glid");
+                        var ak = prefs.getString("AK");
+                        var currentPlatform = prefs.getString("platform");
+                        var ipAddress = prefs.getString("ipAddress");
+                        var mobile = prefs.getString("Mobile");
                         if (widget.pageNo >= 3) {
                           Navigator.push(
                               context,
@@ -192,7 +201,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
                                         id: idsArray[index],
                                         name: nameArray[index],
                                         api:
-                                            "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=${FlutterTests.ak}&modid=ANDROID&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}",
+                                            "https://mapi.indiamart.com/wservce/im/category/?flname=${fnameArray[index]}&VALIDATION_GLID=$glid&APP_SCREEN_NAME=MCAT-m_miscel-164&mid=${idsArray[index]}&AK=$ak&modid=$currentPlatform&token=immenu%407851&APP_USER_ID=$glid&APP_MODID=$currentPlatform&mtype=scat&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=$mobile",
                                         pageNo: (widget.pageNo) + 1,
                                       )));
                         }
@@ -301,12 +310,12 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
             fullscreenDialog: true));
   }
 
-  void fetchSavedData() async{
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact');
-      glid=sharedPreferences.getString('glid');
-      ak=sharedPreferences.getString('AK');
+      mobNo = sharedPreferences.getString('UserContact');
+      glid = sharedPreferences.getString('glid');
+      ak = sharedPreferences.getString('AK');
     });
   }
 }
