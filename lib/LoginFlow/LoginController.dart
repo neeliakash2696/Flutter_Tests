@@ -26,7 +26,7 @@ class LoginController extends StatefulWidget {
 }
 
 class LoginControllerState extends State<LoginController> {
-  String _phoneNumber="";
+  String _phoneNumber = "";
   bool checkStatus = true;
   TextEditingController loginTextField = TextEditingController();
   FocusNode _focusNode = FocusNode();
@@ -41,6 +41,8 @@ class LoginControllerState extends State<LoginController> {
   String currentCountry = "India";
   bool isIndian = true;
   var currentPlatform = "";
+  String ipCountry = "";
+  String ipAddress = "";
 
   late LoginResponse loginData;
   late GeoLocationResponse verifyIpData;
@@ -54,15 +56,17 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
-    if(widget.mobNo!="");
-    loginTextField.text=widget.mobNo;
-    hint_picker() ;
+    if (widget.mobNo != "") ;
+    loginTextField.text = widget.mobNo;
+    if (Platform.isAndroid) {
+      hint_picker();
+    }
   }
 
   @override
   void dispose() {
     dialogStreamController.close();
-    widget.mobNo="";
+    widget.mobNo = "";
     loginTextField.dispose();
     countrySearchTextFiled.dispose();
     super.dispose();
@@ -104,6 +108,8 @@ class LoginControllerState extends State<LoginController> {
                   platform: platform,
                   process: process,
                   requiredParam: requiredParam,
+                  ipCountry: ipCountry,
+                  ipAddress: ipAddress,
                 )));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -141,6 +147,8 @@ class LoginControllerState extends State<LoginController> {
       Map<String, dynamic> data = json.decode(response.body);
       verifyIpData = GeoLocationResponse.fromJson(data);
       print(verifyIpData.response.data.geoipCountryName);
+      ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
+      ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
@@ -160,8 +168,10 @@ class LoginControllerState extends State<LoginController> {
                 "${verifyIpData.response.status}\n${verifyIpData.response.message}")));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
+          loginTextField.text.replaceAll(" ", ""), "   ");
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -169,10 +179,16 @@ class LoginControllerState extends State<LoginController> {
     if (loginTextField.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please enter your mobile number")));
-    }
-    else if(loginTextField.text.length<10 || loginTextField.text.startsWith("0")||loginTextField.text.startsWith("2")||loginTextField.text.startsWith("3")||loginTextField.text.startsWith("5")){
+    } else if (loginTextField.text.length < 10 ||
+        loginTextField.text.startsWith("0") ||
+        loginTextField.text.startsWith("2") ||
+        loginTextField.text.startsWith("3") ||
+        loginTextField.text.startsWith("5")) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Enter a valid mobile number")));
+    } else if (checkStatus == false) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Please accept Terms and Privacy Policy")));
     } else {
       if (checkStatus == true) {
         verifyIpCountry(loginTextField.text);
@@ -381,22 +397,22 @@ class LoginControllerState extends State<LoginController> {
               elevation: 1,
               title: Center(
                   child: Container(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    // color: Colors.white,
-                    alignment: Alignment.center,
-                    child: Center(
-                      child: Container(
-                        height: 30,
-                        // width: 200,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage("images/indiamartLogo.png"),
-                              fit: BoxFit.contain),
-                        ),
-                      ),
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                // color: Colors.white,
+                alignment: Alignment.center,
+                child: Center(
+                  child: Container(
+                    height: 30,
+                    // width: 200,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("images/indiamartLogo.png"),
+                          fit: BoxFit.contain),
                     ),
-                  )),
+                  ),
+                ),
+              )),
             ),
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -426,9 +442,12 @@ class LoginControllerState extends State<LoginController> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Text(isIndian == true
-                          ? "Please enter your 10 digit mobile number to begin"
-                          : "Enter your e-mail address to help us begin",style: TextStyle(fontSize: 12),),
+                      Text(
+                        isIndian == true
+                            ? "Please enter your 10 digit mobile number to begin"
+                            : "Enter your e-mail address to help us begin",
+                        style: TextStyle(fontSize: 12),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -469,7 +488,9 @@ class LoginControllerState extends State<LoginController> {
                               Expanded(
                                 child: TextField(
                                   textInputAction: TextInputAction.go,
-                                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(10)
+                                  ],
                                   keyboardType: isIndian
                                       ? TextInputType.number
                                       : TextInputType.emailAddress,
@@ -479,13 +500,12 @@ class LoginControllerState extends State<LoginController> {
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},
-                                  onTap: () {
-                                  },
+                                  onTap: () {},
                                   controller: loginTextField,
                                   decoration: InputDecoration(
-                                    // labelText: isIndian
-                                    //     ? "Enter your Mobile number."
-                                    //     : "Please Enter your Email Address",
+                                    hintText: isIndian
+                                        ? "Enter your Mobile number"
+                                        : "Please Enter your Email Address",
                                     border: InputBorder.none,
                                     // contentPadding: const EdgeInsets.all(8),
                                   ),
@@ -503,7 +523,9 @@ class LoginControllerState extends State<LoginController> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                              "Don't worry! Your details are safe with us.",style: TextStyle(fontSize: 12),),
+                            "Don't worry! Your details are safe with us.",
+                            style: TextStyle(fontSize: 12),
+                          ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -531,7 +553,10 @@ class LoginControllerState extends State<LoginController> {
                                     checkStatus = value ?? false;
                                   });
                                 }),
-                            const Text("I accept all the ",style: TextStyle(fontSize: 12),),
+                            const Text(
+                              "I accept all the ",
+                              style: TextStyle(fontSize: 12),
+                            ),
                             InkWell(
                               onTap: () {
                                 Navigator.push(
@@ -548,13 +573,12 @@ class LoginControllerState extends State<LoginController> {
                               child: Text(
                                 "terms",
                                 style: TextStyle(
-                                  color: Colors.teal[400],
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Colors.grey,
-                                  decorationThickness: 1,
-                                  // decorationStyle: TextDecorationStyle.dashed,
-                                  fontSize: 12
-                                ),
+                                    color: Colors.teal[400],
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.grey,
+                                    decorationThickness: 1,
+                                    // decorationStyle: TextDecorationStyle.dashed,
+                                    fontSize: 12),
                               ),
                             ),
                             const Text(" and "),
@@ -574,13 +598,12 @@ class LoginControllerState extends State<LoginController> {
                               child: Text(
                                 "privacy policy",
                                 style: TextStyle(
-                                  color: Colors.teal[400],
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Colors.grey,
-                                  decorationThickness: 1,
-                                  // decorationStyle: TextDecorationStyle.dashed,
-                                  fontSize: 12
-                                ),
+                                    color: Colors.teal[400],
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.grey,
+                                    decorationThickness: 1,
+                                    // decorationStyle: TextDecorationStyle.dashed,
+                                    fontSize: 12),
                               ),
                             )
                           ],
@@ -612,18 +635,18 @@ class LoginControllerState extends State<LoginController> {
             ),
           ));
 
-   void hint_picker()async {
+  void hint_picker() async {
     final String? phone = await AccountPicker.phoneHint();
     setState(() {
-      if(phone!=null && phone!="") {
+      if (phone != null && phone != "") {
         _phoneNumber = phone;
         loginTextField.text = _phoneNumber.replaceFirst('+91', '');
-        loginTextField.selection = TextSelection.collapsed(offset: loginTextField.text.length);
+        loginTextField.selection =
+            TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
-      }
-      else
+      } else
         setState(() {
-          loginTextField.text=widget.mobNo;
+          loginTextField.text = widget.mobNo;
           // _focusNode.requestFocus();
         });
     });

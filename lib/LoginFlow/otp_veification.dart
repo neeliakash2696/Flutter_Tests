@@ -1,13 +1,14 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, use_build_context_synchronously, sort_child_properties_last
 
 import 'dart:convert';
-
+import 'package:account_picker/account_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/LoginFlow/DetailsRequest.dart';
 import 'package:flutter_tests/DataModels/UserDetailSyncModel.dart';
 import 'package:flutter_tests/LoginFlow/LoginController.dart';
@@ -30,6 +31,8 @@ class OTP_Verification extends StatefulWidget {
   String platform;
   String requiredParam;
   String countryCode;
+  String ipCountry;
+  String ipAddress;
   OTP_Verification(
       {required this.mobNo,
       required this.glusrid,
@@ -39,7 +42,10 @@ class OTP_Verification extends StatefulWidget {
       required this.country,
       required this.countryId,
       required this.requiredParam,
-      required this.countryCode});
+      required this.countryCode,
+      required this.ipCountry,
+      required this.ipAddress});
+
   @override
   State<OTP_Verification> createState() => _OTP_VerificationState();
 }
@@ -54,8 +60,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late UDS uds;
 
   String authkey = "";
-
-  bool clear=false;
+  bool clear = false;
 
   @override
   void initState() {
@@ -472,7 +477,6 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         apiCall(
             "https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${widget.glusrid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData1.response.loginData?.imIss.AK}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${widget.glusrid}&APP_MODID=ANDROID&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&logo=1&VALIDATION_USER_IP=49.36.221.59&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=${widget.mobNo}");
       } else {
-      // EasyLoading.dismiss();
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -499,7 +503,9 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                           fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
-                      OtpTextField(clearText: true,);
+                      OtpTextField(
+                        clearText: true,
+                      );
                       apiCall(
                           "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                       Navigator.of(context).pop();
@@ -523,21 +529,33 @@ class _OTP_VerificationState extends State<OTP_Verification> {
             content: Text(
                 "${loginData1.response.message}\n${loginData1.response.error}")));
       }
-    } else if(pathUrl.contains("users/detail/")){
-      uds=UDS.fromJson(data);
-      if(!checkIfCodeExists(uds.code,)){
-        saveDetails(uds,loginData1.response.loginData!.imIss.AK);
-        print("name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
-        if(uds.firstName==""||uds.lastName==""||uds.email1==""||uds.city=="")
+    } else if (pathUrl.contains("users/detail/")) {
+      uds = UDS.fromJson(data);
+      if (!checkIfCodeExists(uds.code)) {
+        print(
+            "name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
+        FocusScope.of(context).unfocus();
+        AK = loginData1.response.loginData!.imIss.AK;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("AK", AK);
+        if (uds.firstName == "" ||
+            uds.lastName == "" ||
+            uds.email1 == "" ||
+            uds.city == "")
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => DetailsRequest(
-                fname:uds.firstName,
-                lname: uds.lastName,
-                email: uds.email1,
-                city: uds.city,
-              )));
+                    fname: uds.firstName,
+                    lname: uds.lastName,
+                    email: uds.email1,
+                    city: uds.city,
+                    isIndian: widget.isIndian,
+                    creds: widget.mobNo,
+                    ipCountry: widget.ipCountry,
+                    glId: widget.glusrid,
+                    ipAddress: widget.ipAddress,
+                  )));
         else {
-          ak=loginData1.response.loginData!.imIss.AK;
+          ak = loginData1.response.loginData!.imIss.AK;
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => ViewCategories()));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -547,6 +565,7 @@ class _OTP_VerificationState extends State<OTP_Verification> {
       }
     }
   }
+  
   bool checkIfCodeExists(String code) {
     String codeArray = "403,412,204,400";
 
@@ -581,7 +600,6 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     sharedPreferences.setString('CONTACT_ADDRESS', uds.contactAddress);
     sharedPreferences.setString('DISTRICT', uds.glusrUsrDistrict);
   }
-
 }
 
 class OtpInputFields extends StatefulWidget {

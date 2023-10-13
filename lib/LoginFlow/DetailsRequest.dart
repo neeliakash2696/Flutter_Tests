@@ -10,13 +10,28 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailsRequest extends StatefulWidget {
   String fname;
   String lname;
   String email;
   String city;
-  DetailsRequest({required this.fname, required this.lname, required this.email, required this.city});
+  bool isIndian;
+  String creds;
+  String ipCountry;
+  String glId;
+  String ipAddress;
+  DetailsRequest(
+      {required this.fname,
+      required this.lname,
+      required this.email,
+      required this.city,
+      required this.isIndian,
+      required this.creds,
+      required this.ipCountry,
+      required this.glId,
+      required this.ipAddress});
   @override
   State<DetailsRequest> createState() => DetailsRequestState();
 }
@@ -28,12 +43,12 @@ class DetailsRequestState extends State<DetailsRequest> {
   FocusNode emailTextFieldFocus = FocusNode();
   FocusNode pinCodeTextFieldFocus = FocusNode();
 
-
   String? currentAddress;
   Position? currentPosition;
   static const platform = const MethodChannel('samples.flutter.dev/battery');
   List<dynamic> emailList = <dynamic>[];
-  bool showDropdown=false;
+  bool showDropdown = false;
+  late Placemark place;
 
   // List<String> items=["kkk","kjjj"];
 
@@ -44,16 +59,16 @@ class DetailsRequestState extends State<DetailsRequest> {
     }
     super.initState();
   }
+
   Future<void> _getEmails() async {
     final permissionStatus = await Permission.contacts.request();
-    if (!(permissionStatus.isGranted))
-      return;
+    if (!(permissionStatus.isGranted)) return;
     try {
       var list = await platform.invokeMethod('getEmailList');
       if (list != null && mounted) {
         setState(() {
           emailList = list;
-          emailTextField.text=emailList[0];
+          emailTextField.text = emailList[0];
           print("emaillist=$emailList");
         });
       }
@@ -61,6 +76,7 @@ class DetailsRequestState extends State<DetailsRequest> {
       print(e.message);
     }
   }
+
   @override
   void dispose() {
     nameTextField.dispose();
@@ -69,16 +85,32 @@ class DetailsRequestState extends State<DetailsRequest> {
     super.dispose();
   }
 
-  updateDetails() {
+  updateDetails() async {
     var updatedUsing = "";
+    var ak = "";
+    var appModId = "";
+    String pathUrl = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    ak = prefs.getString("AK") ?? "";
+    print("ak is $ak");
 
     if (Platform.isIOS) {
+      appModId = "iOS";
       updatedUsing = "Edit Profile (IOS)";
-    } else {
+    } else if (Platform.isAndroid) {
+      appModId = "ANDROID";
       updatedUsing = "Edit Profile (Android)";
+    } else {
+      appModId = "WEB";
+      updatedUsing = "Edit Profile (Web)";
     }
-    String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=199718898&VALIDATION_GLID=199718898&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=49.36.221.59&FIRSTNAME=mnb&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSo1KjQqNyo4KiIsImV4cCI6MTY5NjYwMDc4OCwiaWF0IjoxNjk2NTE0Mzg4LCJzdWIiOiIxOTk3MTg4OTgiLCJjZHQiOiIwNS0xMC0yMDIzIn0.uJIAduzC6Q6e3ED63IQb9GMpRbs3A-lZB16ZYLs5BJU&EMAIL=ghahah@gmail.com&UPDATEDUSING=Edit Profile (Android)&APP_USER_ID=199718898&APP_MODID=ANDROID&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=India&APP_LONGITUDE=0.0&VALIDATION_USER_IP=49.36.221.59&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=1455487885&MODID=ANDROID";
+    if (widget.isIndian == true) {
+      pathUrl =
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=&STATE=&LOCALITY=${place.locality}";
+    } else {
+      pathUrl =
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=&MODID=$appModId";
+    }
   }
 
   proceedToHome() {
@@ -139,7 +171,7 @@ class DetailsRequestState extends State<DetailsRequest> {
     await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude)
         .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
+      place = placemarks[0];
       setState(() {
         print(place.postalCode);
         currentAddress = '${place.postalCode}';
@@ -167,22 +199,22 @@ class DetailsRequestState extends State<DetailsRequest> {
               elevation: 1,
               title: Center(
                   child: Container(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    // color: Colors.white,
-                    alignment: Alignment.center,
-                    child: Center(
-                      child: Container(
-                        height: 30,
-                        // width: 200,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage("images/indiamartLogo.png"),
-                              fit: BoxFit.contain),
-                        ),
-                      ),
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                // color: Colors.white,
+                alignment: Alignment.center,
+                child: Center(
+                  child: Container(
+                    height: 30,
+                    // width: 200,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("images/indiamartLogo.png"),
+                          fit: BoxFit.contain),
                     ),
-                  )),
+                  ),
+                ),
+              )),
             ),
             body: SafeArea(
               child: Column(
@@ -240,9 +272,9 @@ class DetailsRequestState extends State<DetailsRequest> {
                               onTapOutside: (event) {},
                               onTap: () {
                                 setState(() {
-                                  showDropdown=false;
+                                  showDropdown = false;
                                 });
-                                },
+                              },
                               controller: nameTextField,
                               decoration: const InputDecoration(
                                 hintText: "Contact Name",
@@ -257,21 +289,25 @@ class DetailsRequestState extends State<DetailsRequest> {
                           WillPopScope(
                             onWillPop: () async {
                               if (showDropdown) {
-                              setState(() {
-                              showDropdown = false;
-                              });
-                              return false;
+                                setState(() {
+                                  showDropdown = false;
+                                });
+                                return false;
                               }
                               return true;
-                              },
+                            },
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 10, 20, 20),
                               child: Column(
                                 children: <Widget>[
                                   TextField(
                                     focusNode: emailTextFieldFocus,
-                                    textInputAction: TextInputAction.unspecified,
-                                    keyboardType: TextInputType.name,
+                                    textInputAction:
+                                        TextInputAction.unspecified,
+                                    keyboardType: widget.isIndian == true
+                                        ? TextInputType.emailAddress
+                                        : TextInputType.number,
                                     autocorrect: false,
                                     autofocus: true,
                                     onSubmitted: (value) {
@@ -280,10 +316,11 @@ class DetailsRequestState extends State<DetailsRequest> {
                                     },
                                     onChanged: (searchingText) {},
                                     onEditingComplete: () {},
-                                    scrollPhysics: NeverScrollableScrollPhysics(),
-                                    controller:emailTextField ,
-                                    onTapOutside: (event){
-                                      showDropdown =false;
+                                    scrollPhysics:
+                                        NeverScrollableScrollPhysics(),
+                                    controller: emailTextField,
+                                    onTapOutside: (event) {
+                                      showDropdown = false;
                                     },
                                     onTap: () {
                                       setState(() {
@@ -292,7 +329,9 @@ class DetailsRequestState extends State<DetailsRequest> {
                                     },
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.all(8),
-                                      hintText: 'Email',
+                                      hintText: widget.isIndian == true
+                                          ? "Email"
+                                          : "Contact Number",
                                       border: OutlineInputBorder(),
                                     ),
                                   ),
@@ -307,26 +346,36 @@ class DetailsRequestState extends State<DetailsRequest> {
                                               (item) => Column(
                                                 children: [
                                                   ListTile(
-                                            title: Text(item),
-                                            onTap: () {
-                                                  // Handle item selection
-                                                  print('Selected: $item');
-                                                  setState(() {
-                                                    emailTextField.text=item;
-                                                    emailTextField.selection = TextSelection.collapsed(offset: emailTextField.text.length);
-                                                    showDropdown = false;
-                                                  });
-                                                  },
-                                                ),
-                                                  if(item!=emailList[emailList.length-1])
-                                                  Divider(  // Divider to separate items
-                                                    color: Colors.grey[300],
-                                                    height: 1,
-                                                    thickness: 1,
+                                                    title: Text(item),
+                                                    onTap: () {
+                                                      // Handle item selection
+                                                      print('Selected: $item');
+                                                      setState(() {
+                                                        emailTextField.text =
+                                                            item;
+                                                        emailTextField
+                                                                .selection =
+                                                            TextSelection.collapsed(
+                                                                offset:
+                                                                    emailTextField
+                                                                        .text
+                                                                        .length);
+                                                        showDropdown = false;
+                                                      });
+                                                    },
                                                   ),
+                                                  if (item !=
+                                                      emailList[
+                                                          emailList.length - 1])
+                                                    Divider(
+                                                      // Divider to separate items
+                                                      color: Colors.grey[300],
+                                                      height: 1,
+                                                      thickness: 1,
+                                                    ),
                                                 ],
                                               ),
-                                        )
+                                            )
                                             .toList(),
                                       ),
                                     ),
@@ -334,27 +383,29 @@ class DetailsRequestState extends State<DetailsRequest> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Select your Location",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              ],
+                          if (widget.isIndian == true) ...{
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Select your Location",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: TextButton.icon(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all(
-                                          Colors.transparent),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.transparent),
                                       shape: MaterialStateProperty.all<
                                           OutlinedBorder>(
                                         RoundedRectangleBorder(
@@ -369,7 +420,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        showDropdown=false;
+                                        showDropdown = false;
                                       });
                                       // get Location
                                       FocusScope.of(context).unfocus();
@@ -390,11 +441,15 @@ class DetailsRequestState extends State<DetailsRequest> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left:5.0),
-                                  child: Text("or",style: TextStyle(color: Colors.grey[400]),),
+                                  padding: const EdgeInsets.only(left: 5.0),
+                                  child: Text(
+                                    "or",
+                                    style: TextStyle(color: Colors.grey[400]),
+                                  ),
                                 ),
                                 Container(
-                                  width: MediaQuery.of(context).size.width - 253,
+                                  width:
+                                      MediaQuery.of(context).size.width - 253,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 5),
                                     child: TextField(
@@ -410,23 +465,25 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       onTapOutside: (event) {},
                                       onTap: () {
                                         setState(() {
-                                          showDropdown=false;
+                                          showDropdown = false;
                                         });
                                       },
                                       controller: pincodeTextField,
                                       decoration: const InputDecoration(
                                         hintText: "Enter Pincode",
-                                        contentPadding: EdgeInsets.only(left:8),
+                                        contentPadding:
+                                            EdgeInsets.only(left: 8),
                                         border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1, color: Colors.grey),
+                                          borderSide: BorderSide(
+                                              width: 1, color: Colors.grey),
+                                        ),
                                       ),
                                     ),
-                          ),
+                                  ),
                                 ),
+                              ]),
                             ),
-                            ]),
-                          )
+                          },
                         ],
                       ),
                     ),
