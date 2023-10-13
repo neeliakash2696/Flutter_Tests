@@ -246,7 +246,10 @@ class _CategoriesDetailState extends State<CategoriesDetail> {
   Future<void> getCategories() async {
     String path = widget.api;
     print("api=$path");
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var ak = prefs.getString("AK");
+    var glId = prefs.getString("glid");
+    var mobile = prefs.getString("Mobile");
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
     if (code == "402") {

@@ -321,6 +321,10 @@ class ImportantSuppilesDetailsListState
     // print("cateory=$category");
     // print(
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var ak = prefs.getString("AK");
+    var glId = prefs.getString("glid");
+    var mobile = prefs.getString("Mobile");
     try {
       setState(() {
         if (currentPage > 1) isLoading = true;
@@ -332,7 +336,7 @@ class ImportantSuppilesDetailsListState
       String pathUrl = "";
       print("apizzz=${FlutterTests.ak}");
       pathUrl =
-          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=${FlutterTests.glid}&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${FlutterTests.ak}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+          "https://mapi.indiamart.com/wservce/products/listing/?flag=product&VALIDATION_GLID=${glid}&flname=${category}&APP_SCREEN_NAME=IMPCat Listing&start=${start}&AK=${ak}&cityid=${cityId}&modid=ANDROID&token=imobile@15061981&APP_USER_ID=${glid}&APP_MODID=ANDROID&in_country_iso=0&biz_filter=${biztype_data}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${glid}&VALIDATION_USER_IP=117.244.8.192&end=${end}&app_version_no=13.2.1_T1&VALIDATION_USERCONTACT=${mobNo}";
       print("api=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
       var code = json.decode(response.body)['CODE'];
