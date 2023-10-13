@@ -1,7 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, use_build_context_synchronously, sort_child_properties_last
 
 import 'dart:convert';
-
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,13 +52,14 @@ class _OTP_VerificationState extends State<OTP_Verification> {
   late FocusNode otp4;
   late VerifyOTP loginData1;
   late UDS uds;
-
+  String _code="";
   String authkey = "";
 
   bool clear=false;
 
   @override
   void initState() {
+    Future<String> signature=getSignature();
     otp1 = FocusNode();
     otp2 = FocusNode();
     otp3 = FocusNode();
@@ -580,6 +581,11 @@ class _OTP_VerificationState extends State<OTP_Verification> {
     sharedPreferences.setString('COMPANYNAME', uds.companyName);
     sharedPreferences.setString('CONTACT_ADDRESS', uds.contactAddress);
     sharedPreferences.setString('DISTRICT', uds.glusrUsrDistrict);
+  }
+
+  Future<String> getSignature() async {
+    String? signature = await SmsAutoFill().getAppSignature;
+    return signature;
   }
 
 }
