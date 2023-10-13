@@ -16,6 +16,7 @@ import 'package:flutter_tests/LoginFlow/LoginController.dart';
 import 'package:flutter_tests/view_categories.dart';
 import 'package:http/http.dart' as http;
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../DataModels/VerifyOTPDataModel.dart';
 import '../DataModels/UserDetailSyncModel.dart';
@@ -31,6 +32,8 @@ class OTP_Verification extends StatefulWidget {
   String platform;
   String requiredParam;
   String countryCode;
+  String ipCountry;
+  String ipAddress;
   OTP_Verification(
       {required this.mobNo,
       required this.glusrid,
@@ -40,7 +43,9 @@ class OTP_Verification extends StatefulWidget {
       required this.country,
       required this.countryId,
       required this.requiredParam,
-      required this.countryCode});
+      required this.countryCode,
+      required this.ipCountry,
+      required this.ipAddress});
   @override
   State<OTP_Verification> createState() => _OTP_VerificationState();
 }
@@ -526,6 +531,9 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         print(
             "name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
         FocusScope.of(context).unfocus();
+        AK = loginData1.response.loginData!.imIss.AK;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("AK", AK);
         if (uds.firstName == "" ||
             uds.lastName == "" ||
             uds.email1 == "" ||
@@ -536,6 +544,11 @@ class _OTP_VerificationState extends State<OTP_Verification> {
                     lname: uds.lastName,
                     email: uds.email1,
                     city: uds.city,
+                    isIndian: widget.isIndian,
+                    creds: widget.mobNo,
+                    ipCountry: widget.ipCountry,
+                    glId: widget.glusrid,
+                    ipAddress: widget.ipAddress,
                   )));
         else {
           AK = loginData1.response.loginData!.imIss.AK;

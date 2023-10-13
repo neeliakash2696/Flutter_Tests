@@ -10,17 +10,28 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailsRequest extends StatefulWidget {
   String fname;
   String lname;
   String email;
   String city;
+  bool isIndian;
+  String creds;
+  String ipCountry;
+  String glId;
+  String ipAddress;
   DetailsRequest(
       {required this.fname,
       required this.lname,
       required this.email,
-      required this.city});
+      required this.city,
+      required this.isIndian,
+      required this.creds,
+      required this.ipCountry,
+      required this.glId,
+      required this.ipAddress});
   @override
   State<DetailsRequest> createState() => DetailsRequestState();
 }
@@ -37,6 +48,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   static const platform = const MethodChannel('samples.flutter.dev/battery');
   List<dynamic> emailList = <dynamic>[];
   bool showDropdown = false;
+  late Placemark place;
 
   // List<String> items=["kkk","kjjj"];
 
@@ -73,16 +85,32 @@ class DetailsRequestState extends State<DetailsRequest> {
     super.dispose();
   }
 
-  updateDetails() {
+  updateDetails() async {
     var updatedUsing = "";
+    var ak = "";
+    var appModId = "";
+    String pathUrl = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    ak = prefs.getString("AK") ?? "";
+    print("ak is $ak");
 
     if (Platform.isIOS) {
+      appModId = "iOS";
       updatedUsing = "Edit Profile (IOS)";
-    } else {
+    } else if (Platform.isAndroid) {
+      appModId = "ANDROID";
       updatedUsing = "Edit Profile (Android)";
+    } else {
+      appModId = "WEB";
+      updatedUsing = "Edit Profile (Web)";
     }
-    String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=199718898&VALIDATION_GLID=199718898&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=49.36.221.59&FIRSTNAME=mnb&AK=eyJ0eXAiOiJKV1QiLCJhbGciOiJzaGEyNTYifQ.eyJpc3MiOiJVU0VSIiwiYXVkIjoiMSo1KjQqNyo4KiIsImV4cCI6MTY5NjYwMDc4OCwiaWF0IjoxNjk2NTE0Mzg4LCJzdWIiOiIxOTk3MTg4OTgiLCJjZHQiOiIwNS0xMC0yMDIzIn0.uJIAduzC6Q6e3ED63IQb9GMpRbs3A-lZB16ZYLs5BJU&EMAIL=ghahah@gmail.com&UPDATEDUSING=Edit Profile (Android)&APP_USER_ID=199718898&APP_MODID=ANDROID&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=India&APP_LONGITUDE=0.0&VALIDATION_USER_IP=49.36.221.59&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=1455487885&MODID=ANDROID";
+    if (widget.isIndian == true) {
+      pathUrl =
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=&STATE=&LOCALITY=${place.locality}";
+    } else {
+      pathUrl =
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=&MODID=$appModId";
+    }
   }
 
   proceedToHome() {
@@ -143,7 +171,7 @@ class DetailsRequestState extends State<DetailsRequest> {
     await placemarkFromCoordinates(
             currentPosition!.latitude, currentPosition!.longitude)
         .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
+      place = placemarks[0];
       setState(() {
         print(place.postalCode);
         currentAddress = '${place.postalCode}';
@@ -277,7 +305,9 @@ class DetailsRequestState extends State<DetailsRequest> {
                                     focusNode: emailTextFieldFocus,
                                     textInputAction:
                                         TextInputAction.unspecified,
-                                    keyboardType: TextInputType.name,
+                                    keyboardType: widget.isIndian == true
+                                        ? TextInputType.emailAddress
+                                        : TextInputType.number,
                                     autocorrect: false,
                                     autofocus: true,
                                     onSubmitted: (value) {
@@ -299,7 +329,9 @@ class DetailsRequestState extends State<DetailsRequest> {
                                     },
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.all(8),
-                                      hintText: 'Email',
+                                      hintText: widget.isIndian == true
+                                          ? "Email"
+                                          : "Contact Number",
                                       border: OutlineInputBorder(),
                                     ),
                                   ),
@@ -351,102 +383,107 @@ class DetailsRequestState extends State<DetailsRequest> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Select your Location",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              ],
+                          if (widget.isIndian == true) ...{
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Select your Location",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: TextButton.icon(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.transparent),
-                                    shape: MaterialStateProperty.all<
-                                        OutlinedBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        side: BorderSide(
-                                          color: Colors.teal, // Border color
-                                          width: 1.0, // Border width
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: TextButton.icon(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.transparent),
+                                      shape: MaterialStateProperty.all<
+                                          OutlinedBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          side: BorderSide(
+                                            color: Colors.teal, // Border color
+                                            width: 1.0, // Border width
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        showDropdown = false;
+                                      });
+                                      // get Location
+                                      FocusScope.of(context).unfocus();
+                                      getCurrentPosition();
+                                    },
+                                    icon: Icon(
+                                      Icons.gps_fixed,
+                                      color: Colors.teal,
+                                    ),
+                                    label: Text(
+                                      'Use current location',
+                                      style: TextStyle(
+                                        color: Colors.teal[300],
+                                        fontSize: 15,
+                                        // fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 5.0),
+                                  child: Text(
+                                    "or",
+                                    style: TextStyle(color: Colors.grey[400]),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width - 253,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5),
+                                    child: TextField(
+                                      focusNode: pinCodeTextFieldFocus,
+                                      textInputAction: TextInputAction.done,
+                                      keyboardType: TextInputType.number,
+                                      autocorrect: false,
+                                      onSubmitted: (value) {
+                                        // keyboard done action
+                                      },
+                                      onChanged: (searchingText) {},
+                                      onEditingComplete: () {},
+                                      onTapOutside: (event) {},
+                                      onTap: () {
+                                        setState(() {
+                                          showDropdown = false;
+                                        });
+                                      },
+                                      controller: pincodeTextField,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter Pincode",
+                                        contentPadding:
+                                            EdgeInsets.only(left: 8),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1, color: Colors.grey),
                                         ),
                                       ),
                                     ),
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      showDropdown = false;
-                                    });
-                                    // get Location
-                                    FocusScope.of(context).unfocus();
-                                    getCurrentPosition();
-                                  },
-                                  icon: Icon(
-                                    Icons.gps_fixed,
-                                    color: Colors.teal,
-                                  ),
-                                  label: Text(
-                                    'Use current location',
-                                    style: TextStyle(
-                                      color: Colors.teal[300],
-                                      fontSize: 15,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text(
-                                  "or",
-                                  style: TextStyle(color: Colors.grey[400]),
-                                ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width - 253,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: TextField(
-                                    focusNode: pinCodeTextFieldFocus,
-                                    textInputAction: TextInputAction.done,
-                                    keyboardType: TextInputType.number,
-                                    autocorrect: false,
-                                    onSubmitted: (value) {
-                                      // keyboard done action
-                                    },
-                                    onChanged: (searchingText) {},
-                                    onEditingComplete: () {},
-                                    onTapOutside: (event) {},
-                                    onTap: () {
-                                      setState(() {
-                                        showDropdown = false;
-                                      });
-                                    },
-                                    controller: pincodeTextField,
-                                    decoration: const InputDecoration(
-                                      hintText: "Enter Pincode",
-                                      contentPadding: EdgeInsets.only(left: 8),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1, color: Colors.grey),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ]),
-                          )
+                              ]),
+                            ),
+                          },
                         ],
                       ),
                     ),

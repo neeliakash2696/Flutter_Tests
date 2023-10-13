@@ -41,6 +41,8 @@ class LoginControllerState extends State<LoginController> {
   String currentCountry = "India";
   bool isIndian = true;
   var currentPlatform = "";
+  String ipCountry = "";
+  String ipAddress = "";
 
   late LoginResponse loginData;
   late GeoLocationResponse verifyIpData;
@@ -106,6 +108,8 @@ class LoginControllerState extends State<LoginController> {
                   platform: platform,
                   process: process,
                   requiredParam: requiredParam,
+                  ipCountry: ipCountry,
+                  ipAddress: ipAddress,
                 )));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -143,6 +147,8 @@ class LoginControllerState extends State<LoginController> {
       Map<String, dynamic> data = json.decode(response.body);
       verifyIpData = GeoLocationResponse.fromJson(data);
       print(verifyIpData.response.data.geoipCountryName);
+      ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
+      ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
@@ -162,8 +168,10 @@ class LoginControllerState extends State<LoginController> {
                 "${verifyIpData.response.status}\n${verifyIpData.response.message}")));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
+          loginTextField.text.replaceAll(" ", ""), "   ");
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -178,6 +186,9 @@ class LoginControllerState extends State<LoginController> {
         loginTextField.text.startsWith("5")) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Enter a valid mobile number")));
+    } else if (checkStatus == false) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Please accept Terms and Privacy Policy")));
     } else {
       if (checkStatus == true) {
         verifyIpCountry(loginTextField.text);
