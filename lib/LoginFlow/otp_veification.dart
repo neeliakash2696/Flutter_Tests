@@ -57,7 +57,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
   late FocusNode otp4;
   late VerifyOTP loginData1;
   late UDS uds;
-  String _code="";
+  String _code = "";
   String authkey = "";
   bool clear = false;
 
@@ -194,18 +194,22 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                 ),
                               ],
                             ),
-
                           ),
                           const SizedBox(height: 16),
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(80,0,80,0),
+                              padding: const EdgeInsets.fromLTRB(80, 0, 80, 0),
                               child: PinFieldAutoFill(
-                                cursor:Cursor(color: Colors.teal,width: 2,height: 25,enabled: true) ,
+                                cursor: Cursor(
+                                    color: Colors.teal,
+                                    width: 2,
+                                    height: 25,
+                                    enabled: true),
                                 currentCode: codeValue,
                                 decoration: UnderlineDecoration(
                                   gapSpace: 5,
-                                  textStyle: const TextStyle(fontSize: 20, color: Colors.black),
+                                  textStyle: const TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   colorBuilder: FixedColorBuilder(Colors.teal),
                                 ),
                                 codeLength: 4,
@@ -213,7 +217,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                   print("onCodeChanged $code");
                                   setState(() {
                                     codeValue = code.toString();
-                                    authkey=code??"";
+                                    authkey = code ?? "";
                                   });
                                 },
                                 onCodeSubmitted: (val) {
@@ -527,7 +531,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                     child: Text(
                       'RESEND',
                       style: TextStyle(
-                          color: Colors.teal,
+                          color: Colors.teal
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
@@ -649,9 +653,6 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
       // otpCode = code!;
     });
   }
-
-
-
 }
 
 class OtpInputFields extends StatefulWidget {
