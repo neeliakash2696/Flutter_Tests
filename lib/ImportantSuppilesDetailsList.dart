@@ -327,10 +327,6 @@ class ImportantSuppilesDetailsListState
     // print("cateory=$category");
     // print(
     // "start=$start and end=$end and item length=${items.length} currentpage=${currentPage}");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var ak = prefs.getString("AK");
-    var glId = prefs.getString("glid");
-    var mobile = prefs.getString("Mobile");
     try {
       setState(() {
         if (currentPage > 1) isLoading = true;
