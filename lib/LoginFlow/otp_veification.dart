@@ -553,6 +553,12 @@ class _OTP_VerificationState extends State<OTP_Verification> {
         ak = loginData1.response.loginData?.imIss.AK ?? "";
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("AK", ak);
+        // saveDetails(uds, ak);
+        prefs.setString("glid", widget.glusrid);
+        prefs.setString("ipAddress", widget.ipAddress);
+        if (widget.isIndian) {
+          prefs.setString("Mobile", widget.mobNo);
+        }
         if (uds.firstName == "" ||
             uds.lastName == "" ||
             uds.email1 == "" ||

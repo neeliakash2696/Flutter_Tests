@@ -2,9 +2,9 @@ library FlutterTests;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-late String ak ;
-late String mobNo ;
-late String glid ;
+late String ak;
+late String mobNo;
+late String glid;
 // void fetchSavedData() async{
 //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 //     mobNo=sharedPreferences.getString('UserContact')!;

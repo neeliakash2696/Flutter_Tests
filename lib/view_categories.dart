@@ -38,7 +38,7 @@ class _ViewCategoriesState extends State<ViewCategories> {
   @override
   void initState() {
     super.initState();
-    fetchSavedData();
+    // fetchSavedData();
     getCategories();
   }
 
@@ -205,8 +205,15 @@ class _ViewCategoriesState extends State<ViewCategories> {
   }
 
   Future<void> getCategories() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var ak = prefs.getString("AK");
+    var glId = prefs.getString("glid");
+    var mobile = prefs.getString("Mobile");
+    print(ak);
+    print(glId);
+    print(mobile);
     String path =
-        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=${FlutterTests.glid}&APP_SCREEN_NAME=Default-Seller&AK=${FlutterTests.ak}&token=immenu%407851&APP_USER_ID=${FlutterTests.glid}&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${FlutterTests.glid}&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=${FlutterTests.mobNo}";
+        "https://mapi.indiamart.com/wservce/im/category/?VALIDATION_GLID=$glId&APP_SCREEN_NAME=Default-Seller&AK=$ak&token=immenu%407851&APP_USER_ID=$glId&APP_MODID=ANDROID&mtype=group_v2&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glId&VALIDATION_USER_IP=61.3.38.129&app_version_no=13.2.0_S1&VALIDATION_USERCONTACT=$mobile";
     print("api=$path");
     http.Response response = await http.get(Uri.parse(path));
     var code = json.decode(response.body)['CODE'];
@@ -260,14 +267,12 @@ class _ViewCategoriesState extends State<ViewCategories> {
             fullscreenDialog: true));
   }
 
-  void fetchSavedData() async{
+  void fetchSavedData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact')??"";
-      glid=sharedPreferences.getString('glid')??"";
-      ak=sharedPreferences.getString('AK')??"";
+      mobNo = sharedPreferences.getString('UserContact') ?? "";
+      glid = sharedPreferences.getString('glid') ?? "";
+      ak = sharedPreferences.getString('AK') ?? "";
     });
   }
 }
-
-

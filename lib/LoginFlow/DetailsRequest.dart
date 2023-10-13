@@ -1,7 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:io';
-
+import 'dart:math';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -114,17 +116,45 @@ class DetailsRequestState extends State<DetailsRequest> {
     }
     if (widget.isIndian == true) {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=&STATE=&LOCALITY=${place.locality}";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=${place.locality}&STATE=${place.administrativeArea}&LOCALITY=${place.locality}";
     } else {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=199718898&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=&MODID=$appModId";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=&MODID=$appModId";
+    }
+    print(pathUrl);
+    try {
+      http.Response response = await http.post(Uri.parse(pathUrl));
+      Map<String, dynamic> data = json.decode(response.body);
+      var updateDetailsResponseCode = data["RESPONSE"]["CODE"];
+      if (updateDetailsResponseCode == "200") {
+        prefs.setString("glid", widget.glId);
+        prefs.setString("ipAddress", widget.ipAddress);
+        if (widget.isIndian) {
+          prefs.setString("Mobile", widget.creds);
+        }
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => ViewCategories()));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
   proceedToHome() {
-    updateDetails();
-    // Navigator.of(context).pushReplacement(
-    //     MaterialPageRoute(builder: (context) => ViewCategories()));
+    if (nameTextField.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please enter your Name")));
+    } else if (emailTextField.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please fill all the Details")));
+    } else if (widget.isIndian == true &&
+        pincodeTextField.text.isEmpty == true) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please enter Pincode")));
+    } else {
+      updateDetails();
+    }
   }
 
   Future<bool> handleLocationPermission() async {
@@ -182,7 +212,16 @@ class DetailsRequestState extends State<DetailsRequest> {
         .then((List<Placemark> placemarks) {
       place = placemarks[0];
       setState(() {
-        print(place.postalCode);
+        print(place.administrativeArea);
+        print(place.country);
+        print(place.isoCountryCode);
+        print(place.locality);
+        print(place.name);
+        print(place.street);
+        print(place.subAdministrativeArea);
+        print(place.subLocality);
+        print(place.subThoroughfare);
+        print(place.thoroughfare);
         currentAddress = '${place.postalCode}';
         pincodeTextField.text = currentAddress.toString();
         EasyLoading.dismiss();
