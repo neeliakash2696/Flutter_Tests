@@ -263,9 +263,9 @@ class _ViewCategoriesState extends State<ViewCategories> {
   void fetchSavedData() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      mobNo=sharedPreferences.getString('UserContact')!;
-      glid=sharedPreferences.getString('glid')!;
-      ak=sharedPreferences.getString('AK')!;
+      mobNo=sharedPreferences.getString('UserContact')??"";
+      glid=sharedPreferences.getString('glid')??"";
+      ak=sharedPreferences.getString('AK')??"";
     });
   }
 }
