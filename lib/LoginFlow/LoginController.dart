@@ -57,15 +57,17 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
-
     if (widget.mobNo != "") ;
     {
       loginTextField.text = widget.mobNo;
-      TextSelection.collapsed(offset: loginTextField.text.length);
     }
     if (Platform.isAndroid) {
       hint_picker();
     }
+    else
+      setState(() {
+        _focusNode.requestFocus();
+      });
   }
 
   @override
@@ -526,7 +528,7 @@ class LoginControllerState extends State<LoginController> {
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
                                   focusNode: _focusNode,
-                                  autofocus: true,
+                                  autofocus: false,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},
@@ -675,10 +677,7 @@ class LoginControllerState extends State<LoginController> {
             TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
       } else
-        setState(() {
-          loginTextField.text = widget.mobNo;
-          // _focusNode.requestFocus();
-        });
+          _focusNode.requestFocus();
     });
     print("phonenumber=$_phoneNumber");
   }
