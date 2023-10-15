@@ -57,6 +57,7 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
+
     if (widget.mobNo != "") ;
     {
       loginTextField.text = widget.mobNo;
@@ -174,8 +175,17 @@ class LoginControllerState extends State<LoginController> {
               countryCode,
               loginTextField.text.replaceAll(" ", ""),
               verifyIpData.response.data.geoipIpAddress.toString());
-        } else {
+        } else if (countryCode == "+91" &&
+            verifyIpData.response.data.geoipCountryName != "India") {
           showAlert();
+        } else {
+          triggerOTP(
+              currentPlatform,
+              countryId,
+              currentCountry,
+              countryCode,
+              loginTextField.text.replaceAll(" ", ""),
+              verifyIpData.response.data.geoipIpAddress.toString());
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -508,7 +518,8 @@ class LoginControllerState extends State<LoginController> {
                                 child: TextField(
                                   textInputAction: TextInputAction.go,
                                   inputFormatters: [
-                                    LengthLimitingTextInputFormatter(10)
+                                    if (isIndian)
+                                      LengthLimitingTextInputFormatter(10)
                                   ],
                                   keyboardType: isIndian
                                       ? TextInputType.number

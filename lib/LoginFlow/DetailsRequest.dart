@@ -52,7 +52,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   late Placemark place;
   List<dynamic> filteredEmailList = [];
 
-  bool isChanged=false;
+  bool isChanged = false;
 
   @override
   void initState() {
@@ -62,13 +62,16 @@ class DetailsRequestState extends State<DetailsRequest> {
     }
     super.initState();
   }
+
   void filterList(String searchText) {
     setState(() {
       filteredEmailList = emailList
-          .where((email) => email.toLowerCase().contains(searchText.toLowerCase()))
+          .where(
+              (email) => email.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }
+
   Future<void> _getEmails() async {
     final permissionStatus = await Permission.contacts.request();
     if (!(permissionStatus.isGranted)) return;
@@ -138,6 +141,9 @@ class DetailsRequestState extends State<DetailsRequest> {
         }
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ViewCategories()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data["ERROR"] + "\n" + data["ERR_MSG"]["REASON"])));
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -270,8 +276,8 @@ class DetailsRequestState extends State<DetailsRequest> {
             ),
             body: WillPopScope(
               onWillPop: () async {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => ViewCategories()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ViewCategories()));
                 return true;
               },
               child: SafeArea(
@@ -338,8 +344,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                   hintText: "Contact Name",
                                   contentPadding: EdgeInsets.all(8),
                                   border: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(width: 1, color: Colors.grey),
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.grey),
                                   ),
                                 ),
                               ),
@@ -375,7 +381,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       onChanged: (searchText) {
                                         print("changed=$searchText");
                                         setState(() {
-                                          isChanged=true;
+                                          isChanged = true;
                                           showDropdown = true;
                                         });
                                         filterList(searchText);
@@ -390,8 +396,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       onTap: () {
                                         setState(() {
                                           showDropdown = true;
-                                          if(isChanged==false)
-                                          filterList("");
+                                          if (isChanged == false)
+                                            filterList("");
                                         });
                                       },
                                       decoration: InputDecoration(
@@ -406,7 +412,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       Container(
                                         color: Colors.white,
                                         child: ListView(
-                                          physics: NeverScrollableScrollPhysics(),
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
                                           shrinkWrap: true, // This is important
                                           children: filteredEmailList
                                               .map(
@@ -416,7 +423,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                                       title: Text(item),
                                                       onTap: () {
                                                         // Handle item selection
-                                                        print('Selected: $item');
+                                                        print(
+                                                            'Selected: $item');
                                                         setState(() {
                                                           emailTextField.text =
                                                               item;
@@ -433,7 +441,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                                     ),
                                                     if (item !=
                                                         emailList[
-                                                            emailList.length - 1])
+                                                            emailList.length -
+                                                                1])
                                                       Divider(
                                                         // Divider to separate items
                                                         color: Colors.grey[300],
@@ -479,7 +488,8 @@ class DetailsRequestState extends State<DetailsRequest> {
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                             side: BorderSide(
-                                              color: Colors.teal, // Border color
+                                              color:
+                                                  Colors.teal, // Border color
                                               width: 1.0, // Border width
                                             ),
                                           ),
