@@ -523,7 +523,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                     child: Text(
                       'RESEND',
                       style: TextStyle(
-                          color: Colors.teal
+                          color: Colors.teal,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
