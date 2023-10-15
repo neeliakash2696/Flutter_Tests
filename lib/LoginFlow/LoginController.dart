@@ -58,7 +58,10 @@ class LoginControllerState extends State<LoginController> {
     readJson();
     getPlatform();
     if (widget.mobNo != "") ;
-    loginTextField.text = widget.mobNo;
+    {
+      loginTextField.text = widget.mobNo;
+      TextSelection.collapsed(offset: loginTextField.text.length);
+    }
     if (Platform.isAndroid) {
       hint_picker();
     }
@@ -98,6 +101,14 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
+    if(Platform.isAndroid) {
+      var appSignatureID = await SmsAutoFill().getAppSignature;
+      Map sendOtpData = {
+        "mobile_number": loginTextField.text,
+        "app_signature_id": appSignatureID
+      };
+      print(sendOtpData);
+    }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => OTP_Verification(
                   mobNo: loginTextField.text,
@@ -155,14 +166,7 @@ class LoginControllerState extends State<LoginController> {
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
-          if(Platform.isAndroid) {
-            var appSignatureID = await SmsAutoFill().getAppSignature;
-            Map sendOtpData = {
-              "mobile_number": loginTextField.text,
-              "app_signature_id": appSignatureID
-            };
-            print(sendOtpData);
-          }
+
           triggerOTP(
               currentPlatform,
               countryId,

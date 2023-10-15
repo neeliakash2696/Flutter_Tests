@@ -69,15 +69,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
     otp2 = FocusNode();
     otp3 = FocusNode();
     otp4 = FocusNode();
-    String? appSignature;
-    if(Platform.isAndroid)
-    listenForCode();
-
-    SmsAutoFill().getAppSignature.then((signature) {
-      setState(() {
-        appSignature = signature;
-      });
-    });
+    listenOtp();
     super.initState();
   }
 
@@ -637,16 +629,17 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
   }
 
   void listenOtp() async {
-    // await SmsAutoFill().unregisterListener();
-    // listenForCode();
+    await SmsAutoFill().unregisterListener();
+    listenForCode();
     await SmsAutoFill().listenForCode;
     print("OTP listen Called");
   }
 
   @override
   void codeUpdated() {
+    print("Update code $code");
     setState(() {
-      // otpCode = code!;
+      print("codeUpdated");
     });
   }
 
