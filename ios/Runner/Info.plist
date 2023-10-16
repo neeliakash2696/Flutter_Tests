@@ -4,21 +4,8 @@
 <dict>
 	<key>Applicat</key>
 	<string></string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>sms</string>
-		<string>tel</string>
-	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Indiamart wants to access your Location for giving you better search results</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Indiamart wants to access your Location for giving you better search results</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>This App wants to record your audio to convert it to text and display search results</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This App wants to record your audio to convert it to text and display search results</string>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-1233730072936671~7121713710</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -39,7 +26,24 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-1233730072936671~7121713710</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>sms</string>
+		<string>tel</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Indiamart wants to access your Location for giving you better search results</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Indiamart wants to access your Location for giving you better search results</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This App wants to record your audio to convert it to text and display search results</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This App wants to record your audio to convert it to text and display search results</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -60,9 +64,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>
