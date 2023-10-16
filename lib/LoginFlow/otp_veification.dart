@@ -360,8 +360,8 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                                         clear = true;
                                                         hideWidet();
                                                       });
-                                                      if(Platform.isAndroid)
-                                                      listenOtp();
+                                                      if (Platform.isAndroid)
+                                                        listenOtp();
                                                       print(
                                                           "visibility=$_isVisible");
                                                     },
