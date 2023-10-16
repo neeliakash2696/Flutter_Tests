@@ -57,7 +57,7 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
-    
+
     if (widget.mobNo != "") ;
     loginTextField.text = widget.mobNo;
     if (Platform.isAndroid) {
@@ -494,10 +494,21 @@ class LoginControllerState extends State<LoginController> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 5),
-                                child: Image(
+                                child: FadeInImage(
                                   image: NetworkImage(currentFlag),
-                                  fit: BoxFit.fill,
+                                  placeholder:
+                                      const AssetImage("images/in_flag_s.png"),
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Image.asset('images/in_flag_s.png',
+                                        fit: BoxFit.fitWidth);
+                                  },
+                                  fit: BoxFit.fitWidth,
                                 ),
+                                // child: Image(
+                                //   image: NetworkImage(currentFlag),
+                                //   fit: BoxFit.fill,
+                                // ),
                               ),
                               const SizedBox(
                                 width: 5,
