@@ -39,9 +39,9 @@ class DetailsRequest extends StatefulWidget {
 
 class DetailsRequestState extends State<DetailsRequest> {
   TextEditingController nameTextField = TextEditingController();
-  TextEditingController emailTextField = TextEditingController();
+  TextEditingController credentialTextField = TextEditingController();
   TextEditingController pincodeTextField = TextEditingController();
-  FocusNode emailTextFieldFocus = FocusNode();
+  FocusNode credentialTextFieldFocus = FocusNode();
   FocusNode pinCodeTextFieldFocus = FocusNode();
 
   String? currentAddress;
@@ -80,7 +80,7 @@ class DetailsRequestState extends State<DetailsRequest> {
       if (list != null && mounted) {
         setState(() {
           emailList = list;
-          emailTextField.text = emailList[0];
+          credentialTextField.text = emailList[0];
           print("emaillist=$emailList");
         });
       }
@@ -92,7 +92,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   @override
   void dispose() {
     nameTextField.dispose();
-    emailTextField.dispose();
+    credentialTextField.dispose();
     pincodeTextField.dispose();
     super.dispose();
   }
@@ -118,10 +118,10 @@ class DetailsRequestState extends State<DetailsRequest> {
     }
     if (widget.isIndian == true) {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=${place.locality}&STATE=${place.administrativeArea}&LOCALITY=${place.locality}";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${credentialTextField.text.replaceAll(" ", "")}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=${place.locality}&STATE=${place.administrativeArea}&LOCALITY=${place.locality}";
     } else {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${emailTextField.text}&MODID=$appModId";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${credentialTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${credentialTextField.text}&MODID=$appModId";
     }
     print(pathUrl);
     try {
@@ -133,11 +133,13 @@ class DetailsRequestState extends State<DetailsRequest> {
         prefs.setString("ipAddress", widget.ipAddress);
         if (widget.isIndian) {
           prefs.setString("Mobile", widget.creds);
-          prefs.setString("Email", emailTextField.text);
+          prefs.setString("Email", credentialTextField.text);
         } else {
           prefs.setString("Email", widget.creds);
-          prefs.setString("Mobile",
-              emailTextField.text); // this textfield now contains Phone Number
+          prefs.setString(
+              "Mobile",
+              credentialTextField
+                  .text); // this textfield now contains Phone Number
         }
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ViewCategories()));
@@ -155,7 +157,7 @@ class DetailsRequestState extends State<DetailsRequest> {
     if (nameTextField.text.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please enter your Name")));
-    } else if (emailTextField.text.isEmpty) {
+    } else if (credentialTextField.text.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please fill all the Details")));
     } else if (widget.isIndian == true &&
@@ -329,7 +331,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                 autofocus: true,
                                 onSubmitted: (value) {
                                   // keyboard done action
-                                  emailTextFieldFocus.requestFocus();
+                                  credentialTextFieldFocus.requestFocus();
                                 },
                                 onChanged: (searchingText) {},
                                 onEditingComplete: () {},
@@ -366,7 +368,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                 child: Column(
                                   children: <Widget>[
                                     TextField(
-                                      focusNode: emailTextFieldFocus,
+                                      focusNode: credentialTextFieldFocus,
                                       textInputAction:
                                           TextInputAction.unspecified,
                                       keyboardType: widget.isIndian == true
@@ -389,7 +391,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       onEditingComplete: () {},
                                       scrollPhysics:
                                           NeverScrollableScrollPhysics(),
-                                      controller: emailTextField,
+                                      controller: credentialTextField,
                                       onTapOutside: (event) {
                                         showDropdown = false;
                                       },
@@ -426,13 +428,13 @@ class DetailsRequestState extends State<DetailsRequest> {
                                                         print(
                                                             'Selected: $item');
                                                         setState(() {
-                                                          emailTextField.text =
-                                                              item;
-                                                          emailTextField
+                                                          credentialTextField
+                                                              .text = item;
+                                                          credentialTextField
                                                                   .selection =
                                                               TextSelection.collapsed(
                                                                   offset:
-                                                                      emailTextField
+                                                                      credentialTextField
                                                                           .text
                                                                           .length);
                                                           showDropdown = false;
