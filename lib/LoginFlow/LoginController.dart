@@ -63,8 +63,7 @@ class LoginControllerState extends State<LoginController> {
     }
     if (Platform.isAndroid) {
       hint_picker();
-    }
-    else
+    } else
       setState(() {
         _focusNode.requestFocus();
       });
@@ -104,14 +103,14 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
-    if(Platform.isAndroid) {
-      var appSignatureID = await SmsAutoFill().getAppSignature;
-      Map sendOtpData = {
-        "mobile_number": loginTextField.text,
-        "app_signature_id": appSignatureID
-      };
-      print(sendOtpData);
-    }
+        if (Platform.isAndroid) {
+          var appSignatureID = await SmsAutoFill().getAppSignature;
+          Map sendOtpData = {
+            "mobile_number": loginTextField.text,
+            "app_signature_id": appSignatureID
+          };
+          print(sendOtpData);
+        }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => OTP_Verification(
                   mobNo: loginTextField.text,
@@ -127,12 +126,14 @@ class LoginControllerState extends State<LoginController> {
                   ipAddress: ipAddress,
                 )));
       } else {
+        print("${loginData.response.message}\n${loginData.response.error}");
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
                 "${loginData.response.message}\n${loginData.response.error}")));
       }
       EasyLoading.dismiss();
     } catch (e) {
+      print("${loginData.response.message}\n${loginData.response.error}");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               "${loginData.response.message}\n${loginData.response.error}")));
@@ -169,7 +170,6 @@ class LoginControllerState extends State<LoginController> {
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
-
           triggerOTP(
               currentPlatform,
               countryId,
@@ -195,10 +195,10 @@ class LoginControllerState extends State<LoginController> {
                 "${verifyIpData.response.status}\n${verifyIpData.response.message}")));
       }
     } catch (e) {
-      triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
-          loginTextField.text.replaceAll(" ", ""), "   ");
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text(e.toString())));
+      // triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
+      //     loginTextField.text.replaceAll(" ", ""), "   ");
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -206,11 +206,12 @@ class LoginControllerState extends State<LoginController> {
     if (loginTextField.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please enter your mobile number")));
-    } else if (loginTextField.text.length < 10 ||
-        loginTextField.text.startsWith("0") ||
-        loginTextField.text.startsWith("2") ||
-        loginTextField.text.startsWith("3") ||
-        loginTextField.text.startsWith("5")) {
+    } else if ((isIndian == true) &&
+        (loginTextField.text.length < 10 ||
+            loginTextField.text.startsWith("0") ||
+            loginTextField.text.startsWith("2") ||
+            loginTextField.text.startsWith("3") ||
+            loginTextField.text.startsWith("5"))) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Enter a valid mobile number")));
     } else if (checkStatus == false) {
@@ -688,7 +689,7 @@ class LoginControllerState extends State<LoginController> {
             TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
       } else
-          _focusNode.requestFocus();
+        _focusNode.requestFocus();
     });
     print("phonenumber=$_phoneNumber");
   }
