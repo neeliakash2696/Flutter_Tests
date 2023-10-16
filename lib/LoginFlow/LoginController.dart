@@ -371,34 +371,50 @@ class LoginControllerState extends State<LoginController> {
                                   setState(() {});
                                 },
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Image(
-                                      image: CachedNetworkImageProvider(
+                                    Container(
+                                      width: MediaQuery.of(context).size.width -
+                                          180,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Image(
+                                            image: CachedNetworkImageProvider(
+                                                searching == true
+                                                    ? results[index]['cflag']
+                                                    : snapshot.data[index]
+                                                        ['cflag']),
+                                            fit: BoxFit.fill,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              searching == true
+                                                  ? results[index]['cnname']
+                                                  : snapshot.data[index]
+                                                      ['cnname'],
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
                                           searching == true
-                                              ? results[index]['cflag']
-                                              : snapshot.data[index]['cflag']),
-                                      fit: BoxFit.fill,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(searching == true
-                                        ? results[index]['cnname']
-                                        : snapshot.data[index]['cnname']),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            searching == true
-                                                ? results[index]['cncode']
-                                                : snapshot.data[index]
-                                                    ['cncode'],
-                                            style: const TextStyle(
-                                                color: Colors.grey),
-                                          )),
-                                    ),
+                                              ? results[index]['cncode']
+                                              : snapshot.data[index]['cncode'],
+                                          style: const TextStyle(
+                                              color: Colors.grey),
+                                        )),
                                   ],
                                 ),
                               );
