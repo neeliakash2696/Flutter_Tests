@@ -463,14 +463,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                               padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
                               child: GestureDetector(
                                   onTap: () async {
-                                    if (authkey.length == 4)
-                                      apiCall(
-                                          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=${widget.countryId}&APP_SCREEN_NAME=Default-Buyer&verify_screen=${widget.platform}%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
-                                    else
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content:
-                                                  Text("Enter a valid OTP")));
+                                    nextTapped();
                                   },
                                   child: const Text("NEXT",
                                       style: TextStyle(
@@ -645,6 +638,18 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
     setState(() {
       print("codeUpdated");
     });
+    nextTapped();
+  }
+
+  void nextTapped() {
+    if (authkey.length == 4)
+      apiCall(
+          "https://mapi.indiamart.com/wservce/users/OTPverification/?user_ip=${widget.ipAddress}&flag=OTPVer&verify_process=Online&user_country=${widget.countryId}&APP_SCREEN_NAME=Default-Buyer&verify_screen=${widget.platform}%20VERIFICATION%20THROUGH%20OTP&auth_key=$authkey&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${widget.glusrid}&ScreenName=OtpVerification&app_version_no=13.2.2_T1");
+    else
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(
+          content:
+          Text("Enter a valid OTP")));
   }
 }
 
