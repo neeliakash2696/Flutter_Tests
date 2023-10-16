@@ -56,7 +56,7 @@ class DetailsRequestState extends State<DetailsRequest> {
 
   @override
   void initState() {
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid && widget.isIndian) {
       _getEmails();
       filteredEmailList.addAll(emailList);
     }
