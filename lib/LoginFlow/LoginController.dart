@@ -54,7 +54,7 @@ class LoginControllerState extends State<LoginController> {
   Stream get dialogStream => dialogStreamController.stream;
 
   Function get dialogSink => dialogStreamController.sink.add;
-
+  static const Color otpButtonColor = Color(0xFF00FF00);
   @override
   void initState() {
     super.initState();
@@ -67,7 +67,13 @@ class LoginControllerState extends State<LoginController> {
     _stream = TruecallerSdk.streamCallbackData;
     TruecallerSdk.initializeSDK(
         sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
-        consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET
+        consentTitleOptions: TruecallerSdkScope.SDK_CONSENT_TITLE_LOG_IN,
+        footerType: TruecallerSdkScope.FOOTER_TYPE_CONTINUE,
+        consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET,
+        loginTextPrefix:TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_CONTINUE,
+        loginTextSuffix: TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_LOGIN,
+        ctaTextPrefix: TruecallerSdkScope.CTA_TEXT_PREFIX_CONTINUE_WITH,
+        // buttonColor: otpButtonColor,
     );
     getTruecaller();
     // if (Platform.isAndroid) {
