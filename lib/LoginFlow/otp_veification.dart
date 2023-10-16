@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:account_picker/account_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,8 +70,10 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
     otp2 = FocusNode();
     otp3 = FocusNode();
     otp4 = FocusNode();
-    if (Platform.isAndroid) {
-      listenOtp();
+    if(!kIsWeb) {
+      if (Platform.isAndroid) {
+        listenOtp();
+      }
     }
     super.initState();
   }
@@ -362,8 +365,10 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                                         clear = true;
                                                         hideWidet();
                                                       });
-                                                      if (Platform.isAndroid)
-                                                        listenOtp();
+                                                      if(!kIsWeb) {
+                                                        if (Platform.isAndroid)
+                                                          listenOtp();
+                                                      }
                                                       print(
                                                           "visibility=$_isVisible");
                                                     },
