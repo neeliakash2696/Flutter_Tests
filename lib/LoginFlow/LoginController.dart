@@ -15,8 +15,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_tests/DataModels/LoginResponseDataModel';
 import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 import 'package:sms_autofill/sms_autofill.dart';
-
+import 'package:truecaller_sdk/truecaller_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../view_categories.dart';
 import 'otp_veification.dart';
 
 class LoginController extends StatefulWidget {
@@ -47,9 +48,11 @@ class LoginControllerState extends State<LoginController> {
 
   late LoginResponse loginData;
   late GeoLocationResponse verifyIpData;
-
+  late Stream<TruecallerSdkCallback>? _stream;
   StreamController dialogStreamController = StreamController.broadcast();
+
   Stream get dialogStream => dialogStreamController.stream;
+
   Function get dialogSink => dialogStreamController.sink.add;
 
   @override
@@ -57,17 +60,23 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
-    if (widget.mobNo != "") ;
+    if (widget.mobNo != "");
     {
       loginTextField.text = widget.mobNo;
     }
-    if (Platform.isAndroid) {
-      hint_picker();
-    }
-    else
-      setState(() {
-        _focusNode.requestFocus();
-      });
+    _stream = TruecallerSdk.streamCallbackData;
+    TruecallerSdk.initializeSDK(
+        sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
+        consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET
+    );
+    getTruecaller();
+    // if (Platform.isAndroid) {
+    //   hint_picker();
+    // }
+    // else
+    //   setState(() {
+    //     _focusNode.requestFocus();
+    //   });
   }
 
   @override
@@ -104,16 +113,17 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
-    if(Platform.isAndroid) {
-      var appSignatureID = await SmsAutoFill().getAppSignature;
-      Map sendOtpData = {
-        "mobile_number": loginTextField.text,
-        "app_signature_id": appSignatureID
-      };
-      print(sendOtpData);
-    }
+        if (Platform.isAndroid) {
+          var appSignatureID = await SmsAutoFill().getAppSignature;
+          Map sendOtpData = {
+            "mobile_number": loginTextField.text,
+            "app_signature_id": appSignatureID
+          };
+          print(sendOtpData);
+        }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => OTP_Verification(
+            builder: (context) =>
+                OTP_Verification(
                   mobNo: loginTextField.text,
                   glusrid: loginData.response.glusrid ?? "",
                   isIndian: isIndian,
@@ -169,7 +179,6 @@ class LoginControllerState extends State<LoginController> {
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
-
           triggerOTP(
               currentPlatform,
               countryId,
@@ -192,7 +201,8 @@ class LoginControllerState extends State<LoginController> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
-                "${verifyIpData.response.status}\n${verifyIpData.response.message}")));
+                "${verifyIpData.response.status}\n${verifyIpData.response
+                    .message}")));
       }
     } catch (e) {
       triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
@@ -242,14 +252,15 @@ class LoginControllerState extends State<LoginController> {
 
   Future<void> readJson() async {
     final String response =
-        await rootBundle.loadString('assets/countrylist.json');
+    await rootBundle.loadString('assets/countrylist.json');
     countriesData = await json.decode(response);
   }
 
   showAlert() {
     showDialog(
         context: context,
-        builder: (_) => AlertDialog(
+        builder: (_) =>
+            AlertDialog(
                 title: const Text('Alert'),
                 content: const Text(
                     'It seems you are outside India.\nPress Ok to get OTP on email'),
@@ -278,7 +289,10 @@ class LoginControllerState extends State<LoginController> {
               return SimpleDialog(
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
                     child: Column(
                       children: [
                         Row(
@@ -297,16 +311,16 @@ class LoginControllerState extends State<LoginController> {
                                     searching = true;
                                     results = countriesData
                                         .where((elem) =>
-                                            elem['cnname']
-                                                .toString()
-                                                .toLowerCase()
-                                                .contains(searchingText
-                                                    .toLowerCase()) ||
-                                            elem['cncode']
-                                                .toString()
-                                                .toLowerCase()
-                                                .contains(searchingText
-                                                    .toLowerCase()))
+                                    elem['cnname']
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(searchingText
+                                        .toLowerCase()) ||
+                                        elem['cncode']
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains(searchingText
+                                            .toLowerCase()))
                                         .toList();
                                     dialogSink(results);
                                   } else {
@@ -330,7 +344,7 @@ class LoginControllerState extends State<LoginController> {
                                   contentPadding: const EdgeInsets.all(8),
                                   filled: true,
                                   fillColor:
-                                      const Color.fromRGBO(233, 229, 229, 1),
+                                  const Color.fromRGBO(233, 229, 229, 1),
                                 ),
                               ),
                             ),
@@ -359,7 +373,7 @@ class LoginControllerState extends State<LoginController> {
                                   countryCode = snapshot.data[index]['cncode'];
                                   countryId = snapshot.data[index]['cniso'];
                                   currentCountry =
-                                      snapshot.data[index]['cnname'];
+                                  snapshot.data[index]['cnname'];
                                   loginTextField.text = "";
                                   if (countryCode == "91") {
                                     isIndian = true;
@@ -393,7 +407,7 @@ class LoginControllerState extends State<LoginController> {
                                             searching == true
                                                 ? results[index]['cncode']
                                                 : snapshot.data[index]
-                                                    ['cncode'],
+                                            ['cncode'],
                                             style: const TextStyle(
                                                 color: Colors.grey),
                                           )),
@@ -416,7 +430,8 @@ class LoginControllerState extends State<LoginController> {
   }
 
   @override
-  Widget build(BuildContext context) => KeyboardDismisser(
+  Widget build(BuildContext context) =>
+      KeyboardDismisser(
           gestures: const [
             GestureType.onTap,
             GestureType.onPanUpdateDownDirection,
@@ -428,22 +443,25 @@ class LoginControllerState extends State<LoginController> {
               elevation: 1,
               title: Center(
                   child: Container(
-                height: 100,
-                width: MediaQuery.of(context).size.width,
-                // color: Colors.white,
-                alignment: Alignment.center,
-                child: Center(
-                  child: Container(
-                    height: 30,
-                    // width: 200,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("images/indiamartLogo.png"),
-                          fit: BoxFit.contain),
+                    height: 100,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    // color: Colors.white,
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: Container(
+                        height: 30,
+                        // width: 200,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("images/indiamartLogo.png"),
+                              fit: BoxFit.contain),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )),
+                  )),
             ),
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -485,7 +503,10 @@ class LoginControllerState extends State<LoginController> {
                       Container(
                         decoration: BoxDecoration(border: Border.all()),
                         height: 60,
-                        width: MediaQuery.of(context).size.width - 20,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width - 20,
                         child: GestureDetector(
                           onTap: () {
                             countrySearchTextFiled.text = "";
@@ -594,12 +615,13 @@ class LoginControllerState extends State<LoginController> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => webview_class(
-                                        title: "",
-                                        initialUrl:
+                                      builder: (context) =>
+                                          webview_class(
+                                            title: "",
+                                            initialUrl:
                                             "https://m.indiamart.com/terms-of-use.html",
-                                        navMode: '1',
-                                      ),
+                                            navMode: '1',
+                                          ),
                                     ));
                               },
                               child: Text(
@@ -619,12 +641,13 @@ class LoginControllerState extends State<LoginController> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => webview_class(
-                                        title: "Privacy Policy",
-                                        initialUrl:
+                                      builder: (context) =>
+                                          webview_class(
+                                            title: "Privacy Policy",
+                                            initialUrl:
                                             "https://m.indiamart.com/privacy-policy.html",
-                                        navMode: '1',
-                                      ),
+                                            navMode: '1',
+                                          ),
                                     ));
                               },
                               child: Text(
@@ -650,16 +673,19 @@ class LoginControllerState extends State<LoginController> {
                     },
                     child: Container(
                       height: 50,
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       color: Colors.teal,
                       child: const Center(
                           child: Text(
-                        "NEXT",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w600),
-                      )),
+                            "NEXT",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 19,
+                                fontWeight: FontWeight.w600),
+                          )),
                     ),
                   )
                 ],
@@ -677,8 +703,42 @@ class LoginControllerState extends State<LoginController> {
             TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
       } else
-          _focusNode.requestFocus();
+        _focusNode.requestFocus();
     });
     print("phonenumber=$_phoneNumber");
   }
+
+  void getTruecaller() async {
+    print("truecallerusable=${TruecallerSdk.isUsable}");
+    // await TruecallerSdk.initializeSDK(
+    //     sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
+    //     consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET
+    // );
+    print("truecallerusable=$TruecallerSdk.isUsable");
+    TruecallerSdk.isUsable.then((isUsable) {
+      if (isUsable) {
+        TruecallerSdk.getProfile;
+        StreamSubscription streamSubscription = TruecallerSdk.streamCallbackData
+            .listen((truecallerSdkCallback) {
+          switch (truecallerSdkCallback.result) {
+            case TruecallerSdkCallbackResult.success:
+              String firstName = truecallerSdkCallback.profile!.firstName;
+              String? lastName = truecallerSdkCallback.profile!.lastName;
+              String phNo = truecallerSdkCallback.profile!.phoneNumber;
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => ViewCategories()));
+              break;
+            case TruecallerSdkCallbackResult.failure:
+              int errorCode = truecallerSdkCallback.error!.code;
+              break;
+            case TruecallerSdkCallbackResult.verification:
+              print("Verification Required!!");
+              break;
+            default:
+              print("Invalid result");
+          }
+        });
+      }
+    });
+        }
 }
