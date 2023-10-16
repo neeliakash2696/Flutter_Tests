@@ -57,12 +57,17 @@ class LoginControllerState extends State<LoginController> {
     super.initState();
     readJson();
     getPlatform();
-
     if (widget.mobNo != "") ;
-    loginTextField.text = widget.mobNo;
+    {
+      loginTextField.text = widget.mobNo;
+    }
     if (Platform.isAndroid) {
       hint_picker();
     }
+    else
+      setState(() {
+        _focusNode.requestFocus();
+      });
   }
 
   @override
@@ -99,6 +104,14 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
+    if(Platform.isAndroid) {
+      var appSignatureID = await SmsAutoFill().getAppSignature;
+      Map sendOtpData = {
+        "mobile_number": loginTextField.text,
+        "app_signature_id": appSignatureID
+      };
+      print(sendOtpData);
+    }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => OTP_Verification(
                   mobNo: loginTextField.text,
@@ -156,14 +169,7 @@ class LoginControllerState extends State<LoginController> {
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
             verifyIpData.response.data.geoipCountryName == "India") {
-          if (Platform.isAndroid) {
-            var appSignatureID = await SmsAutoFill().getAppSignature;
-            Map sendOtpData = {
-              "mobile_number": loginTextField.text,
-              "app_signature_id": appSignatureID
-            };
-            print(sendOtpData);
-          }
+
           triggerOTP(
               currentPlatform,
               countryId,
@@ -533,7 +539,7 @@ class LoginControllerState extends State<LoginController> {
                                       : TextInputType.emailAddress,
                                   autocorrect: false,
                                   focusNode: _focusNode,
-                                  autofocus: true,
+                                  autofocus: false,
                                   onChanged: (searchingText) {},
                                   onEditingComplete: () {},
                                   onTapOutside: (event) {},
@@ -682,10 +688,7 @@ class LoginControllerState extends State<LoginController> {
             TextSelection.collapsed(offset: loginTextField.text.length);
         validateAndSendOTP();
       } else
-        setState(() {
-          loginTextField.text = widget.mobNo;
-          // _focusNode.requestFocus();
-        });
+          _focusNode.requestFocus();
     });
     print("phonenumber=$_phoneNumber");
   }
