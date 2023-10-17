@@ -76,13 +76,6 @@ class LoginControllerState extends State<LoginController> {
         // buttonColor: otpButtonColor,
     );
     getTruecaller();
-    // if (Platform.isAndroid) {
-    //   hint_picker();
-    // }
-    // else
-    //   setState(() {
-    //     _focusNode.requestFocus();
-    //   });
   }
 
   @override
@@ -715,19 +708,18 @@ class LoginControllerState extends State<LoginController> {
   }
 
   void getTruecaller() async {
-    print("truecallerusable=${TruecallerSdk.isUsable}");
     // await TruecallerSdk.initializeSDK(
     //     sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
     //     consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET
     // );
-    print("truecallerusable=$TruecallerSdk.isUsable");
     TruecallerSdk.isUsable.then((isUsable) {
-      if (isUsable) {
+      if (isUsable && countryCode=="91") {
         TruecallerSdk.getProfile;
         StreamSubscription streamSubscription = TruecallerSdk.streamCallbackData
             .listen((truecallerSdkCallback) {
           switch (truecallerSdkCallback.result) {
             case TruecallerSdkCallbackResult.success:
+              storeDataTruecaller(truecallerSdkCallback.profile);
               String firstName = truecallerSdkCallback.profile!.firstName;
               String? lastName = truecallerSdkCallback.profile!.lastName;
               String phNo = truecallerSdkCallback.profile!.phoneNumber;
@@ -747,4 +739,19 @@ class LoginControllerState extends State<LoginController> {
       }
     });
         }
+
+  void storeDataTruecaller(TruecallerUserProfile? trueProfile) async{
+    SharedPreferences tcDataSharedPreference =
+        await SharedPreferences.getInstance();
+
+    String userName = '${trueProfile?.firstName} ${trueProfile?.lastName}';
+
+     tcDataSharedPreference.setString("TC_NAME", userName);
+     tcDataSharedPreference.setString("TC_EMAIL_ID", trueProfile?.email??"");
+     tcDataSharedPreference.setString("TC_MOBILE_NO", trueProfile?.phoneNumber??"");
+     tcDataSharedPreference.setString("TC_CITY", trueProfile?.city??"");
+     tcDataSharedPreference.setString("TC_COUNTRY_CODE", trueProfile?.countryCode??"");
+     tcDataSharedPreference.setBool("TC_IS_SUCCESS", true);
+     tcDataSharedPreference.setBool("IS_LOGIN_VIA_TC", true);
+  }
 }
