@@ -28,8 +28,8 @@ class UDS {
   var fkGlLegalStatusId;
   String fkGlusrBizIds;
   String fkGlusrNoofEmpId;
-  String fkGlusrTurnoverId;
-  String fkGlusrUsrPbizId;
+  var fkGlusrTurnoverId;
+  var fkGlusrUsrPbizId;
   String freeshowroomAliasIm;
   String glid;
   String glusrDisabledReason;
