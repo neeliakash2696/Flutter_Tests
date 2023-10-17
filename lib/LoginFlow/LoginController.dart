@@ -61,8 +61,11 @@ class LoginControllerState extends State<LoginController> {
     {
       loginTextField.text = widget.mobNo;
     }
-    if (Platform.isAndroid) {
-      hint_picker();
+    if (!kIsWeb) {
+      if(Platform.isAndroid) {
+        print("currentplatform=$currentPlatform");
+        hint_picker();
+      }
     } else
       setState(() {
         _focusNode.requestFocus();
@@ -88,10 +91,14 @@ class LoginControllerState extends State<LoginController> {
     } else {
       requiredParam = "email";
     }
-    if (Platform.isIOS) {
-      process = "OTP_Screen_Fusion";
+    if(!kIsWeb) {
+      if (Platform.isIOS) {
+        process = "OTP_Screen_Fusion";
+      } else {
+        process = "OTP_Screen_Android";
+      }
     } else {
-      process = "OTP_Screen_Android";
+        process = "OTP_Screen_Android";
     }
     String pathUrl =
         "https://mapi.indiamart.com/wservce/users/OTPverification/?process=$process&flag=OTPGen&user_country=$countryId&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=$country&modid=$platform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$platform&user_mobile_country_code=$countryCode&$requiredParam=$textFieldValue&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=$countryId&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=$userIp&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20$platform%20App";
@@ -103,13 +110,15 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
-        if (Platform.isAndroid) {
-          var appSignatureID = await SmsAutoFill().getAppSignature;
-          Map sendOtpData = {
-            "mobile_number": loginTextField.text,
-            "app_signature_id": appSignatureID
-          };
-          print(sendOtpData);
+        if(!kIsWeb) {
+          if (Platform.isAndroid) {
+            var appSignatureID = await SmsAutoFill().getAppSignature;
+            Map sendOtpData = {
+              "mobile_number": loginTextField.text,
+              "app_signature_id": appSignatureID
+            };
+            print(sendOtpData);
+          }
         }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => OTP_Verification(
@@ -143,12 +152,14 @@ class LoginControllerState extends State<LoginController> {
   verifyIpCountry(String creds) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var platform = "";
-    if (Platform.isIOS) {
-      platform = "IOS";
-    } else if (Platform.isAndroid) {
+    if(!kIsWeb) {
+      if (Platform.isIOS) {
+        platform = "IOS";
+      } else if (Platform.isAndroid) {
+        platform = "Android";
+      }
+    } else {
       platform = "Android";
-    } else if (kIsWeb) {
-      platform = "Web";
     }
     var requiredParam = "";
     if (isIndian) {
@@ -166,6 +177,11 @@ class LoginControllerState extends State<LoginController> {
       print(verifyIpData.response.data.geoipCountryName);
       ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
       ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
+      print("ipcountry=$ipCountry");
+      setState(() {
+        if(ipCountry!="India")
+          isIndian=false;
+      });
       prefs.setString("ipAddress", ipAddress);
       if (verifyIpData.response.code == 200) {
         if (isIndian &&
@@ -177,8 +193,8 @@ class LoginControllerState extends State<LoginController> {
               countryCode,
               loginTextField.text.replaceAll(" ", ""),
               verifyIpData.response.data.geoipIpAddress.toString());
-        } else if (countryCode == "+91" &&
-            verifyIpData.response.data.geoipCountryName != "India") {
+        } else if (countryCode == "91" &&
+            ipCountry != "India") {
           showAlert();
         } else {
           triggerOTP(
@@ -229,15 +245,17 @@ class LoginControllerState extends State<LoginController> {
 
   getPlatform() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (Platform.isAndroid) {
+    if(!kIsWeb) {
+      if (Platform.isAndroid) {
+        currentPlatform = "ANDROID";
+        prefs.setString("platform", "ANDROID");
+      } else if (Platform.isIOS) {
+        currentPlatform = "Ios";
+        prefs.setString("platform", "iOS");
+      }
+    } else {
       currentPlatform = "ANDROID";
       prefs.setString("platform", "ANDROID");
-    } else if (Platform.isIOS) {
-      currentPlatform = "Ios";
-      prefs.setString("platform", "iOS");
-    } else if (kIsWeb) {
-      currentPlatform = "WEB";
-      prefs.setString("platform", "WEB");
     }
   }
 

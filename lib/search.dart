@@ -352,12 +352,14 @@ class SearchState extends State<Search>
     var ipAddress = prefs.getString("ipAddress");
     var mobile = prefs.getString("Mobile");
     var source = "";
-    if (Platform.isAndroid) {
-      source = "android.search";
-    } else if (Platform.isIOS) {
-      source = "ios.search";
+    if(!kIsWeb) {
+      if (Platform.isAndroid) {
+        source = "android.search";
+      } else if (Platform.isIOS) {
+        source = "ios.search";
+      }
     } else {
-      source = "web.search";
+      source = "android.search";
     }
     if (currentPage == 1) EasyLoading.show(status: 'Loading...');
     try {

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,9 +57,11 @@ class DetailsRequestState extends State<DetailsRequest> {
 
   @override
   void initState() {
-    if (Platform.isAndroid && widget.isIndian) {
-      _getEmails();
-      filteredEmailList.addAll(emailList);
+    if(!kIsWeb) {
+      if (Platform.isAndroid && widget.isIndian) {
+        _getEmails();
+        filteredEmailList.addAll(emailList);
+      }
     }
     super.initState();
   }
@@ -105,16 +108,17 @@ class DetailsRequestState extends State<DetailsRequest> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     ak = prefs.getString("AK") ?? "";
     print("ak is $ak");
-
-    if (Platform.isIOS) {
-      appModId = "iOS";
-      updatedUsing = "Edit Profile (IOS)";
-    } else if (Platform.isAndroid) {
+    if(!kIsWeb) {
+      if (Platform.isIOS) {
+        appModId = "iOS";
+        updatedUsing = "Edit Profile (IOS)";
+      } else if (Platform.isAndroid) {
+        appModId = "ANDROID";
+        updatedUsing = "Edit Profile (Android)";
+      }
+    } else {
       appModId = "ANDROID";
       updatedUsing = "Edit Profile (Android)";
-    } else {
-      appModId = "WEB";
-      updatedUsing = "Edit Profile (Web)";
     }
     if (widget.isIndian == true) {
       pathUrl =
