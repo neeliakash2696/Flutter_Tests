@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nominatim_geocoding/nominatim_geocoding.dart';
 
 class DetailsRequest extends StatefulWidget {
   String fname;
@@ -52,12 +53,15 @@ class DetailsRequestState extends State<DetailsRequest> {
   bool showDropdown = false;
   late Placemark place;
   List<dynamic> filteredEmailList = [];
+  String currentCity = "";
+  String currentLocality = "";
+  String currentState = "";
 
   bool isChanged = false;
 
   @override
   void initState() {
-    if(!kIsWeb) {
+    if (!kIsWeb) {
       if (Platform.isAndroid && widget.isIndian) {
         _getEmails();
         filteredEmailList.addAll(emailList);
@@ -108,7 +112,7 @@ class DetailsRequestState extends State<DetailsRequest> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     ak = prefs.getString("AK") ?? "";
     print("ak is $ak");
-    if(!kIsWeb) {
+    if (!kIsWeb) {
       if (Platform.isIOS) {
         appModId = "iOS";
         updatedUsing = "Edit Profile (IOS)";
@@ -207,12 +211,19 @@ class DetailsRequestState extends State<DetailsRequest> {
 
   Future getCurrentPosition() async {
     final hasPermission = await handleLocationPermission();
+    await NominatimGeocoding.init(reqCacheNum: 20);
     if (!hasPermission) return;
     EasyLoading.show(status: "Fetching...");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => currentPosition = position);
-      _getAddressFromLatLng(currentPosition!);
+      if (currentPosition != null) {
+        _getAddressFromLatLng();
+      } else {
+        print("Can't fetch Location");
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Can't fetch Location")));
+      }
     }).catchError((e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Can't fetch Location due to ${e.toString()}")));
@@ -222,32 +233,54 @@ class DetailsRequestState extends State<DetailsRequest> {
     });
   }
 
-  Future _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(
-            currentPosition!.latitude, currentPosition!.longitude)
-        .then((List<Placemark> placemarks) {
-      place = placemarks[0];
-      setState(() {
-        print(place.administrativeArea);
-        print(place.country);
-        print(place.isoCountryCode);
-        print(place.locality);
-        print(place.name);
-        print(place.street);
-        print(place.subAdministrativeArea);
-        print(place.subLocality);
-        print(place.subThoroughfare);
-        print(place.thoroughfare);
-        currentAddress = '${place.postalCode}';
-        pincodeTextField.text = currentAddress.toString();
+  Future _getAddressFromLatLng() async {
+    if (kIsWeb) {
+      var coordinate = Coordinate(
+          latitude: currentPosition?.latitude ?? 0.0,
+          longitude: currentPosition?.longitude ?? 0.0);
+      Geocoding geocoding =
+          await NominatimGeocoding.to.reverseGeoCoding(coordinate);
+      print(geocoding.address.city);
+      print(geocoding.address.country);
+      print(geocoding.address.countryCode);
+      print(geocoding.address.district);
+      print(geocoding.address.houseNumber);
+      print(geocoding.address.locale);
+      print(geocoding.address.neighbourhood);
+      print(geocoding.address.postalCode);
+      print(geocoding.address.suburb);
+      currentCity = geocoding.address.city;
+      currentState = geocoding.address.state;
+      currentLocality = geocoding.address.suburb;
+      pincodeTextField.text = geocoding.address.postalCode.toString();
+      EasyLoading.dismiss();
+    } else {
+      await placemarkFromCoordinates(currentPosition?.latitude ?? 0.0,
+              currentPosition?.longitude ?? 0.0)
+          .then((List<Placemark> placemarks) {
+        place = placemarks[0];
+        setState(() {
+          print(place.administrativeArea);
+          print(place.country);
+          print(place.isoCountryCode);
+          print(place.locality);
+          print(place.name);
+          print(place.street);
+          print(place.subAdministrativeArea);
+          print(place.subLocality);
+          print(place.subThoroughfare);
+          print(place.thoroughfare);
+          currentAddress = '${place.postalCode}';
+          pincodeTextField.text = currentAddress.toString();
+          EasyLoading.dismiss();
+        });
+      }).catchError((e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Can't fetch Location due to ${e.toString()}")));
+        debugPrint(e.toString());
         EasyLoading.dismiss();
       });
-    }).catchError((e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Can't fetch Location due to ${e.toString()}")));
-      debugPrint(e.toString());
-      EasyLoading.dismiss();
-    });
+    }
   }
 
   @override
@@ -481,6 +514,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(children: <Widget>[
+                                  // if (!kIsWeb) ...{
                                   Padding(
                                     padding: const EdgeInsets.only(left: 10),
                                     child: TextButton.icon(
@@ -530,6 +564,11 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       style: TextStyle(color: Colors.grey[400]),
                                     ),
                                   ),
+                                  // } else ...{
+                                  //   SizedBox(
+                                  //     width: 8,
+                                  //   )
+                                  // },
                                   Container(
                                     width:
                                         MediaQuery.of(context).size.width - 253,

@@ -1,6 +1,8 @@
 // ignore_for_file: must_be_immutable, unrelated_type_equality_checks, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tests/search.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -63,6 +65,7 @@ class SearchFieldControllerState extends State<SearchFieldController> {
 
   @override
   void dispose() {
+    focus.unfocus();
     searchBar.dispose();
     super.dispose();
   }
@@ -76,6 +79,8 @@ class SearchFieldControllerState extends State<SearchFieldController> {
 
   proceedForSearch() {
     // saveSearchQueryLocally(searchQuery);
+    focus.unfocus();
+    print(widget.fromScreen);
     switch (widget.fromScreen) {
       case SearchingFromScreen.def:
         Navigator.pop(context);
@@ -119,6 +124,16 @@ class SearchFieldControllerState extends State<SearchFieldController> {
                     )));
       case SearchingFromScreen.search:
         Navigator.pop(context);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Search(
+                      city: 0,
+                      productName: searchQuery,
+                      productFname: searchQuery,
+                      productIndex: 0,
+                      biztype: "",
+                    )));
     }
   }
 
@@ -150,15 +165,25 @@ class SearchFieldControllerState extends State<SearchFieldController> {
     var ipAddress = prefs.getString("ipAddress");
     var mobile = prefs.getString("Mobile");
     EasyLoading.show(status: 'Loading...');
+    var modId = "";
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        modId = "ANDROID";
+      } else if (Platform.isIOS) {
+        modId = "IOS";
+      }
+    } else {
+      modId = "ANDROID";
+    }
     try {
       String pathUrl = "";
       if (query.isEmpty) {
         var logtime = formattedEndDate();
         pathUrl =
-            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=$glid&APP_SCREEN_NAME=Default-Seller&count=15&AK=$ak&source=Search Products On Scroll&type=2&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=$glid&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=$mobile";
+            "https://mapi.indiamart.com//wservce/users/getBuyerData/?VALIDATION_GLID=$glid&APP_SCREEN_NAME=Default-Seller&count=15&AK=$ak&source=Search Products On Scroll&type=2&modid=$modId&token=imobile@15061981&APP_USER_ID=$glid&APP_MODID=$modId&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&VALIDATION_USER_IP=$ipAddress&logtime=$logtime&app_version_no=13.2.0&VALIDATION_USERCONTACT=$mobile";
       } else {
         pathUrl =
-            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=$currentPlatform&AK=$ak&VALIDATION_GLID=$glid&VALIDATION_USER_IP=$ipAddress&VALIDATION_USERCONTACT=$mobile&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=$glid&APP_SCREEN_NAME=Default-Seller";
+            "https://suggest.imimg.com/suggest/suggest.php/?q=$query&limit=10&type=product%2Cmcat&match=fuzzy&fields=&p=5&APP_MODID=$modId&AK=$ak&VALIDATION_GLID=$glid&VALIDATION_USER_IP=$ipAddress&VALIDATION_USERCONTACT=$mobile&app_version_no=13.2.1_T1&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&APP_USER_ID=$glid&APP_SCREEN_NAME=Default-Seller";
       }
       print("pathurl=$pathUrl");
       http.Response response = await http.get(Uri.parse(pathUrl));
