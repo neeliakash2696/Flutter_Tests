@@ -720,6 +720,7 @@ class LoginControllerState extends State<LoginController> {
           switch (truecallerSdkCallback.result) {
             case TruecallerSdkCallbackResult.success:
               storeDataTruecaller(truecallerSdkCallback.profile);
+              callApi();
               String firstName = truecallerSdkCallback.profile!.firstName;
               String? lastName = truecallerSdkCallback.profile!.lastName;
               String phNo = truecallerSdkCallback.profile!.phoneNumber;
@@ -753,5 +754,9 @@ class LoginControllerState extends State<LoginController> {
      tcDataSharedPreference.setString("TC_COUNTRY_CODE", trueProfile?.countryCode??"");
      tcDataSharedPreference.setBool("TC_IS_SUCCESS", true);
      tcDataSharedPreference.setBool("IS_LOGIN_VIA_TC", true);
+  }
+
+  void callApi() {
+
   }
 }
