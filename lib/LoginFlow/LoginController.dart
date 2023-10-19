@@ -17,7 +17,10 @@ import 'package:flutter_tests/DataModels/VerifyIPLocationDataModel';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:truecaller_sdk/truecaller_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../DataModels/UserDetailSyncModel.dart';
+import '../DataModels/VerifyOTPDataModel.dart';
 import '../view_categories.dart';
+import 'DetailsRequest.dart';
 import 'otp_veification.dart';
 
 class LoginController extends StatefulWidget {
@@ -35,6 +38,8 @@ class LoginControllerState extends State<LoginController> {
   TextEditingController countrySearchTextFiled = TextEditingController();
   var countriesData;
   var results;
+  late VerifyOTP loginData1;
+  late UDS uds;
   bool searching = false;
   String currentFlag =
       "http://imghost.indiamart.com/country-flags/small/in_flag_s.png";
@@ -51,10 +56,13 @@ class LoginControllerState extends State<LoginController> {
   late Stream<TruecallerSdkCallback>? _stream;
   StreamController dialogStreamController = StreamController.broadcast();
 
+  var glid = "";
+
   Stream get dialogStream => dialogStreamController.stream;
 
   Function get dialogSink => dialogStreamController.sink.add;
   static const Color otpButtonColor = Color(0xFF00FF00);
+
   @override
   void initState() {
     super.initState();
@@ -66,14 +74,14 @@ class LoginControllerState extends State<LoginController> {
     }
     _stream = TruecallerSdk.streamCallbackData;
     TruecallerSdk.initializeSDK(
-        sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
-        consentTitleOptions: TruecallerSdkScope.SDK_CONSENT_TITLE_LOG_IN,
-        footerType: TruecallerSdkScope.FOOTER_TYPE_CONTINUE,
-        consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET,
-        loginTextPrefix:TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_CONTINUE,
-        loginTextSuffix: TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_LOGIN,
-        ctaTextPrefix: TruecallerSdkScope.CTA_TEXT_PREFIX_CONTINUE_WITH,
-        // buttonColor: otpButtonColor,
+      sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
+      consentTitleOptions: TruecallerSdkScope.SDK_CONSENT_TITLE_LOG_IN,
+      footerType: TruecallerSdkScope.FOOTER_TYPE_CONTINUE,
+      consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET,
+      loginTextPrefix: TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_CONTINUE,
+      loginTextSuffix: TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_LOGIN,
+      ctaTextPrefix: TruecallerSdkScope.CTA_TEXT_PREFIX_CONTINUE_WITH,
+      // buttonColor: otpButtonColor,
     );
     getTruecaller();
   }
@@ -148,7 +156,8 @@ class LoginControllerState extends State<LoginController> {
     }
   }
 
-  verifyIpCountry(String creds) async {
+  verifyIpCountry(String creds, bool tcUsed, bool otpTriggered,
+      TruecallerUserProfile? profile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var platform = "";
     if (Platform.isIOS) {
@@ -176,27 +185,31 @@ class LoginControllerState extends State<LoginController> {
       ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
       prefs.setString("ipAddress", ipAddress);
       if (verifyIpData.response.code == 200) {
-        if (isIndian &&
-            verifyIpData.response.data.geoipCountryName == "India") {
-          triggerOTP(
-              currentPlatform,
-              countryId,
-              currentCountry,
-              countryCode,
-              loginTextField.text.replaceAll(" ", ""),
-              verifyIpData.response.data.geoipIpAddress.toString());
-        } else if (countryCode == "+91" &&
-            verifyIpData.response.data.geoipCountryName != "India") {
-          showAlert();
-        } else {
-          triggerOTP(
-              currentPlatform,
-              countryId,
-              currentCountry,
-              countryCode,
-              loginTextField.text.replaceAll(" ", ""),
-              verifyIpData.response.data.geoipIpAddress.toString());
+        if (otpTriggered) {
+          if (isIndian &&
+              verifyIpData.response.data.geoipCountryName == "India") {
+            triggerOTP(
+                currentPlatform,
+                countryId,
+                currentCountry,
+                countryCode,
+                loginTextField.text.replaceAll(" ", ""),
+                verifyIpData.response.data.geoipIpAddress.toString());
+          } else if (countryCode == "+91" &&
+              verifyIpData.response.data.geoipCountryName != "India") {
+            showAlert();
+          } else {
+            triggerOTP(
+                currentPlatform,
+                countryId,
+                currentCountry,
+                countryCode,
+                loginTextField.text.replaceAll(" ", ""),
+                verifyIpData.response.data.geoipIpAddress.toString());
+          }
         }
+        else
+          callApi(creds, profile);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -227,7 +240,7 @@ class LoginControllerState extends State<LoginController> {
           content: Text("Please accept Terms and Privacy Policy")));
     } else {
       if (checkStatus == true) {
-        verifyIpCountry(loginTextField.text);
+        verifyIpCountry(loginTextField.text, false, true, null);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Please Accept Terms and Privacy Policy")));
@@ -708,24 +721,27 @@ class LoginControllerState extends State<LoginController> {
   }
 
   void getTruecaller() async {
-    // await TruecallerSdk.initializeSDK(
-    //     sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
-    //     consentMode: TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET
-    // );
     TruecallerSdk.isUsable.then((isUsable) {
-      if (isUsable && countryCode=="91") {
+      if (isUsable && countryCode == "91") {
         TruecallerSdk.getProfile;
         StreamSubscription streamSubscription = TruecallerSdk.streamCallbackData
             .listen((truecallerSdkCallback) {
           switch (truecallerSdkCallback.result) {
             case TruecallerSdkCallbackResult.success:
-              storeDataTruecaller(truecallerSdkCallback.profile);
-              callApi();
+              print("payload=${truecallerSdkCallback.profile?.payload}");
+              print("signature=${truecallerSdkCallback.profile?.signature}");
+              var phoneNumber = truecallerSdkCallback.profile?.phoneNumber
+                  .replaceFirst('+91', '') ?? "";
+              verifyIpCountry(
+                  phoneNumber, true, false, truecallerSdkCallback.profile);
+              storeDataTruecaller(truecallerSdkCallback.profile, phoneNumber);
               String firstName = truecallerSdkCallback.profile!.firstName;
+              print("firstName=${truecallerSdkCallback.profile?.firstName}");
               String? lastName = truecallerSdkCallback.profile!.lastName;
               String phNo = truecallerSdkCallback.profile!.phoneNumber;
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => ViewCategories()));
+                  context,
+                  MaterialPageRoute(builder: (context) => ViewCategories()));
               break;
             case TruecallerSdkCallbackResult.failure:
               int errorCode = truecallerSdkCallback.error!.code;
@@ -739,24 +755,129 @@ class LoginControllerState extends State<LoginController> {
         });
       }
     });
-        }
+  }
 
-  void storeDataTruecaller(TruecallerUserProfile? trueProfile) async{
+  void storeDataTruecaller(TruecallerUserProfile? trueProfile,
+      String phoneNumber) async {
     SharedPreferences tcDataSharedPreference =
-        await SharedPreferences.getInstance();
+    await SharedPreferences.getInstance();
 
     String userName = '${trueProfile?.firstName} ${trueProfile?.lastName}';
 
-     tcDataSharedPreference.setString("TC_NAME", userName);
-     tcDataSharedPreference.setString("TC_EMAIL_ID", trueProfile?.email??"");
-     tcDataSharedPreference.setString("TC_MOBILE_NO", trueProfile?.phoneNumber??"");
-     tcDataSharedPreference.setString("TC_CITY", trueProfile?.city??"");
-     tcDataSharedPreference.setString("TC_COUNTRY_CODE", trueProfile?.countryCode??"");
-     tcDataSharedPreference.setBool("TC_IS_SUCCESS", true);
-     tcDataSharedPreference.setBool("IS_LOGIN_VIA_TC", true);
+    tcDataSharedPreference.setString("TC_NAME", userName);
+    tcDataSharedPreference.setString("TC_EMAIL_ID", trueProfile?.email ?? "");
+    tcDataSharedPreference.setString("TC_MOBILE_NO", phoneNumber ?? "");
+    tcDataSharedPreference.setString("TC_CITY", trueProfile?.city ?? "");
+    tcDataSharedPreference.setString(
+        "TC_COUNTRY_CODE", trueProfile?.countryCode ?? "");
+    tcDataSharedPreference.setBool("TC_IS_SUCCESS", true);
+    tcDataSharedPreference.setBool("IS_LOGIN_VIA_TC", true);
   }
 
-  void callApi() {
+  void callApi(String phoneNumber, TruecallerUserProfile? profile) async {
+    String pathUrl =
+        "https://mapi.indiamart.com/wservce/users/add/?S_Query_Modid=$currentPlatform&APP_SCREEN_NAME=Default-Buyer&user_updatedby=USER&USER_IP_COUNTRY=India&token=imartenquiryprovider&APP_USER_ID=&APP_MODID=$currentPlatform&S_mobile=$phoneNumber&user_mobile_country_code=91&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=IN&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=$ipAddress&app_version_no=13.2.1&country_iso=IN&user_updatedusing=TRUECALLER";
+    print(pathUrl);
+    try {
+      http.Response response = await http.post(Uri.parse(pathUrl));
+      var code = json.decode(response.body)['CODE'];
+      print("tccode=$pathUrl");
+      glid = json.decode(response.body)['gluser_id'];
+      print("tcglid=$glid");
+      callTcAuthApi(glid, profile, phoneNumber);
+      SharedPreferences tcDataSharedPreference = await SharedPreferences
+          .getInstance();
+      tcDataSharedPreference.setString("glid", glid);
+    } catch (e) {
 
+    }
+  }
+
+  void callTcAuthApi(String glid, TruecallerUserProfile? profile,
+      String phoneNumber) async {
+    String pathUrl =
+        "https://mapi.indiamart.com/wservce/users/TCAuthenticate_Verify/?APP_SCREEN_NAME=Default-Buyer&KEY_MOB_VERIFY=${profile
+        ?.payload}&SIGNATURE=${profile
+        ?.signature}&USER_IP_COUNTRY=India&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=IN&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&USER_IP=$ipAddress&app_version_no=13.2.2";
+    // "https://mapi.indiamart.com/wservce/users/TCAuthenticate_Verify/?APP_SCREEN_NAME=Default-Buyer&KEY_MOB_VERIFY=${profile?.payload??""}&SIGNATURE=${profile?.signature??""}&USER_IP_COUNTRY=India&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=IN&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&USER_IP=$ipAddress&app_version_no=13.2.2";
+    print(pathUrl);
+    try {
+      http.Response response = await http.post(Uri.parse(pathUrl));
+      // var code = json.decode(response.body)['CODE'];
+      print("tccode=${response.body}");
+      Map<String, dynamic> data = json.decode(response.body);
+      print("response.body${response.body}");
+      loginData1 = VerifyOTP.fromJson(data);
+      if (loginData1.response.code == "200") {
+        print("ak check${loginData1.response.loginData?.imIss.AK}");
+        // Success
+        udsApiCall(phoneNumber);
+      }
+    } catch (e) {
+
+    }
+  }
+
+  void udsApiCall(String phoneNumber) async {
+    String pathUrl="https://mapi.indiamart.com/wservce/users/detail/?VALIDATION_GLID=${glid}&APP_SCREEN_NAME=Default-Seller&AK=${loginData1.response.loginData?.imIss
+        .AK}&modid=${currentPlatform}&token=imobile@15061981&APP_USER_ID=${glid}&APP_MODID=${currentPlatform}&APP_ACCURACY=0.0&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=${glid}&logo=1&VALIDATION_USER_IP=${ipAddress}&app_version_no=13.2.2_S1&others=glusr_usr_latitude,glusr_usr_longitude,glusr_usr_membersince,glusr_listing_status_reason&VALIDATION_USERCONTACT=$phoneNumber";
+    http.Response response = await http.post(Uri.parse(pathUrl));
+    // var code = json.decode(response.body)['CODE'];
+    print("tccode=${response.body}");
+    Map<String, dynamic> data = json.decode(response.body);
+    print("response.body${response.body}");
+    uds = UDS.fromJson(data);
+    if (!checkIfCodeExists(uds.code)) {
+      print(
+          "name,lastname,email=${uds.firstName},${uds.lastName},${uds.email1}");
+      FocusScope.of(context).unfocus();
+      String ak = loginData1.response.loginData?.imIss.AK ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("AK", ak);
+      prefs.setString("glid", glid);
+      prefs.setString("ipAddress", ipAddress);
+      if (isIndian) {
+        prefs.setString("Mobile", phoneNumber);
+      }
+      if (uds.firstName == "" ||
+          uds.lastName == "" ||
+          uds.email1 == "" ||
+          uds.city == "")
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) =>
+                DetailsRequest(
+                  fname: uds.firstName,
+                  lname: uds.lastName,
+                  email: uds.email1,
+                  city: uds.city,
+                  isIndian: isIndian,
+                  creds: widget.mobNo,
+                  ipCountry: ipCountry,
+                  glId: glid,
+                  ipAddress: ipAddress,
+                )));
+      else {
+        ak = loginData1.response.loginData?.imIss.AK ?? "";
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => ViewCategories()));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content:
+            Text("Verification Successful Welcome ${uds.firstName}")));
+      }
+    }
+  }
+
+  bool checkIfCodeExists(String code) {
+    String codeArray = "403,412,204,400";
+
+    try {
+      List<String> codeList = codeArray.split(',');
+      if (codeList.contains(code)) {
+        return true;
+      }
+    } catch (e) {
+      print('Exception in retrieving codes: $e');
+    }
+    return false;
   }
 }

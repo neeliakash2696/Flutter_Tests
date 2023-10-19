@@ -63,6 +63,8 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
 
   String codeValue = "";
 
+  TextEditingController otpField=TextEditingController();
+
   @override
   void initState() {
     otp1 = FocusNode();
@@ -192,6 +194,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(80, 0, 80, 0),
                               child: PinFieldAutoFill(
+                                controller: otpField,
                                 cursor: Cursor(
                                     color: Colors.teal,
                                     width: 2,
@@ -354,6 +357,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                                                       10.0),
                                                   child: GestureDetector(
                                                     onTap: () {
+                                                      otpField.clear();
                                                       apiCall(
                                                           "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.country}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryId}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=49.36.221.59&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                                                       setState(() {
@@ -521,9 +525,7 @@ class _OTP_VerificationState extends State<OTP_Verification> with CodeAutoFill {
                           fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
-                      OtpTextField(
-                        clearText: true,
-                      );
+                      otpField.clear();
                       apiCall(
                           "https://mapi.indiamart.com/wservce/users/OTPverification/?process=${widget.process}&flag=OTPGen&user_country=${widget.countryId}&APP_SCREEN_NAME=OtpEnterMobileNumber&USER_IP_COUNTRY=${widget.ipAddress}&modid=${widget.platform}&token=imobile@15061981&APP_USER_ID=&APP_MODID=${widget.platform}&user_mobile_country_code=${widget.countryCode}&${widget.requiredParam}=${widget.mobNo}&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=${widget.countryCode}&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&USER_IP=${widget.ipAddress}&app_version_no=13.2.2_T1&user_updatedusing=OTPfrom%20${widget.platform}%20App");
                       Navigator.of(context).pop();
