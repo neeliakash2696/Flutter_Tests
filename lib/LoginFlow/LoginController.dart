@@ -735,13 +735,13 @@ class LoginControllerState extends State<LoginController> {
               verifyIpCountry(
                   phoneNumber, true, false, truecallerSdkCallback.profile);
               storeDataTruecaller(truecallerSdkCallback.profile, phoneNumber);
-              String firstName = truecallerSdkCallback.profile!.firstName;
-              print("firstName=${truecallerSdkCallback.profile?.firstName}");
+              String? firstName = truecallerSdkCallback.profile!.signatureAlgorithm;
+              print("firstName=${firstName}");
               String? lastName = truecallerSdkCallback.profile!.lastName;
               String phNo = truecallerSdkCallback.profile!.phoneNumber;
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => ViewCategories()));
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => ViewCategories()));
               break;
             case TruecallerSdkCallbackResult.failure:
               int errorCode = truecallerSdkCallback.error!.code;
@@ -795,26 +795,49 @@ class LoginControllerState extends State<LoginController> {
 
   void callTcAuthApi(String glid, TruecallerUserProfile? profile,
       String phoneNumber) async {
+    Map<String,String> formData={
+    'APP_SCREEN_NAME':'Default-Buyer',
+    'KEY_MOB_VERIFY':'${profile?.payload}',
+    'SIGNATURE':'${profile?.signature}',
+    'USER_IP_COUNTRY':'India',
+    'modid':'$currentPlatform',
+    'token':'imobile@15061981',
+    'APP_USER_ID':'',
+    'APP_MODID':'$currentPlatform',
+    'APP_ACCURACY':'0.0',
+    'USER_IP_COUNTRY_ISO':'IN',
+    'APP_LATITUDE':'0.0',
+    'APP_LONGITUDE':'0.0',
+    'glusrid':'$glid',
+    'USER_IP':'$ipAddress',
+    'app_version_no':'13.2.2'
+    };
     String pathUrl =
-        "https://mapi.indiamart.com/wservce/users/TCAuthenticate_Verify/?APP_SCREEN_NAME=Default-Buyer&KEY_MOB_VERIFY=${profile
-        ?.payload}&SIGNATURE=${profile
-        ?.signature}&USER_IP_COUNTRY=India&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=IN&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&USER_IP=$ipAddress&app_version_no=13.2.2";
-    // "https://mapi.indiamart.com/wservce/users/TCAuthenticate_Verify/?APP_SCREEN_NAME=Default-Buyer&KEY_MOB_VERIFY=${profile?.payload??""}&SIGNATURE=${profile?.signature??""}&USER_IP_COUNTRY=India&modid=$currentPlatform&token=imobile@15061981&APP_USER_ID=&APP_MODID=$currentPlatform&APP_ACCURACY=0.0&USER_IP_COUNTRY_ISO=IN&APP_LATITUDE=0.0&APP_LONGITUDE=0.0&glusrid=$glid&USER_IP=$ipAddress&app_version_no=13.2.2";
-    print(pathUrl);
+        "https://mapi.indiamart.com/wservce/users/TCAuthenticate_Verify/?";
+    String encodedFormData = Uri(queryParameters: formData).query;
+    print(pathUrl+encodedFormData);
     try {
-      http.Response response = await http.post(Uri.parse(pathUrl));
-      // var code = json.decode(response.body)['CODE'];
+      http.Response response = await http.post(
+          Uri.parse(pathUrl),
+          body:encodedFormData,
+          headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        encoding: Encoding.getByName("utf-8")
+
+      );
       print("tccode=${response.body}");
       Map<String, dynamic> data = json.decode(response.body);
       print("response.body${response.body}");
+      print("response.body1${VerifyOTP.fromJson(data).response}");
       loginData1 = VerifyOTP.fromJson(data);
       if (loginData1.response.code == "200") {
         print("ak check${loginData1.response.loginData?.imIss.AK}");
-        // Success
         udsApiCall(phoneNumber);
       }
     } catch (e) {
-
+      print("exceptionff=$e");
     }
   }
 
