@@ -257,6 +257,16 @@ class _SpeechToTextConverterState extends State<SpeechToTextConverter>
                     )));
       case VoiceSearchFromScreen.search:
         Navigator.pop(context);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Search(
+                      productName: voiceConvertedText,
+                      productFname: voiceConvertedText,
+                      productIndex: 0,
+                      biztype: "",
+                      city: widget.cityIndex,
+                    )));
     }
   }
 

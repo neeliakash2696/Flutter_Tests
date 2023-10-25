@@ -18,7 +18,7 @@ import 'package:sms_autofill/sms_autofill.dart';
 import 'package:truecaller_sdk/truecaller_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../DataModels/UserDetailSyncModel.dart';
-import '../DataModels/VerifyOTPDataModel.dart';
+import '../DataModels/VerifyTruecallerDataModel.dart';
 import '../view_categories.dart';
 import 'DetailsRequest.dart';
 import 'otp_veification.dart';
@@ -38,7 +38,7 @@ class LoginControllerState extends State<LoginController> {
   TextEditingController countrySearchTextFiled = TextEditingController();
   var countriesData;
   var results;
-  late VerifyOTP loginData1;
+  late VerifyTruecallerDataModel loginData1;
   late UDS uds;
   bool searching = false;
   String currentFlag =
@@ -72,6 +72,7 @@ class LoginControllerState extends State<LoginController> {
     {
       loginTextField.text = widget.mobNo;
     }
+
     _stream = TruecallerSdk.streamCallbackData;
     TruecallerSdk.initializeSDK(
       sdkOptions: TruecallerSdkScope.SDK_OPTION_WITH_OTP,
@@ -83,7 +84,9 @@ class LoginControllerState extends State<LoginController> {
       ctaTextPrefix: TruecallerSdkScope.CTA_TEXT_PREFIX_CONTINUE_WITH,
       // buttonColor: otpButtonColor,
     );
-    getTruecaller();
+    // TruecallerSdk.isUsable.then((isUsable) {
+      getTruecaller();
+    // });
   }
 
   @override
@@ -105,8 +108,12 @@ class LoginControllerState extends State<LoginController> {
     } else {
       requiredParam = "email";
     }
-    if (Platform.isIOS) {
-      process = "OTP_Screen_Fusion";
+    if (!kIsWeb) {
+      if (Platform.isIOS) {
+        process = "OTP_Screen_Fusion";
+      } else {
+        process = "OTP_Screen_Android";
+      }
     } else {
       process = "OTP_Screen_Android";
     }
@@ -120,6 +127,7 @@ class LoginControllerState extends State<LoginController> {
       if (loginData.response.code == "200") {
         // Success
         FocusScope.of(context).unfocus();
+        if (!kIsWeb) {
         if (Platform.isAndroid) {
           var appSignatureID = await SmsAutoFill().getAppSignature;
           Map sendOtpData = {
@@ -127,6 +135,7 @@ class LoginControllerState extends State<LoginController> {
             "app_signature_id": appSignatureID
           };
           print(sendOtpData);
+        }
         }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) =>
@@ -144,12 +153,14 @@ class LoginControllerState extends State<LoginController> {
                   ipAddress: ipAddress,
                 )));
       } else {
+        print("${loginData.response.message}\n${loginData.response.error}");
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
                 "${loginData.response.message}\n${loginData.response.error}")));
       }
       EasyLoading.dismiss();
     } catch (e) {
+      print("${loginData.response.message}\n${loginData.response.error}");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               "${loginData.response.message}\n${loginData.response.error}")));
@@ -160,12 +171,14 @@ class LoginControllerState extends State<LoginController> {
       TruecallerUserProfile? profile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var platform = "";
-    if (Platform.isIOS) {
-      platform = "IOS";
-    } else if (Platform.isAndroid) {
+    if (!kIsWeb) {
+      if (Platform.isIOS) {
+        platform = "IOS";
+      } else if (Platform.isAndroid) {
+        platform = "Android";
+      }
+    } else {
       platform = "Android";
-    } else if (kIsWeb) {
-      platform = "Web";
     }
     var requiredParam = "";
     if (isIndian) {
@@ -183,6 +196,10 @@ class LoginControllerState extends State<LoginController> {
       print(verifyIpData.response.data.geoipCountryName);
       ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
       ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
+      print("ipcountry=$ipCountry");
+      setState(() {
+        if (ipCountry != "India") isIndian = false;
+      });
       prefs.setString("ipAddress", ipAddress);
       if (verifyIpData.response.code == 200) {
         if (otpTriggered) {
@@ -195,8 +212,7 @@ class LoginControllerState extends State<LoginController> {
                 countryCode,
                 loginTextField.text.replaceAll(" ", ""),
                 verifyIpData.response.data.geoipIpAddress.toString());
-          } else if (countryCode == "+91" &&
-              verifyIpData.response.data.geoipCountryName != "India") {
+        } else if (countryCode == "91" && ipCountry != "India") {
             showAlert();
           } else {
             triggerOTP(
@@ -211,16 +227,19 @@ class LoginControllerState extends State<LoginController> {
         else
           callApi(creds, profile);
       } else {
+        print(
+            "${verifyIpData.response.status}\n${verifyIpData.response.message}");
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
                 "${verifyIpData.response.status}\n${verifyIpData.response
                     .message}")));
       }
     } catch (e) {
-      triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
-          loginTextField.text.replaceAll(" ", ""), "   ");
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text(e.toString())));
+      // triggerOTP(currentPlatform, countryId, currentCountry, countryCode,
+      //     loginTextField.text.replaceAll(" ", ""), "   ");
+      print(e.toString());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -228,11 +247,12 @@ class LoginControllerState extends State<LoginController> {
     if (loginTextField.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please enter your mobile number")));
-    } else if (loginTextField.text.length < 10 ||
-        loginTextField.text.startsWith("0") ||
-        loginTextField.text.startsWith("2") ||
-        loginTextField.text.startsWith("3") ||
-        loginTextField.text.startsWith("5")) {
+    } else if ((isIndian == true) &&
+        (loginTextField.text.length < 10 ||
+            loginTextField.text.startsWith("0") ||
+            loginTextField.text.startsWith("2") ||
+            loginTextField.text.startsWith("3") ||
+            loginTextField.text.startsWith("5"))) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Enter a valid mobile number")));
     } else if (checkStatus == false) {
@@ -250,15 +270,17 @@ class LoginControllerState extends State<LoginController> {
 
   getPlatform() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (Platform.isAndroid) {
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        currentPlatform = "ANDROID";
+        prefs.setString("platform", "ANDROID");
+      } else if (Platform.isIOS) {
+        currentPlatform = "Ios";
+        prefs.setString("platform", "iOS");
+      }
+    } else {
       currentPlatform = "ANDROID";
       prefs.setString("platform", "ANDROID");
-    } else if (Platform.isIOS) {
-      currentPlatform = "Ios";
-      prefs.setString("platform", "iOS");
-    } else if (kIsWeb) {
-      currentPlatform = "WEB";
-      prefs.setString("platform", "WEB");
     }
   }
 
@@ -396,34 +418,50 @@ class LoginControllerState extends State<LoginController> {
                                   setState(() {});
                                 },
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Image(
-                                      image: CachedNetworkImageProvider(
+                                    Container(
+                                      width: MediaQuery.of(context).size.width -
+                                          180,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Image(
+                                            image: CachedNetworkImageProvider(
+                                                searching == true
+                                                    ? results[index]['cflag']
+                                                    : snapshot.data[index]
+                                                        ['cflag']),
+                                            fit: BoxFit.fill,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              searching == true
+                                                  ? results[index]['cnname']
+                                                  : snapshot.data[index]
+                                                      ['cnname'],
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
                                           searching == true
-                                              ? results[index]['cflag']
-                                              : snapshot.data[index]['cflag']),
-                                      fit: BoxFit.fill,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(searching == true
-                                        ? results[index]['cnname']
-                                        : snapshot.data[index]['cnname']),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            searching == true
-                                                ? results[index]['cncode']
-                                                : snapshot.data[index]
-                                            ['cncode'],
-                                            style: const TextStyle(
-                                                color: Colors.grey),
-                                          )),
-                                    ),
+                                              ? results[index]['cncode']
+                                              : snapshot.data[index]['cncode'],
+                                          style: const TextStyle(
+                                              color: Colors.grey),
+                                        )),
                                   ],
                                 ),
                               );
@@ -533,10 +571,21 @@ class LoginControllerState extends State<LoginController> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 5),
-                                child: Image(
+                                child: FadeInImage(
                                   image: NetworkImage(currentFlag),
-                                  fit: BoxFit.fill,
+                                  placeholder:
+                                      const AssetImage("images/in_flag_s.png"),
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Image.asset('images/in_flag_s.png',
+                                        fit: BoxFit.fitWidth);
+                                  },
+                                  fit: BoxFit.fitWidth,
                                 ),
+                                // child: Image(
+                                //   image: NetworkImage(currentFlag),
+                                //   fit: BoxFit.fill,
+                                // ),
                               ),
                               const SizedBox(
                                 width: 5,
@@ -724,8 +773,10 @@ class LoginControllerState extends State<LoginController> {
     TruecallerSdk.isUsable.then((isUsable) {
       if (isUsable && countryCode == "91") {
         TruecallerSdk.getProfile;
+        try{
         StreamSubscription streamSubscription = TruecallerSdk.streamCallbackData
             .listen((truecallerSdkCallback) {
+          print("currentplatform=${truecallerSdkCallback.result}");
           switch (truecallerSdkCallback.result) {
             case TruecallerSdkCallbackResult.success:
               print("payload=${truecallerSdkCallback.profile?.payload}");
@@ -747,12 +798,35 @@ class LoginControllerState extends State<LoginController> {
               int errorCode = truecallerSdkCallback.error!.code;
               break;
             case TruecallerSdkCallbackResult.verification:
-              print("Verification Required!!");
+              if (!kIsWeb) {
+                if (Platform.isAndroid) {
+                  print("currentplatform=$currentPlatform");
+                  hint_picker();
+                }
+              } else
+                setState(() {
+                  _focusNode.requestFocus();
+                });
               break;
             default:
               print("Invalid result");
           }
         });
+        print("currentplatform=${streamSubscription}");
+      } catch(e){
+          print("exceptionhdhfhhf=$e");
+        }
+      }
+      else{
+        if (!kIsWeb) {
+          if (Platform.isAndroid) {
+            print("currentplatform=$currentPlatform");
+            hint_picker();
+          }
+        } else
+          setState(() {
+            _focusNode.requestFocus();
+          });
       }
     });
   }
@@ -830,8 +904,8 @@ class LoginControllerState extends State<LoginController> {
       print("tccode=${response.body}");
       Map<String, dynamic> data = json.decode(response.body);
       print("response.body${response.body}");
-      print("response.body1${VerifyOTP.fromJson(data).response}");
-      loginData1 = VerifyOTP.fromJson(data);
+      print("response.body1${VerifyTruecallerDataModel.fromJson(data).response}");
+      loginData1 = VerifyTruecallerDataModel.fromJson(data);
       if (loginData1.response.code == "200") {
         print("ak check${loginData1.response.loginData?.imIss.AK}");
         udsApiCall(phoneNumber);

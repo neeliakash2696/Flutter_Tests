@@ -1,12 +1,12 @@
-class VerifyTruecallerDataMode {
+class VerifyTruecallerDataModel {
   final Response response;
 
-  VerifyTruecallerDataMode({
+  VerifyTruecallerDataModel({
     required this.response
   });
 
-  factory VerifyTruecallerDataMode.fromJson(Map<String, dynamic> json) {
-    return VerifyTruecallerDataMode(
+  factory VerifyTruecallerDataModel.fromJson(Map<String, dynamic> json) {
+    return VerifyTruecallerDataModel(
       response: Response.fromJson(json['Response']),
     );
   }

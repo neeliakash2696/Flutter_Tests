@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nominatim_geocoding/nominatim_geocoding.dart';
 
 class DetailsRequest extends StatefulWidget {
   String fname;
@@ -40,9 +41,9 @@ class DetailsRequest extends StatefulWidget {
 
 class DetailsRequestState extends State<DetailsRequest> {
   TextEditingController nameTextField = TextEditingController();
-  TextEditingController emailTextField = TextEditingController();
+  TextEditingController credentialTextField = TextEditingController();
   TextEditingController pincodeTextField = TextEditingController();
-  FocusNode emailTextFieldFocus = FocusNode();
+  FocusNode credentialTextFieldFocus = FocusNode();
   FocusNode pinCodeTextFieldFocus = FocusNode();
 
   String? currentAddress;
@@ -52,14 +53,19 @@ class DetailsRequestState extends State<DetailsRequest> {
   bool showDropdown = false;
   late Placemark place;
   List<dynamic> filteredEmailList = [];
+  String currentCity = "";
+  String currentLocality = "";
+  String currentState = "";
 
   bool isChanged = false;
 
   @override
   void initState() {
-    if (Platform.isAndroid) {
-      _getEmails();
-      filteredEmailList.addAll(emailList);
+    if (!kIsWeb) {
+      if (Platform.isAndroid && widget.isIndian) {
+        _getEmails();
+        filteredEmailList.addAll(emailList);
+      }
     }
     super.initState();
   }
@@ -81,7 +87,7 @@ class DetailsRequestState extends State<DetailsRequest> {
       if (list != null && mounted) {
         setState(() {
           emailList = list;
-          emailTextField.text = emailList[0];
+          credentialTextField.text = emailList[0];
           print("emaillist=$emailList");
         });
       }
@@ -93,7 +99,7 @@ class DetailsRequestState extends State<DetailsRequest> {
   @override
   void dispose() {
     nameTextField.dispose();
-    emailTextField.dispose();
+    credentialTextField.dispose();
     pincodeTextField.dispose();
     super.dispose();
   }
@@ -106,23 +112,24 @@ class DetailsRequestState extends State<DetailsRequest> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     ak = prefs.getString("AK") ?? "";
     print("ak is $ak");
-
-    if (Platform.isIOS) {
-      appModId = "iOS";
-      updatedUsing = "Edit Profile (IOS)";
-    } else if (Platform.isAndroid) {
+    if (!kIsWeb) {
+      if (Platform.isIOS) {
+        appModId = "iOS";
+        updatedUsing = "Edit Profile (IOS)";
+      } else if (Platform.isAndroid) {
+        appModId = "ANDROID";
+        updatedUsing = "Edit Profile (Android)";
+      }
+    } else {
       appModId = "ANDROID";
       updatedUsing = "Edit Profile (Android)";
-    } else {
-      appModId = "WEB";
-      updatedUsing = "Edit Profile (Web)";
     }
     if (widget.isIndian == true && !kIsWeb) {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=${place.locality}&STATE=${place.administrativeArea}&LOCALITY=${place.locality}";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${credentialTextField.text.replaceAll(" ", "")}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${widget.creds}&MODID=$appModId&ZIP=${pincodeTextField.text.replaceAll(" ", "")}&CITY=${place.locality}&STATE=${place.administrativeArea}&LOCALITY=${place.locality}";
     } else {
       pathUrl =
-          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&EMAIL=${emailTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${emailTextField.text}&MODID=$appModId";
+          "https://mapi.indiamart.com/wservce/users/edit/?USR_ID=${widget.glId}&VALIDATION_GLID=${widget.glId}&APP_SCREEN_NAME=OtpEnterMoreDetails&IP=${widget.ipAddress}&FIRSTNAME=${nameTextField.text}&AK=$ak&PH_MOBILE=${credentialTextField.text.replaceAll(" ", "")}}&UPDATEDUSING=$updatedUsing&APP_USER_ID=${widget.glId}&APP_MODID=$appModId&VALIDATION_KEY=e27d039e38ae7b3d439e8d1fe870fc68&APP_ACCURACY=0.0&APP_LATITUDE=0.0&IP_COUNTRY=${widget.ipCountry}&APP_LONGITUDE=0.0&VALIDATION_USER_IP=${widget.ipAddress}&UPDATEDBY=User&app_version_no=13.2.2_T1&VALIDATION_USERCONTACT=${credentialTextField.text}&MODID=$appModId";
     }
 
     print(pathUrl);
@@ -135,11 +142,13 @@ class DetailsRequestState extends State<DetailsRequest> {
         prefs.setString("ipAddress", widget.ipAddress);
         if (widget.isIndian) {
           prefs.setString("Mobile", widget.creds);
-          prefs.setString("Email", emailTextField.text);
+          prefs.setString("Email", credentialTextField.text);
         } else {
           prefs.setString("Email", widget.creds);
-          prefs.setString("Mobile",
-              emailTextField.text); // this textfield now contains Phone Number
+          prefs.setString(
+              "Mobile",
+              credentialTextField
+                  .text); // this textfield now contains Phone Number
         }
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ViewCategories()));
@@ -157,7 +166,7 @@ class DetailsRequestState extends State<DetailsRequest> {
     if (nameTextField.text.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please enter your Name")));
-    } else if (emailTextField.text.isEmpty) {
+    } else if (credentialTextField.text.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please fill all the Details")));
     } else if (widget.isIndian == true &&
@@ -203,12 +212,19 @@ class DetailsRequestState extends State<DetailsRequest> {
 
   Future getCurrentPosition() async {
     final hasPermission = await handleLocationPermission();
+    await NominatimGeocoding.init(reqCacheNum: 20);
     if (!hasPermission) return;
     EasyLoading.show(status: "Fetching...");
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => currentPosition = position);
-      _getAddressFromLatLng(currentPosition!);
+      if (currentPosition != null) {
+        _getAddressFromLatLng();
+      } else {
+        print("Can't fetch Location");
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Can't fetch Location")));
+      }
     }).catchError((e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Can't fetch Location due to ${e.toString()}")));
@@ -218,32 +234,54 @@ class DetailsRequestState extends State<DetailsRequest> {
     });
   }
 
-  Future _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(
-            currentPosition!.latitude, currentPosition!.longitude)
-        .then((List<Placemark> placemarks) {
-      place = placemarks[0];
-      setState(() {
-        print(place.administrativeArea);
-        print(place.country);
-        print(place.isoCountryCode);
-        print(place.locality);
-        print(place.name);
-        print(place.street);
-        print(place.subAdministrativeArea);
-        print(place.subLocality);
-        print(place.subThoroughfare);
-        print(place.thoroughfare);
-        currentAddress = '${place.postalCode}';
-        pincodeTextField.text = currentAddress.toString();
+  Future _getAddressFromLatLng() async {
+    if (kIsWeb) {
+      var coordinate = Coordinate(
+          latitude: currentPosition?.latitude ?? 0.0,
+          longitude: currentPosition?.longitude ?? 0.0);
+      Geocoding geocoding =
+          await NominatimGeocoding.to.reverseGeoCoding(coordinate);
+      print(geocoding.address.city);
+      print(geocoding.address.country);
+      print(geocoding.address.countryCode);
+      print(geocoding.address.district);
+      print(geocoding.address.houseNumber);
+      print(geocoding.address.locale);
+      print(geocoding.address.neighbourhood);
+      print(geocoding.address.postalCode);
+      print(geocoding.address.suburb);
+      currentCity = geocoding.address.city;
+      currentState = geocoding.address.state;
+      currentLocality = geocoding.address.suburb;
+      pincodeTextField.text = geocoding.address.postalCode.toString();
+      EasyLoading.dismiss();
+    } else {
+      await placemarkFromCoordinates(currentPosition?.latitude ?? 0.0,
+              currentPosition?.longitude ?? 0.0)
+          .then((List<Placemark> placemarks) {
+        place = placemarks[0];
+        setState(() {
+          print(place.administrativeArea);
+          print(place.country);
+          print(place.isoCountryCode);
+          print(place.locality);
+          print(place.name);
+          print(place.street);
+          print(place.subAdministrativeArea);
+          print(place.subLocality);
+          print(place.subThoroughfare);
+          print(place.thoroughfare);
+          currentAddress = '${place.postalCode}';
+          pincodeTextField.text = currentAddress.toString();
+          EasyLoading.dismiss();
+        });
+      }).catchError((e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Can't fetch Location due to ${e.toString()}")));
+        debugPrint(e.toString());
         EasyLoading.dismiss();
       });
-    }).catchError((e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Can't fetch Location due to ${e.toString()}")));
-      debugPrint(e.toString());
-      EasyLoading.dismiss();
-    });
+    }
   }
 
   @override
@@ -331,7 +369,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                 autofocus: true,
                                 onSubmitted: (value) {
                                   // keyboard done action
-                                  emailTextFieldFocus.requestFocus();
+                                  credentialTextFieldFocus.requestFocus();
                                 },
                                 onChanged: (searchingText) {},
                                 onEditingComplete: () {},
@@ -368,7 +406,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                 child: Column(
                                   children: <Widget>[
                                     TextField(
-                                      focusNode: emailTextFieldFocus,
+                                      focusNode: credentialTextFieldFocus,
                                       textInputAction:
                                           TextInputAction.unspecified,
                                       keyboardType: widget.isIndian == true
@@ -391,7 +429,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       onEditingComplete: () {},
                                       scrollPhysics:
                                           NeverScrollableScrollPhysics(),
-                                      controller: emailTextField,
+                                      controller: credentialTextField,
                                       onTapOutside: (event) {
                                         showDropdown = false;
                                       },
@@ -428,13 +466,13 @@ class DetailsRequestState extends State<DetailsRequest> {
                                                         print(
                                                             'Selected: $item');
                                                         setState(() {
-                                                          emailTextField.text =
-                                                              item;
-                                                          emailTextField
+                                                          credentialTextField
+                                                              .text = item;
+                                                          credentialTextField
                                                                   .selection =
                                                               TextSelection.collapsed(
                                                                   offset:
-                                                                      emailTextField
+                                                                      credentialTextField
                                                                           .text
                                                                           .length);
                                                           showDropdown = false;
@@ -477,6 +515,7 @@ class DetailsRequestState extends State<DetailsRequest> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(children: <Widget>[
+                                  // if (!kIsWeb) ...{
                                   Padding(
                                     padding: const EdgeInsets.only(left: 10),
                                     child: TextButton.icon(
@@ -526,6 +565,11 @@ class DetailsRequestState extends State<DetailsRequest> {
                                       style: TextStyle(color: Colors.grey[400]),
                                     ),
                                   ),
+                                  // } else ...{
+                                  //   SizedBox(
+                                  //     width: 8,
+                                  //   )
+                                  // },
                                   Container(
                                     width:
                                         MediaQuery.of(context).size.width - 253,

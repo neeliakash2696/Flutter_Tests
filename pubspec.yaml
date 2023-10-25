@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.17.0
   geolocator: ^10.0.0
   geocoding: ^2.0.4
+  nominatim_geocoding: ^0.0.6
   share_plus: ^7.1.0
   keyboard_dismisser: ^3.0.0
   flutter_inappwebview: ^5.8.0
@@ -54,6 +55,8 @@ dependencies:
 #  dropdown_textfield: ^1.0.8
   sms_autofill: ^2.3.0
   truecaller_sdk: ^0.1.2
+
+
 
 dev_dependencies:
   flutter_test:

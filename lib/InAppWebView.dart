@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -44,11 +45,15 @@ class webview_classState extends State<webview_class> {
         color: const Color(0xff432B40),
       ),
       onRefresh: () async {
-        if (Platform.isAndroid) {
+        if(!kIsWeb) {
+          if (Platform.isAndroid) {
+            webViewController.reload();
+          } else if (Platform.isIOS) {
+            webViewController.loadUrl(
+                urlRequest: URLRequest(url: await webViewController.getUrl()));
+          }
+        } else {
           webViewController.reload();
-        } else if (Platform.isIOS) {
-          webViewController.loadUrl(
-              urlRequest: URLRequest(url: await webViewController.getUrl()));
         }
       },
     );
