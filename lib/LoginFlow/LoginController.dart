@@ -174,10 +174,10 @@ class LoginControllerState extends State<LoginController> {
       http.Response response = await http.post(Uri.parse(pathUrl));
       Map<String, dynamic> data = json.decode(response.body);
       verifyIpData = GeoLocationResponse.fromJson(data);
-      print(verifyIpData.response.data.geoipCountryName);
+      print(response.body);
       ipCountry = verifyIpData.response.data.geoipCountryName ?? "";
       ipAddress = verifyIpData.response.data.geoipIpAddress ?? "";
-      print("ipcountry=$ipCountry");
+
       setState(() {
         if (ipCountry != "India") isIndian = false;
       });
